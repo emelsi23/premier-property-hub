@@ -51,7 +51,7 @@ public static class DatabaseExtensions
         if (databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase)
             || databaseUrl.StartsWith("Server=", StringComparison.OrdinalIgnoreCase))
         {
-            return databaseUrl;
+            return AppendPostgresOptions(databaseUrl);
         }
 
         var uri = new Uri(databaseUrl);
@@ -61,6 +61,17 @@ public static class DatabaseExtensions
         var database = uri.AbsolutePath.TrimStart('/');
         var port = uri.Port > 0 ? uri.Port : 5432;
 
-        return $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Prefer;Trust Server Certificate=true";
+        return AppendPostgresOptions(
+            $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Prefer;Trust Server Certificate=true");
+    }
+
+    private static string AppendPostgresOptions(string connectionString)
+    {
+        if (connectionString.Contains("Gss Encryption Mode=", StringComparison.OrdinalIgnoreCase))
+        {
+            return connectionString;
+        }
+
+        return connectionString.TrimEnd(';') + ";Gss Encryption Mode=Disable";
     }
 }
