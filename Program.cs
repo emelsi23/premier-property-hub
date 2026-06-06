@@ -19,7 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Admin/Logout";
         options.AccessDeniedPath = "/Admin/Login";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
-        options.SlideExpiration = true;
+        options.SlidingExpiration = true;
         options.Cookie.Name = "PremierPropertyHub.Admin";
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
