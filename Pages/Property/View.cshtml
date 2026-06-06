@@ -1,0 +1,380 @@
+@page "/property/{slug}"
+@model ApartamentosRenta.Pages.Property.ViewModel
+@{
+    ViewData["Title"] = Model.Propiedad.Titulo;
+    var fotos = Model.Propiedad.Fotos.ToList();
+    var amenidades = Model.Propiedad.Amenidades
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    var minVisit = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    var maxBirth = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
+}
+
+<div class="listing-page">
+    <header class="listing-header">
+        <div class="listing-header-inner">
+            <img src="~/images/logo-icon.png" alt="" class="listing-logo" asp-append-version="true" />
+            <div>
+                <span class="listing-brand">Premier Property Hub</span>
+                <span class="listing-brand-sub">By Zillow</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="listing-content">
+    @if (fotos.Count > 0)
+    {
+        <div class="gallery-shell">
+            <div class="gallery-viewer" id="galleryViewer">
+                <span class="gallery-counter" id="galleryCounter">1 / @fotos.Count</span>
+                @if (fotos.Count > 1)
+                {
+                    <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Previous photo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="Next photo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                }
+                <img id="mainPhoto" src="@fotos[0].Url" alt="@Model.Propiedad.Titulo" class="gallery-main" />
+            </div>
+
+            @if (fotos.Count > 1)
+            {
+                <div class="gallery-strip">
+                    @for (var i = 0; i < fotos.Count; i++)
+                    {
+                        <button type="button" class="gallery-thumb @(i == 0 ? "active" : "")" data-index="@i" data-photo="@fotos[i].Url" aria-label="Photo @(i + 1)">
+                            <img src="@fotos[i].Url" alt="" loading="lazy" />
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+        <div class="listing-card">
+            <p class="property-location">@Model.Propiedad.Direccion · @Model.Propiedad.Ciudad</p>
+            <h1 class="property-title">@Model.Propiedad.Titulo</h1>
+            <p class="property-price">$@Model.Propiedad.PrecioMensual.ToString("N0")<span>/mo</span></p>
+
+            <div class="property-stats">
+                <div><strong>@Model.Propiedad.Habitaciones</strong><span>Bedrooms</span></div>
+                <div><strong>@Model.Propiedad.Banos</strong><span>Bathrooms</span></div>
+                <div><strong>@Model.Propiedad.MetrosCuadrados</strong><span>sq m</span></div>
+            </div>
+
+            <h2 class="section-title">About this home</h2>
+            <p class="property-description">@Model.Propiedad.Descripcion</p>
+
+            @if (amenidades.Length > 0)
+            {
+                <h2 class="section-title">Amenities</h2>
+                <div class="property-tags">
+                    @foreach (var item in amenidades)
+                    {
+                        <span class="property-tag">@item</span>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="listing-card listing-form-card" id="schedule">
+            <div class="form-card-header">
+                <h2 class="form-card-title">Schedule a tour</h2>
+                <p class="form-card-subtitle">Complete the form below and our team will reach out to confirm your visit.</p>
+            </div>
+
+            <div id="formErrors" class="alert alert-danger d-none" role="alert"></div>
+
+            <form method="post" class="cita-form" id="citaForm" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="form-field">
+                    <label asp-for="Appointment.NombreCliente" class="form-label"></label>
+                    <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="John Smith" autocomplete="name" />
+                    <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Appointment.FechaNacimiento" class="form-label"></label>
+                    <input asp-for="Appointment.FechaNacimiento" class="form-control" type="date" max="@maxBirth" />
+                    <span asp-validation-for="Appointment.FechaNacimiento" class="field-error"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Appointment.Email" class="form-label"></label>
+                    <input asp-for="Appointment.Email" class="form-control" type="email"
+                           placeholder="john.smith@email.com" autocomplete="email" />
+                    <span asp-validation-for="Appointment.Email" class="field-error"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Appointment.Telefono" class="form-label"></label>
+                    <input asp-for="Appointment.Telefono" id="phoneInput" class="form-control" type="tel"
+                           placeholder="+1 (555) 000-0000" autocomplete="tel" maxlength="14" inputmode="numeric" />
+                    <span asp-validation-for="Appointment.Telefono" class="field-error"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Appointment.FechaHora" class="form-label"></label>
+                    <input asp-for="Appointment.FechaHora" class="form-control" type="datetime-local" min="@minVisit" />
+                    <span asp-validation-for="Appointment.FechaHora" class="field-error"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="Appointment.SsnItin" class="form-label"></label>
+                    <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
+                           placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
+                    <span class="form-hint">Required for identity verification. Your information is kept secure.</span>
+                    <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-submit w-100" id="submitBtn">
+                    Request tour
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="status-modal" id="statusModal" aria-hidden="true">
+    <div class="status-modal-backdrop"></div>
+    <div class="status-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div id="modalLoading">
+            <h3 id="modalTitle" class="modal-title">Processing your application</h3>
+            <p class="modal-text">Please wait while we review your information…</p>
+            <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p class="progress-label" id="progressLabel">0%</p>
+        </div>
+        <div id="modalSuccess" class="d-none modal-success-panel">
+            <div class="success-confetti" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="modal-success-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <p class="success-badge">Approved</p>
+            <h3 class="modal-title success-title">Congratulations!</h3>
+            <p class="modal-text success-lead">You have been approved.</p>
+            <p class="modal-text success-contact">
+                We will be contacting you via <strong>phone</strong> or <strong>WhatsApp</strong> to continue the process.
+            </p>
+            <div class="success-channels">
+                <span class="success-channel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                    Phone
+                </span>
+                <span class="success-channel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+                    WhatsApp
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.gallery-thumb').forEach(btn => {
+            btn.addEventListener('click', () => goToPhoto(parseInt(btn.dataset.index, 10)));
+        });
+
+        const photos = [@Html.Raw(string.Join(",", fotos.Select(f => $"\"{f.Url}\"")))];
+        let currentIndex = 0;
+        const mainPhoto = document.getElementById('mainPhoto');
+        const counter = document.getElementById('galleryCounter');
+        const prevBtn = document.getElementById('galleryPrev');
+        const nextBtn = document.getElementById('galleryNext');
+        const viewer = document.getElementById('galleryViewer');
+
+        function goToPhoto(index) {
+            if (!photos.length) return;
+            currentIndex = (index + photos.length) % photos.length;
+            mainPhoto.style.opacity = '0';
+            setTimeout(() => {
+                mainPhoto.src = photos[currentIndex];
+                mainPhoto.style.opacity = '1';
+            }, 150);
+            if (counter) counter.textContent = `${currentIndex + 1} / ${photos.length}`;
+            document.querySelectorAll('.gallery-thumb').forEach((b, i) => {
+                b.classList.toggle('active', i === currentIndex);
+                if (i === currentIndex) b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            });
+        }
+
+        prevBtn?.addEventListener('click', () => goToPhoto(currentIndex - 1));
+        nextBtn?.addEventListener('click', () => goToPhoto(currentIndex + 1));
+
+        function formatPhone(value) {
+            const digits = value.replace(/\D/g, '').slice(0, 10);
+            if (digits.length === 0) return '';
+            if (digits.length < 4) return `(${digits}`;
+            if (digits.length < 7) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+            return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        }
+
+        function formatSsn(value) {
+            const digits = value.replace(/\D/g, '').slice(0, 9);
+            if (digits.length <= 3) return digits;
+            if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+            return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+        }
+
+        function bindMask(input, formatter) {
+            if (!input) return;
+            input.addEventListener('input', () => {
+                const start = input.selectionStart;
+                const before = input.value;
+                input.value = formatter(input.value);
+                const diff = input.value.length - before.length;
+                input.setSelectionRange(start + diff, start + diff);
+            });
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                input.value = formatter(text);
+            });
+        }
+
+        bindMask(document.getElementById('phoneInput'), formatPhone);
+        bindMask(document.getElementById('ssnInput'), formatSsn);
+
+        let touchStartX = 0;
+        viewer?.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+        viewer?.addEventListener('touchend', e => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(diff) > 50) goToPhoto(currentIndex + (diff < 0 ? 1 : -1));
+        }, { passive: true });
+
+        const form = document.getElementById('citaForm');
+        const modal = document.getElementById('statusModal');
+        const modalLoading = document.getElementById('modalLoading');
+        const modalSuccess = document.getElementById('modalSuccess');
+        const progressBar = document.getElementById('progressBar');
+        const progressLabel = document.getElementById('progressLabel');
+        const formErrors = document.getElementById('formErrors');
+        const submitBtn = document.getElementById('submitBtn');
+        const phoneInput = document.getElementById('phoneInput');
+        const ssnInput = document.getElementById('ssnInput');
+
+        const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+        const ssnPattern = /^\d{3}-\d{2}-\d{4}$/;
+
+        function validateForm() {
+            formErrors.classList.add('d-none');
+            formErrors.innerHTML = '';
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+
+            const errors = [];
+            if (!phonePattern.test(phoneInput.value.trim())) {
+                errors.push('Enter a valid phone number: (809) 690-9988');
+            }
+            if (!ssnPattern.test(ssnInput.value.trim())) {
+                errors.push('Enter a valid SSN: 121-22-1123');
+            }
+
+            if (errors.length) {
+                formErrors.innerHTML = errors.map(m => `<div>${m}</div>`).join('');
+                formErrors.classList.remove('d-none');
+                document.getElementById('schedule')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return false;
+            }
+
+            return true;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateForm()) return;
+
+            submitBtn.disabled = true;
+            resetProgress();
+            showModal('loading');
+            startProgress(6000);
+
+            const formData = new FormData(form);
+            const token = form.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            const submitPromise = fetch(window.location.pathname, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token || ''
+                }
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 6000));
+
+            try {
+                const response = await submitPromise;
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    hideModal();
+                    submitBtn.disabled = false;
+                    if (data.errors) {
+                        const messages = Object.values(data.errors);
+                        formErrors.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                        formErrors.classList.remove('d-none');
+                    }
+                    return;
+                }
+
+                showModal('success');
+                form.reset();
+                submitBtn.disabled = false;
+            } catch {
+                hideModal();
+                submitBtn.disabled = false;
+                formErrors.textContent = 'Something went wrong. Please try again.';
+                formErrors.classList.remove('d-none');
+            }
+        });
+
+        function resetProgress() {
+            progressBar.style.width = '0%';
+            progressLabel.textContent = '0%';
+        }
+
+        function startProgress(durationMs) {
+            const start = performance.now();
+
+            function tick(now) {
+                const elapsed = now - start;
+                const pct = Math.min(100, Math.round((elapsed / durationMs) * 100));
+                progressBar.style.width = pct + '%';
+                progressLabel.textContent = pct + '%';
+                if (elapsed < durationMs) {
+                    requestAnimationFrame(tick);
+                }
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        function showModal(state) {
+            modal.classList.add('is-visible');
+            modal.setAttribute('aria-hidden', 'false');
+            modal.querySelector('.status-modal-dialog')?.classList.remove('is-success');
+            if (state === 'loading') {
+                modalLoading.classList.remove('d-none');
+                modalSuccess.classList.add('d-none');
+            } else {
+                modalLoading.classList.add('d-none');
+                modalSuccess.classList.remove('d-none');
+                modal.querySelector('.status-modal-dialog')?.classList.add('is-success');
+            }
+        }
+
+        function hideModal() {
+            modal.classList.remove('is-visible');
+            modal.setAttribute('aria-hidden', 'true');
+            resetProgress();
+        }
+    </script>
+}

@@ -1,0 +1,82 @@
+﻿@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Premier Property Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ApartamentosRenta.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-accent" aria-hidden="true"></div>
+        <nav class="navbar navbar-expand-lg site-navbar">
+            <div class="container-xl site-navbar-inner">
+                <a class="navbar-brand site-brand" asp-page="/Apartamentos/Index" aria-label="Premier Property Hub By Zillow - Home">
+                    <img src="~/images/logo-icon.png"
+                         alt=""
+                         class="site-brand-icon"
+                         asp-append-version="true"
+                         aria-hidden="true" />
+                    <span class="site-brand-text">
+                        <span class="site-brand-name">Premier Property Hub</span>
+                        <span class="site-brand-byline">By Zillow</span>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler site-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse site-navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav site-nav mx-lg-auto">
+                        <li class="nav-item">
+                            <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" asp-page="/Apartamentos/Index">
+                                Listings
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="site-nav-actions">
+                        <a class="btn btn-site-cta" asp-page="/Apartamentos/Index">
+                            Browse rentals
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-xl py-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container-xl">
+            <div class="site-footer-inner">
+                <div class="site-footer-brand">
+                    <img src="~/images/logo-icon.png" alt="" class="site-footer-icon" asp-append-version="true" aria-hidden="true" />
+                    <span class="site-footer-name">Premier Property Hub By Zillow</span>
+                </div>
+                <p class="site-footer-copy mb-0">&copy; @DateTime.Now.Year All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

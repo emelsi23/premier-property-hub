@@ -1,0 +1,83 @@
+@page
+@model ApartamentosRenta.Pages.Admin.Appointments.IndexModel
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Visit appointments</h1>
+        <p class="text-muted mb-0">Requests submitted by clients from your property links.</p>
+    </div>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
+</div>
+
+@if (!Model.Appointments.Any())
+{
+    <div class="alert alert-info">No appointments yet. Share a property link via WhatsApp to get started.</div>
+}
+else
+{
+    <div class="table-responsive card shadow-sm border-0">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Client</th>
+                    <th>Property</th>
+                    <th>Visit</th>
+                    <th>ID / DOB</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var appointment in Model.Appointments)
+                {
+                    <tr>
+                        <td>
+                            <strong>@appointment.NombreCliente</strong><br />
+                            <a href="mailto:@appointment.Email" class="small">@appointment.Email</a><br />
+                            <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a>
+                        </td>
+                        <td>
+                            @appointment.Propiedad.Titulo<br />
+                            <span class="small text-muted">@appointment.Propiedad.Direccion</span>
+                        </td>
+                        <td>
+                            @appointment.FechaHora.ToString("MM/dd/yyyy HH:mm")
+                        </td>
+                        <td>
+                            <span class="font-monospace small">@appointment.SsnItin</span><br />
+                            <span class="small text-muted">DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
+                        </td>
+                        <td>
+                            @switch (appointment.Estado)
+                            {
+                                case ApartamentosRenta.Models.EstadoCita.Pendiente:
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    break;
+                                case ApartamentosRenta.Models.EstadoCita.Confirmada:
+                                    <span class="badge bg-success">Confirmed</span>
+                                    break;
+                                case ApartamentosRenta.Models.EstadoCita.Cancelada:
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end">
+                            @if (appointment.Estado == ApartamentosRenta.Models.EstadoCita.Pendiente)
+                            {
+                                <form method="post" asp-page-handler="Confirm" asp-route-id="@appointment.Id" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                </form>
+                                <form method="post" asp-page-handler="Cancel" asp-route-id="@appointment.Id" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

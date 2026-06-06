@@ -1,0 +1,17 @@
+@page "{id:int}"
+@model ApartamentosRenta.Pages.Admin.DeleteModel
+@{
+    ViewData["Title"] = "Delete property";
+}
+
+<h1 class="h3 mb-4 text-danger">Delete property</h1>
+
+<div class="alert alert-warning">
+    Delete <strong>@Model.Propiedad.Titulo</strong>? This will also remove its photos and appointments.
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Propiedad.Id" />
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a asp-page="Index" class="btn btn-link">Cancel</a>
+</form>

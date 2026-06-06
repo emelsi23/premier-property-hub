@@ -1,0 +1,40 @@
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## SQLite local database
+*.db
+*.db-shm
+*.db-wal
+
+## ASP.NET
+appsettings.Development.json
+secrets.json
+
+## OS
+.DS_Store
+Thumbs.db
+
+## NuGet
+*.nupkg
+**/packages/*
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Publish
+publish/

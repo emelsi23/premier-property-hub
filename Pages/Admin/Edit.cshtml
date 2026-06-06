@@ -1,0 +1,29 @@
+@page "{id:int}"
+@model ApartamentosRenta.Pages.Admin.EditModel
+@{
+    ViewData["Title"] = "Edit property";
+}
+
+<h1 class="h3 mb-4">Edit property</h1>
+
+@if (!string.IsNullOrEmpty(Model.LinkPreview))
+{
+    <div class="alert alert-light border mb-4">
+        <strong>Current link:</strong>
+        <a href="@Model.LinkPreview" target="_blank" class="font-monospace small">@Model.LinkPreview</a>
+    </div>
+}
+
+<form method="post" class="card shadow-sm border-0">
+    <div class="card-body">
+        <partial name="_PropertyForm" model="Model.Input" />
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-page="Index" class="btn btn-link">Cancel</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

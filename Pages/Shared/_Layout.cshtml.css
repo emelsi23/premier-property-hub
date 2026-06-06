@@ -1,0 +1,12 @@
+﻿/* Scoped layout overrides — aligned with Premier Property Hub branding */
+
+a.navbar-brand {
+  white-space: normal;
+  word-break: normal;
+}
+
+.footer {
+  position: static;
+  white-space: normal;
+  line-height: inherit;
+}

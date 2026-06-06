@@ -1,0 +1,61 @@
+using System.ComponentModel.DataAnnotations;
+using ApartamentosRenta.Models;
+
+namespace ApartamentosRenta.Pages.Admin;
+
+public class PropertyInput
+{
+    [Required, StringLength(120), Display(Name = "Title")]
+    public string Titulo { get; set; } = string.Empty;
+
+    [Required, StringLength(2000), Display(Name = "Description")]
+    public string Descripcion { get; set; } = string.Empty;
+
+    [Required, StringLength(200), Display(Name = "Address")]
+    public string Direccion { get; set; } = string.Empty;
+
+    [Required, StringLength(80), Display(Name = "City")]
+    public string Ciudad { get; set; } = string.Empty;
+
+    [Range(1, 999999), Display(Name = "Monthly rent")]
+    public decimal PrecioMensual { get; set; }
+
+    [Range(0, 20), Display(Name = "Bedrooms")]
+    public int Habitaciones { get; set; } = 1;
+
+    [Range(1, 10), Display(Name = "Bathrooms")]
+    public int Banos { get; set; } = 1;
+
+    [Range(10, 10000), Display(Name = "Square feet")]
+    public decimal MetrosCuadrados { get; set; }
+
+    [Display(Name = "Available")]
+    public bool Disponible { get; set; } = true;
+
+    [StringLength(500), Display(Name = "Amenities")]
+    public string Amenidades { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Add at least one photo URL")]
+    [Display(Name = "Photos (one URL per line)")]
+    public string FotosUrls { get; set; } = string.Empty;
+
+    public IEnumerable<string> ParseFotoUrls() =>
+        FotosUrls
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(url => !string.IsNullOrWhiteSpace(url));
+
+    public static PropertyInput FromEntity(Propiedad entity) => new()
+    {
+        Titulo = entity.Titulo,
+        Descripcion = entity.Descripcion,
+        Direccion = entity.Direccion,
+        Ciudad = entity.Ciudad,
+        PrecioMensual = entity.PrecioMensual,
+        Habitaciones = entity.Habitaciones,
+        Banos = entity.Banos,
+        MetrosCuadrados = entity.MetrosCuadrados,
+        Disponible = entity.Disponible,
+        Amenidades = entity.Amenidades,
+        FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url))
+    };
+}

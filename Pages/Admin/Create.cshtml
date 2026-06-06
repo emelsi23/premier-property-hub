@@ -1,0 +1,21 @@
+@page
+@model ApartamentosRenta.Pages.Admin.CreateModel
+@{
+    ViewData["Title"] = "New property";
+}
+
+<h1 class="h3 mb-4">New property</h1>
+
+<form method="post" class="card shadow-sm border-0">
+    <div class="card-body">
+        <partial name="_PropertyForm" model="Model.Input" />
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a asp-page="Index" class="btn btn-link">Cancel</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
