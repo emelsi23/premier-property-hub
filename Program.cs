@@ -33,6 +33,9 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapGet("/", () => Results.Redirect("/Admin"));
+app.MapGet("/casa/{slug}", (string slug) => Results.Redirect($"/property/{slug}", permanent: true));
+app.MapGet("/casa/{slug}/gracias", (string slug) => Results.Redirect($"/property/{slug}/thank-you", permanent: true));
+app.MapGet("/Admin/Citas/{**path}", () => Results.Redirect("/Admin/Appointments", permanent: true));
 
 app.MapRazorPages();
 
