@@ -11,11 +11,12 @@ public static class DatabaseExtensions
 
         services.AddDbContext<AppDbContext>(options =>
         {
+            options.ConfigureWarnings(w =>
+                w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
             if (IsPostgreSql(connectionString))
             {
-                options.UseNpgsql(connectionString, npgsql =>
-                    npgsql.ConfigureWarnings(w =>
-                        w.Ignore(RelationalEventId.PendingModelChangesWarning)));
+                options.UseNpgsql(connectionString);
             }
             else
             {
