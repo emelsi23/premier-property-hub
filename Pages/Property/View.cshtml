@@ -302,6 +302,7 @@
             const submitPromise = fetch(window.location.pathname, {
                 method: 'POST',
                 body: formData,
+                credentials: 'same-origin',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'RequestVerificationToken': token || ''
@@ -312,16 +313,26 @@
 
             try {
                 const response = await submitPromise;
+                const contentType = response.headers.get('content-type') || '';
 
                 if (!response.ok) {
-                    const data = await response.json();
                     hideModal();
                     submitBtn.disabled = false;
-                    if (data.errors) {
-                        const messages = Object.values(data.errors);
-                        formErrors.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
-                        formErrors.classList.remove('d-none');
+
+                    if (contentType.includes('application/json')) {
+                        const data = await response.json();
+                        if (data.errors) {
+                            const messages = Object.values(data.errors);
+                            formErrors.innerHTML = messages.map(m => `<div>${m}</div>`).join('');
+                            formErrors.classList.remove('d-none');
+                            return;
+                        }
                     }
+
+                    formErrors.textContent = response.status === 400
+                        ? 'Session expired. Refresh the page and try again.'
+                        : 'Something went wrong. Please try again.';
+                    formErrors.classList.remove('d-none');
                     return;
                 }
 

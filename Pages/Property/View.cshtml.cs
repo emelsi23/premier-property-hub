@@ -66,7 +66,27 @@ public class ViewModel(AppDbContext context) : PageModel
             FechaHora = Appointment.FechaHora
         });
 
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to save appointment: {ex.Message} | {ex.InnerException?.Message}");
+            if (isAjax)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    errors = new Dictionary<string, string>
+                    {
+                        ["_"] = "Could not save your request. Please try again in a moment."
+                    }
+                });
+            }
+
+            throw;
+        }
 
         return isAjax
             ? new JsonResult(new { success = true })
