@@ -11,6 +11,26 @@ namespace ApartamentosRenta.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder.ActiveProvider == "Npgsql.EntityFrameworkCore.PostgreSQL")
+            {
+                migrationBuilder.Sql("""
+                    ALTER TABLE "Propiedades" ADD COLUMN IF NOT EXISTS "DepositAmount" numeric(10,2) NOT NULL DEFAULT 0;
+                    ALTER TABLE "Propiedades" ADD COLUMN IF NOT EXISTS "ZelleContact" character varying(120) NOT NULL DEFAULT '';
+                    ALTER TABLE "Propiedades" ADD COLUMN IF NOT EXISTS "ZelleDisplayName" character varying(120) NOT NULL DEFAULT '';
+                    ALTER TABLE "Citas" ADD COLUMN IF NOT EXISTS "PaymentProofContentType" character varying(100) NULL;
+                    ALTER TABLE "Citas" ADD COLUMN IF NOT EXISTS "PaymentProofData" bytea NULL;
+                    ALTER TABLE "Citas" ADD COLUMN IF NOT EXISTS "PaymentProofUploadedAt" timestamp with time zone NULL;
+                    ALTER TABLE "Citas" ADD COLUMN IF NOT EXISTS "PublicToken" uuid NOT NULL DEFAULT gen_random_uuid();
+
+                    UPDATE "Citas"
+                    SET "PublicToken" = gen_random_uuid()
+                    WHERE "PublicToken" = '00000000-0000-0000-0000-000000000000'::uuid;
+
+                    CREATE UNIQUE INDEX IF NOT EXISTS "IX_Citas_PublicToken" ON "Citas" ("PublicToken");
+                    """);
+                return;
+            }
+
             migrationBuilder.AddColumn<decimal>(
                 name: "DepositAmount",
                 table: "Propiedades",
@@ -62,34 +82,18 @@ namespace ApartamentosRenta.Migrations
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
-            if (migrationBuilder.ActiveProvider == "Npgsql.EntityFrameworkCore.PostgreSQL")
-            {
-                migrationBuilder.Sql("""
-                    UPDATE "Citas"
-                    SET "PublicToken" = gen_random_uuid()
-                    WHERE "PublicToken" = '00000000-0000-0000-0000-000000000000';
-
-                    ALTER TABLE "Propiedades" ALTER COLUMN "DepositAmount" TYPE numeric(10,2) USING 0::numeric;
-                    ALTER TABLE "Citas" ALTER COLUMN "PublicToken" TYPE uuid USING "PublicToken"::uuid;
-                    ALTER TABLE "Citas" ALTER COLUMN "PaymentProofData" TYPE bytea USING NULL::bytea;
-                    ALTER TABLE "Citas" ALTER COLUMN "PaymentProofUploadedAt" TYPE timestamp with time zone USING NULL::timestamptz;
-                    """);
-            }
-            else
-            {
-                migrationBuilder.Sql("""
-                    UPDATE Citas
-                    SET PublicToken = lower(
-                        hex(randomblob(4)) || '-' ||
-                        hex(randomblob(2)) || '-4' ||
-                        substr(hex(randomblob(2)), 2) || '-' ||
-                        substr('89ab', abs(random()) % 4 + 1, 1) ||
-                        substr(hex(randomblob(2)), 2) || '-' ||
-                        hex(randomblob(6))
-                    )
-                    WHERE PublicToken = '00000000-0000-0000-0000-000000000000';
-                    """);
-            }
+            migrationBuilder.Sql("""
+                UPDATE Citas
+                SET PublicToken = lower(
+                    hex(randomblob(4)) || '-' ||
+                    hex(randomblob(2)) || '-4' ||
+                    substr(hex(randomblob(2)), 2) || '-' ||
+                    substr('89ab', abs(random()) % 4 + 1, 1) ||
+                    substr(hex(randomblob(2)), 2) || '-' ||
+                    hex(randomblob(6))
+                )
+                WHERE PublicToken = '00000000-0000-0000-0000-000000000000';
+                """);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Citas_PublicToken",
