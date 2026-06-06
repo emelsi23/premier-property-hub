@@ -9,6 +9,23 @@ namespace ApartamentosRenta.Pages.Admin;
 
 public static class PropiedadHelper
 {
+    public static void ApplyInput(Propiedad propiedad, PropertyInput input)
+    {
+        propiedad.Titulo = input.Titulo.Trim();
+        propiedad.Descripcion = input.Descripcion.Trim();
+        propiedad.Direccion = input.Direccion.Trim();
+        propiedad.Ciudad = input.Ciudad.Trim();
+        propiedad.PrecioMensual = input.PrecioMensual;
+        propiedad.Habitaciones = input.Habitaciones;
+        propiedad.Banos = input.Banos;
+        propiedad.MetrosCuadrados = input.MetrosCuadrados;
+        propiedad.Disponible = input.Disponible;
+        propiedad.Amenidades = input.Amenidades.Trim();
+        propiedad.ZelleDisplayName = input.ZelleDisplayName.Trim();
+        propiedad.ZelleContact = input.ZelleContact.Trim();
+        propiedad.DepositAmount = input.DepositAmount;
+    }
+
     public static async Task ApplyFotosAsync(AppDbContext context, Propiedad propiedad, IEnumerable<string> urls)
     {
         var urlList = urls.ToList();

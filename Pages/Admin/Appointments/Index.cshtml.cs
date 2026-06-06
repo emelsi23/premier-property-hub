@@ -18,10 +18,27 @@ public class IndexModel(AppDbContext context) : PageModel
             .ToListAsync();
     }
 
+    public async Task<IActionResult> OnGetPaymentProofAsync(int id)
+    {
+        var cita = await context.Citas.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        if (cita?.PaymentProofData is null || cita.PaymentProofData.Length == 0)
+        {
+            return NotFound();
+        }
+
+        return File(cita.PaymentProofData, cita.PaymentProofContentType ?? "image/jpeg");
+    }
+
     public async Task<IActionResult> OnPostConfirmAsync(int id)
     {
         var cita = await context.Citas.FindAsync(id);
         if (cita is null) return NotFound();
+
+        if (cita.Estado != EstadoCita.EsperandoConfirmacion)
+        {
+            return RedirectToPage();
+        }
+
         cita.Estado = EstadoCita.Confirmada;
         await context.SaveChangesAsync();
         return RedirectToPage();

@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             entity.Property(p => p.PrecioMensual).HasPrecision(10, 2);
             entity.Property(p => p.MetrosCuadrados).HasPrecision(8, 2);
+            entity.Property(p => p.DepositAmount).HasPrecision(10, 2);
             entity.HasIndex(p => p.Slug).IsUnique();
             entity.HasIndex(p => p.Ciudad);
         });
@@ -35,6 +36,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(c => c.FechaHora);
             entity.HasIndex(c => c.Estado);
+            entity.HasIndex(c => c.PublicToken).IsUnique();
         });
     }
 }

@@ -39,6 +39,15 @@ public class PropertyInput
     [Display(Name = "Photos (one URL per line)")]
     public string FotosUrls { get; set; } = string.Empty;
 
+    [StringLength(120), Display(Name = "Zelle display name")]
+    public string ZelleDisplayName { get; set; } = string.Empty;
+
+    [StringLength(120), Display(Name = "Zelle email or phone")]
+    public string ZelleContact { get; set; } = string.Empty;
+
+    [Range(0, 999999), Display(Name = "Visit deposit amount")]
+    public decimal DepositAmount { get; set; }
+
     public IEnumerable<string> ParseFotoUrls() =>
         FotosUrls
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -56,6 +65,9 @@ public class PropertyInput
         MetrosCuadrados = entity.MetrosCuadrados,
         Disponible = entity.Disponible,
         Amenidades = entity.Amenidades,
+        ZelleDisplayName = entity.ZelleDisplayName,
+        ZelleContact = entity.ZelleContact,
+        DepositAmount = entity.DepositAmount,
         FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url))
     };
 }

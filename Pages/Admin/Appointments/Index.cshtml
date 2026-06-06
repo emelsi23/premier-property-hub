@@ -7,7 +7,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-1">Visit appointments</h1>
-        <p class="text-muted mb-0">Requests submitted by clients from your property links.</p>
+        <p class="text-muted mb-0">Review applications, payment proofs, and confirm visits.</p>
     </div>
     <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
 </div>
@@ -25,7 +25,7 @@ else
                     <th>Client</th>
                     <th>Property</th>
                     <th>Visit</th>
-                    <th>ID / DOB</th>
+                    <th>Payment</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
@@ -37,7 +37,8 @@ else
                         <td>
                             <strong>@appointment.NombreCliente</strong><br />
                             <a href="mailto:@appointment.Email" class="small">@appointment.Email</a><br />
-                            <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a>
+                            <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a><br />
+                            <span class="small text-muted">SSN: @appointment.SsnItin · DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
                         </td>
                         <td>
                             @appointment.Propiedad.Titulo<br />
@@ -47,14 +48,36 @@ else
                             @appointment.FechaHora.ToString("MM/dd/yyyy HH:mm")
                         </td>
                         <td>
-                            <span class="font-monospace small">@appointment.SsnItin</span><br />
-                            <span class="small text-muted">DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
+                            @if (appointment.PaymentProofData is { Length: > 0 })
+                            {
+                                <a asp-page-handler="PaymentProof" asp-route-id="@appointment.Id" target="_blank" class="d-inline-block">
+                                    <img src="@Url.Page(null, "PaymentProof", new { id = appointment.Id })"
+                                         alt="Payment proof"
+                                         class="payment-proof-thumb" />
+                                </a>
+                                @if (appointment.PaymentProofUploadedAt.HasValue)
+                                {
+                                    <div class="small text-muted">@appointment.PaymentProofUploadedAt.Value.ToString("MM/dd/yyyy HH:mm") UTC</div>
+                                }
+                            }
+                            else if (appointment.Propiedad.DepositAmount > 0)
+                            {
+                                <span class="small text-muted">Deposit: $@appointment.Propiedad.DepositAmount.ToString("N0")</span>
+                            }
+                            else
+                            {
+                                <span class="small text-muted">No proof yet</span>
+                            }
                         </td>
                         <td>
                             @switch (appointment.Estado)
                             {
                                 case ApartamentosRenta.Models.EstadoCita.Pendiente:
-                                    <span class="badge bg-warning text-dark">Pending</span>
+                                case ApartamentosRenta.Models.EstadoCita.EsperandoDeposito:
+                                    <span class="badge bg-warning text-dark">Awaiting deposit</span>
+                                    break;
+                                case ApartamentosRenta.Models.EstadoCita.EsperandoConfirmacion:
+                                    <span class="badge bg-info text-dark">Awaiting confirmation</span>
                                     break;
                                 case ApartamentosRenta.Models.EstadoCita.Confirmada:
                                     <span class="badge bg-success">Confirmed</span>
@@ -65,11 +88,14 @@ else
                             }
                         </td>
                         <td class="text-end">
-                            @if (appointment.Estado == ApartamentosRenta.Models.EstadoCita.Pendiente)
+                            @if (appointment.Estado == ApartamentosRenta.Models.EstadoCita.EsperandoConfirmacion)
                             {
                                 <form method="post" asp-page-handler="Confirm" asp-route-id="@appointment.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                    <button type="submit" class="btn btn-sm btn-success">Confirm visit</button>
                                 </form>
+                            }
+                            @if (appointment.Estado is not ApartamentosRenta.Models.EstadoCita.Confirmada and not ApartamentosRenta.Models.EstadoCita.Cancelada)
+                            {
                                 <form method="post" asp-page-handler="Cancel" asp-route-id="@appointment.Id" class="d-inline">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                 </form>

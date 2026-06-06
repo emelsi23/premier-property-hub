@@ -28,8 +28,11 @@ public static class DbSeeder
                 Habitaciones = 2,
                 Banos = 2,
                 MetrosCuadrados = 85,
-                Amenidades = "Parking, Gym, 24h Security",
-                Disponible = true,
+            Amenidades = "Parking, Gym, 24h Security",
+            ZelleDisplayName = "Premier Property Hub",
+            ZelleContact = "payments@premierpropertyhub.com",
+            DepositAmount = 250,
+            Disponible = true,
                 Fotos =
                 [
                     new FotoPropiedad { Url = "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80", Orden = 0 },

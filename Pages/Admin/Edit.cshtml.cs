@@ -50,17 +50,8 @@ public class EditModel(AppDbContext context) : PageModel
             return NotFound();
         }
 
-        propiedad.Titulo = Input.Titulo.Trim();
-        propiedad.Descripcion = Input.Descripcion.Trim();
-        propiedad.Direccion = Input.Direccion.Trim();
-        propiedad.Ciudad = Input.Ciudad.Trim();
-        propiedad.PrecioMensual = Input.PrecioMensual;
-        propiedad.Habitaciones = Input.Habitaciones;
-        propiedad.Banos = Input.Banos;
-        propiedad.MetrosCuadrados = Input.MetrosCuadrados;
-        propiedad.Disponible = Input.Disponible;
-        propiedad.Amenidades = Input.Amenidades.Trim();
         propiedad.Slug = await PropiedadHelper.BuildSlugAsync(context, Input.Direccion, Input.Ciudad, id);
+        PropiedadHelper.ApplyInput(propiedad, Input);
 
         await PropiedadHelper.ApplyFotosAsync(context, propiedad, Input.ParseFotoUrls());
         await context.SaveChangesAsync();

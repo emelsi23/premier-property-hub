@@ -6,12 +6,16 @@ public enum EstadoCita
 {
     Pendiente,
     Confirmada,
-    Cancelada
+    Cancelada,
+    EsperandoDeposito,
+    EsperandoConfirmacion
 }
 
 public class Cita
 {
     public int Id { get; set; }
+
+    public Guid PublicToken { get; set; } = Guid.NewGuid();
 
     public int PropiedadId { get; set; }
 
@@ -36,7 +40,14 @@ public class Cita
     [StringLength(500)]
     public string? Notas { get; set; }
 
-    public EstadoCita Estado { get; set; } = EstadoCita.Pendiente;
+    public EstadoCita Estado { get; set; } = EstadoCita.EsperandoDeposito;
 
     public DateTime FechaSolicitud { get; set; } = DateTime.UtcNow;
+
+    public byte[]? PaymentProofData { get; set; }
+
+    [StringLength(100)]
+    public string? PaymentProofContentType { get; set; }
+
+    public DateTime? PaymentProofUploadedAt { get; set; }
 }

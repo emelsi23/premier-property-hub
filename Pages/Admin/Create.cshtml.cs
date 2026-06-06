@@ -30,19 +30,10 @@ public class CreateModel(AppDbContext context) : PageModel
 
         var propiedad = new Propiedad
         {
-            Titulo = Input.Titulo.Trim(),
             Slug = slug,
-            Descripcion = Input.Descripcion.Trim(),
-            Direccion = Input.Direccion.Trim(),
-            Ciudad = Input.Ciudad.Trim(),
-            PrecioMensual = Input.PrecioMensual,
-            Habitaciones = Input.Habitaciones,
-            Banos = Input.Banos,
-            MetrosCuadrados = Input.MetrosCuadrados,
-            Disponible = Input.Disponible,
-            Amenidades = Input.Amenidades.Trim(),
             FechaCreacion = DateTime.UtcNow
         };
+        PropiedadHelper.ApplyInput(propiedad, Input);
 
         await PropiedadHelper.ApplyFotosAsync(context, propiedad, Input.ParseFotoUrls());
         context.Propiedades.Add(propiedad);

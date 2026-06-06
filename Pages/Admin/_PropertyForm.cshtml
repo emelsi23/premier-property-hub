@@ -55,4 +55,22 @@
             <label asp-for="Disponible" class="form-check-label"></label>
         </div>
     </div>
+    <div class="col-12">
+        <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Zelle deposit (shown to clients after approval)</h2>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DepositAmount" class="form-label"></label>
+        <input asp-for="DepositAmount" class="form-control" type="number" step="1" min="0" />
+        <span asp-validation-for="DepositAmount" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ZelleDisplayName" class="form-label"></label>
+        <input asp-for="ZelleDisplayName" class="form-control" placeholder="Premier Property Hub" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ZelleContact" class="form-label"></label>
+        <input asp-for="ZelleContact" class="form-control" placeholder="payments@email.com" />
+        <div class="form-text">Zelle email or mobile number.</div>
+    </div>
 </div>

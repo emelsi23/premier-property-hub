@@ -25,7 +25,10 @@ else
         @foreach (var prop in Model.Propiedades)
         {
             var link = Model.BuildLink(prop.Slug);
-            var pendingAppointments = prop.Citas.Count(c => c.Estado == ApartamentosRenta.Models.EstadoCita.Pendiente);
+            var pendingAppointments = prop.Citas.Count(c =>
+                c.Estado == ApartamentosRenta.Models.EstadoCita.Pendiente
+                || c.Estado == ApartamentosRenta.Models.EstadoCita.EsperandoDeposito
+                || c.Estado == ApartamentosRenta.Models.EstadoCita.EsperandoConfirmacion);
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
