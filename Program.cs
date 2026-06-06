@@ -64,7 +64,8 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
         }
         catch (Exception ex) when (attempt < maxAttempts)
         {
-            Console.WriteLine($"Database init attempt {attempt} failed: {ex.Message}. Retrying in 5s...");
+            var detail = ex.InnerException?.Message ?? ex.ToString();
+            Console.WriteLine($"Database init attempt {attempt} failed: {ex.Message} | {detail}. Retrying in 5s...");
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
     }
