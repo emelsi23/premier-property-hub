@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -43,13 +44,13 @@ public class ViewModel(AppDbContext context) : PageModel
             return isAjax ? AjaxValidationError() : Page();
         }
 
-        if (Appointment.FechaHora <= DateTime.Now)
+        if (DateTimeUtc.FromForm(Appointment.FechaHora) <= DateTime.UtcNow)
         {
             ModelState.AddModelError("Appointment.FechaHora", "Please choose a future date and time.");
             return isAjax ? AjaxValidationError() : Page();
         }
 
-        if (Appointment.FechaNacimiento.Date >= DateTime.Today)
+        if (DateTimeUtc.FromFormDate(Appointment.FechaNacimiento) >= DateTime.UtcNow.Date)
         {
             ModelState.AddModelError("Appointment.FechaNacimiento", "Please enter a valid date of birth.");
             return isAjax ? AjaxValidationError() : Page();
@@ -61,9 +62,10 @@ public class ViewModel(AppDbContext context) : PageModel
             NombreCliente = Appointment.NombreCliente.Trim(),
             Email = Appointment.Email.Trim(),
             Telefono = Appointment.Telefono.Trim(),
-            FechaNacimiento = Appointment.FechaNacimiento.Date,
+            FechaNacimiento = DateTimeUtc.FromFormDate(Appointment.FechaNacimiento),
             SsnItin = Appointment.SsnItin.Trim(),
-            FechaHora = Appointment.FechaHora
+            FechaHora = DateTimeUtc.FromForm(Appointment.FechaHora),
+            FechaSolicitud = DateTime.UtcNow
         });
 
         try
