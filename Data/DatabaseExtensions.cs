@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ApartamentosRenta.Data;
 
@@ -12,7 +13,9 @@ public static class DatabaseExtensions
         {
             if (IsPostgreSql(connectionString))
             {
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString, npgsql =>
+                    npgsql.ConfigureWarnings(w =>
+                        w.Ignore(RelationalEventId.PendingModelChangesWarning)));
             }
             else
             {
