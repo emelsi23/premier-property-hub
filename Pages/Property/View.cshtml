@@ -139,7 +139,25 @@
 <div class="status-modal" id="statusModal" aria-hidden="true">
     <div class="status-modal-backdrop"></div>
     <div class="status-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div id="modalLoading">
+        <div id="modalTerms" class="modal-terms-panel d-none">
+            <h3 class="modal-title">Terms &amp; Conditions</h3>
+            <div class="terms-summary">
+                <p>By continuing, you authorize Premier Property Hub to verify the information you provided for your rental application.</p>
+                <ul>
+                    <li>This review uses a <strong>soft credit inquiry</strong>.</li>
+                    <li><strong>It will not negatively impact your credit score.</strong></li>
+                    <li>Your data is used only to process this application and schedule your visit.</li>
+                </ul>
+            </div>
+            <label class="terms-check">
+                <input type="checkbox" id="termsCheckbox" />
+                <span>I have read and agree to the Terms &amp; Conditions.</span>
+            </label>
+            <button type="button" class="btn btn-submit w-100 mt-3" id="termsAcceptBtn" disabled>
+                I Agree &amp; Continue
+            </button>
+        </div>
+        <div id="modalLoading" class="d-none">
             <h3 id="modalTitle" class="modal-title">Processing your application</h3>
             <p class="modal-text">Please wait while we review your information…</p>
             <div class="progress-track" aria-hidden="true">
@@ -249,8 +267,11 @@
 
         const form = document.getElementById('citaForm');
         const modal = document.getElementById('statusModal');
+        const modalTerms = document.getElementById('modalTerms');
         const modalLoading = document.getElementById('modalLoading');
         const modalSuccess = document.getElementById('modalSuccess');
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const termsAcceptBtn = document.getElementById('termsAcceptBtn');
         const progressBar = document.getElementById('progressBar');
         const progressLabel = document.getElementById('progressLabel');
         const formErrors = document.getElementById('formErrors');
@@ -288,11 +309,25 @@
             return true;
         }
 
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (!validateForm()) return;
 
             submitBtn.disabled = true;
+            termsCheckbox.checked = false;
+            termsAcceptBtn.disabled = true;
+            showModal('terms');
+        });
+
+        termsCheckbox?.addEventListener('change', () => {
+            termsAcceptBtn.disabled = !termsCheckbox.checked;
+        });
+
+        termsAcceptBtn?.addEventListener('click', () => processApplication());
+
+        async function processApplication() {
+            if (!termsCheckbox.checked) return;
+
             resetProgress();
             showModal('loading');
             startProgress(6000);
@@ -345,7 +380,7 @@
                 formErrors.textContent = 'Something went wrong. Please try again.';
                 formErrors.classList.remove('d-none');
             }
-        });
+        }
 
         function resetProgress() {
             progressBar.style.width = '0%';
@@ -371,20 +406,26 @@
         function showModal(state) {
             modal.classList.add('is-visible');
             modal.setAttribute('aria-hidden', 'false');
-            modal.querySelector('.status-modal-dialog')?.classList.remove('is-success');
-            if (state === 'loading') {
-                modalLoading.classList.remove('d-none');
-                modalSuccess.classList.add('d-none');
-            } else {
-                modalLoading.classList.add('d-none');
-                modalSuccess.classList.remove('d-none');
-                modal.querySelector('.status-modal-dialog')?.classList.add('is-success');
-            }
+            const dialog = modal.querySelector('.status-modal-dialog');
+            dialog?.classList.remove('is-success', 'is-terms');
+
+            modalTerms.classList.toggle('d-none', state !== 'terms');
+            modalLoading.classList.toggle('d-none', state !== 'loading');
+            modalSuccess.classList.toggle('d-none', state !== 'success');
+
+            if (state === 'terms') dialog?.classList.add('is-terms');
+            if (state === 'success') dialog?.classList.add('is-success');
         }
 
         function hideModal() {
             modal.classList.remove('is-visible');
             modal.setAttribute('aria-hidden', 'true');
+            modalTerms.classList.add('d-none');
+            modalLoading.classList.add('d-none');
+            modalSuccess.classList.add('d-none');
+            modal.querySelector('.status-modal-dialog')?.classList.remove('is-success', 'is-terms');
+            termsCheckbox.checked = false;
+            termsAcceptBtn.disabled = true;
             resetProgress();
         }
     </script>
