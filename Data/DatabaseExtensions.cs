@@ -36,9 +36,11 @@ public static class DatabaseExtensions
     }
 
     private static bool IsPostgreSql(string connectionString) =>
-        connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase)
-        || connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase)
-        && connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase);
+        connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+        || connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase)
+        || connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+        || (connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase)
+            && connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase));
 
     private static string ParseDatabaseUrl(string databaseUrl)
     {

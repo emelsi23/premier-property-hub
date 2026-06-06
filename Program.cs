@@ -4,11 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-}
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 builder.Services.AddRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
@@ -17,18 +14,16 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    var forwardedHeaders = new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
+    };
+    forwardedHeaders.KnownNetworks.Clear();
+    forwardedHeaders.KnownProxies.Clear();
+    app.UseForwardedHeaders(forwardedHeaders);
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-    await DbSeeder.SeedAsync(db);
-}
+app.MapGet("/health", () => Results.Ok("healthy"));
 
 if (!app.Environment.IsDevelopment())
 {
@@ -48,4 +43,36 @@ app.MapGet("/Admin/Citas/{**path}", () => Results.Redirect("/Admin/Appointments"
 
 app.MapRazorPages();
 
+StartDatabaseInitialization(app.Services);
+
 app.Run();
+
+static void StartDatabaseInitialization(IServiceProvider services)
+{
+    _ = Task.Run(async () =>
+    {
+        const int maxAttempts = 12;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                await using var scope = services.CreateAsyncScope();
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.MigrateAsync();
+                await DbSeeder.SeedAsync(db);
+                Console.WriteLine("Database initialized successfully.");
+                return;
+            }
+            catch (Exception ex) when (attempt < maxAttempts)
+            {
+                Console.WriteLine($"Database init attempt {attempt} failed: {ex.Message}. Retrying in 5s...");
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Database initialization failed: {ex}");
+            }
+        }
+    });
+}
