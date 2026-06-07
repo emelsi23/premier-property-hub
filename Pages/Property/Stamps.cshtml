@@ -18,12 +18,33 @@
 
     <div class="contract-amounts card border-0 shadow-sm mb-3">
         <div class="card-body">
-            <h2 class="h6 text-muted mb-3">Stamps &amp; seals fees</h2>
-            <div class="row g-2 small">
-                <div class="col-6 col-md-4"><span class="text-muted">Stamps</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.StampsAmount.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">Seals</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.SealsAmount.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">Total</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong></div>
+            <h2 class="h6 text-muted mb-3">What would you like to purchase?</h2>
+            <div class="contract-action-tabs purchase-option-tabs mb-3">
+                <label class="contract-action-tab purchase-option-tab">
+                    <input type="radio" name="purchaseOption" value="Stamps" />
+                    <span>
+                        <strong>Stamps only</strong><br />
+                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.StampsAmount.ToString("N0")</span>
+                    </span>
+                </label>
+                <label class="contract-action-tab purchase-option-tab">
+                    <input type="radio" name="purchaseOption" value="Seals" />
+                    <span>
+                        <strong>Seals only</strong><br />
+                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.SealsAmount.ToString("N0")</span>
+                    </span>
+                </label>
+                <label class="contract-action-tab purchase-option-tab">
+                    <input type="radio" name="purchaseOption" value="Both" checked />
+                    <span>
+                        <strong>Stamps &amp; seals</strong><br />
+                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</span>
+                    </span>
+                </label>
             </div>
+            <p class="mb-0 small text-muted">
+                Your total: <strong id="purchaseTotal">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong>
+            </p>
         </div>
     </div>
 
@@ -33,7 +54,7 @@
 
     <section class="contract-section contract-sign-panel" id="signPanel">
         <h2>Client signature</h2>
-        <p class="mb-3">Sign to authorize purchase of stamps and seals, or submit proposed changes.</p>
+        <p class="mb-3">Select stamps, seals, or both, then sign to authorize the purchase or submit proposed changes.</p>
 
         <form id="stampSignForm" novalidate>
             @Html.AntiForgeryToken()
@@ -71,7 +92,7 @@
                 </div>
                 <label class="terms-check mt-3">
                     <input type="checkbox" id="agreeCheckbox" />
-                    <span>I authorize the purchase of stamps and seals as described above.</span>
+                    <span id="agreeText">I authorize the purchase of stamps and seals as described above.</span>
                 </label>
             </div>
 
@@ -114,6 +135,38 @@
 
 @section Scripts {
     <script>
+        const purchasePrices = {
+            Stamps: @ApartamentosRenta.Services.StampSealSettings.StampsAmount,
+            Seals: @ApartamentosRenta.Services.StampSealSettings.SealsAmount,
+            Both: @ApartamentosRenta.Services.StampSealSettings.TotalAmount
+        };
+        const purchaseLabels = {
+            Stamps: 'stamps only',
+            Seals: 'seals only',
+            Both: 'stamps and seals'
+        };
+
+        function getSelectedPurchaseOption() {
+            return document.querySelector('input[name="purchaseOption"]:checked')?.value || '';
+        }
+
+        function formatMoney(amount) {
+            return '$' + amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        }
+
+        function updatePurchaseSummary() {
+            const option = getSelectedPurchaseOption();
+            const total = purchasePrices[option] ?? purchasePrices.Both;
+            document.getElementById('purchaseTotal').textContent = formatMoney(total);
+            document.getElementById('agreeText').textContent =
+                `I authorize the purchase of ${purchaseLabels[option] ?? 'stamps and seals'} for ${formatMoney(total)} as described above.`;
+        }
+
+        document.querySelectorAll('input[name="purchaseOption"]').forEach(radio => {
+            radio.addEventListener('change', updatePurchaseSummary);
+        });
+        updatePurchaseSummary();
+
         const signForm = document.getElementById('stampSignForm');
         const canvas = document.getElementById('signaturePad');
         const ctx = canvas.getContext('2d');
@@ -177,6 +230,8 @@
             const optionalChanges = document.getElementById('optionalChanges').value.trim();
 
             if (!clientName || !clientEmail) { err.textContent = 'Name and email are required.'; err.classList.remove('d-none'); return; }
+            const purchaseOption = getSelectedPurchaseOption();
+            if (!purchaseOption) { err.textContent = 'Select stamps, seals, or both.'; err.classList.remove('d-none'); return; }
             if (action === 'sign') {
                 if (!document.getElementById('agreeCheckbox').checked) { err.textContent = 'Please confirm authorization.'; err.classList.remove('d-none'); return; }
                 if (!hasSignature) { err.textContent = 'Please draw your signature.'; err.classList.remove('d-none'); return; }
@@ -195,7 +250,7 @@
                         'RequestVerificationToken': signForm.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                     },
                     body: JSON.stringify({
-                        clientName, clientEmail, clientPhone: clientPhone || null, action,
+                        clientName, clientEmail, clientPhone: clientPhone || null, action, purchaseOption,
                         signatureDataUrl: action === 'sign' ? canvas.toDataURL('image/png') : null,
                         proposedChanges: action === 'changes' ? proposedChanges : (optionalChanges || null)
                     })
@@ -205,7 +260,7 @@
 
                 document.getElementById('successTitle').textContent = action === 'sign' ? 'Signature submitted' : 'Changes submitted';
                 document.getElementById('successText').textContent = action === 'sign'
-                    ? 'Your signature has been supplied. We will process your stamps and seals order shortly.'
+                    ? `Your signature has been supplied. We will process your ${purchaseLabels[purchaseOption] ?? 'stamps and seals'} order shortly.`
                     : 'Your proposed changes have been received. We will contact you shortly.';
                 document.getElementById('successBadge').textContent = action === 'sign' ? 'Signature supplied' : 'Changes received';
                 modal.classList.add('is-visible');

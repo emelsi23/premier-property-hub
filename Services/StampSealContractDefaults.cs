@@ -5,9 +5,9 @@ namespace ApartamentosRenta.Services;
 public static class StampSealContractDefaults
 {
     public const string NoticeHtml = """
-        <strong>Important:</strong> This agreement covers the purchase of official <strong>stamps</strong> and <strong>seals</strong>
+        <strong>Important:</strong> This agreement covers the purchase of official <strong>stamps</strong> and/or <strong>seals</strong>
         required for rental documentation related to <strong>{{PropertyTitle}}</strong> at {{Address}}, {{City}}.
-        Total amount: <strong>{{TotalAmount}}</strong> (stamps {{StampsAmount}} + seals {{SealsAmount}}).
+        You may select stamps only ({{StampsAmount}}), seals only ({{SealsAmount}}), or both ({{TotalAmount}}).
         """;
 
     public const string BodyHtml = """

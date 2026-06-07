@@ -1,5 +1,6 @@
 @page
 @using ApartamentosRenta.Models
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Admin.StampSeals.SubmissionsModel
 @{
     ViewData["Title"] = "Stamps & seals submissions";
@@ -25,6 +26,7 @@ else
                 <tr>
                     <th>Property</th>
                     <th>Client</th>
+                    <th>Purchase</th>
                     <th>Type</th>
                     <th>Signature</th>
                     <th>Notes</th>
@@ -42,6 +44,10 @@ else
                         <td>
                             <strong>@item.ClientName</strong><br />
                             <a href="mailto:@item.ClientEmail" class="small">@item.ClientEmail</a>
+                        </td>
+                        <td>
+                            <strong>@StampSealSettings.GetLabel(item.PurchaseOption)</strong><br />
+                            <span class="small text-muted">$@item.SelectedAmount.ToString("N0")</span>
                         </td>
                         <td>
                             @if (item.SubmissionType == ContractSubmissionType.Signature)

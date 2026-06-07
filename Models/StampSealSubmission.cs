@@ -21,6 +21,10 @@ public class StampSealSubmission
 
     public ContractSubmissionType SubmissionType { get; set; }
 
+    public StampSealPurchaseOption PurchaseOption { get; set; } = StampSealPurchaseOption.Both;
+
+    public decimal SelectedAmount { get; set; }
+
     public byte[]? SignatureImageData { get; set; }
 
     [StringLength(100)]

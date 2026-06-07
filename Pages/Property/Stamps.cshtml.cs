@@ -62,6 +62,12 @@ public class StampsModel(AppDbContext context) : PageModel
             return BadRequest(new { success = false, message = "Choose to sign or submit changes." });
         }
 
+        if (!StampSealSettings.TryParseOption(request.PurchaseOption, out var purchaseOption))
+        {
+            return BadRequest(new { success = false, message = "Select stamps, seals, or both." });
+        }
+
+        var selectedAmount = StampSealSettings.GetAmount(purchaseOption);
         byte[]? signatureBytes = null;
         string? signatureContentType = null;
         var proposedChanges = string.IsNullOrWhiteSpace(request.ProposedChanges)
@@ -110,6 +116,8 @@ public class StampsModel(AppDbContext context) : PageModel
             SubmissionType = action == "sign"
                 ? ContractSubmissionType.Signature
                 : ContractSubmissionType.ChangeRequest,
+            PurchaseOption = purchaseOption,
+            SelectedAmount = selectedAmount,
             SignatureImageData = signatureBytes,
             SignatureImageContentType = signatureContentType,
             ProposedChanges = proposedChanges,
@@ -150,6 +158,7 @@ public class StampSealSubmitRequest
     public string ClientEmail { get; set; } = string.Empty;
     public string? ClientPhone { get; set; }
     public string? Action { get; set; }
+    public string? PurchaseOption { get; set; }
     public string? SignatureDataUrl { get; set; }
     public string? ProposedChanges { get; set; }
 }

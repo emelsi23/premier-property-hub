@@ -987,6 +987,27 @@ body {
   accent-color: var(--brand-primary);
 }
 
+.purchase-option-tabs {
+  flex-direction: column;
+}
+
+@media (min-width: 576px) {
+  .purchase-option-tabs {
+    flex-direction: row;
+  }
+}
+
+.purchase-option-tab span {
+  text-align: center;
+  line-height: 1.35;
+}
+
+.purchase-option-price {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
 .signature-pad-wrap {
   position: relative;
   border: 2px dashed #cbd5e1;
