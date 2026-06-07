@@ -43,6 +43,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<LeaseContract>(entity =>
         {
+            entity.Property(c => c.Id).UseIdentityByDefaultColumn();
             entity.HasOne(c => c.Propiedad)
                 .WithOne(p => p.LeaseContract)
                 .HasForeignKey<LeaseContract>(c => c.PropiedadId)
