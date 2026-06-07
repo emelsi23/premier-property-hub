@@ -142,7 +142,8 @@ public class StampsModel(AppDbContext context) : PageModel
         RenderedTitle = StampSealTemplateRenderer.Render(contract.Title, propiedad);
         RenderedSubtitle = StampSealTemplateRenderer.Render(contract.Subtitle, propiedad);
         RenderedNoticeHtml = StampSealTemplateRenderer.Render(contract.NoticeHtml, propiedad);
-        RenderedBodyHtml = StampSealTemplateRenderer.Render(contract.BodyHtml, propiedad);
+        RenderedBodyHtml = StampSealContractDynamicEnricher.Enrich(
+            StampSealTemplateRenderer.Render(contract.BodyHtml, propiedad));
         ViewData["Title"] = RenderedTitle;
     }
 

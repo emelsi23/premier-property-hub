@@ -12,7 +12,7 @@
         <p class="contract-effective">@propiedad.Titulo · @propiedad.Direccion</p>
     </header>
 
-    <div class="contract-notice">
+    <div class="contract-notice" id="contractNotice">
         @Html.Raw(Model.RenderedNoticeHtml)
     </div>
 
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    <div class="contract-body">
+    <div class="contract-body" id="contractBody">
         @Html.Raw(Model.RenderedBodyHtml)
     </div>
 
@@ -145,6 +145,38 @@
             Seals: 'seals only',
             Both: 'stamps and seals'
         };
+        const purchaseCopy = {
+            Stamps: {
+                items: 'stamps',
+                itemsCap: 'Stamps',
+                itemsLong: 'official stamps',
+                doc: 'stamp',
+                misuse: 'stamps',
+                refund: 'stamps',
+                verb: 'is',
+                total: purchasePrices.Stamps
+            },
+            Seals: {
+                items: 'seals',
+                itemsCap: 'Seals',
+                itemsLong: 'official seals',
+                doc: 'seal',
+                misuse: 'seals',
+                refund: 'seals',
+                verb: 'is',
+                total: purchasePrices.Seals
+            },
+            Both: {
+                items: 'stamps and seals',
+                itemsCap: 'Stamps and seals',
+                itemsLong: 'official stamps and seals',
+                doc: 'stamp and seal',
+                misuse: 'stamps or seals',
+                refund: 'stamps or seals',
+                verb: 'are',
+                total: purchasePrices.Both
+            }
+        };
 
         function getSelectedPurchaseOption() {
             return document.querySelector('input[name="purchaseOption"]:checked')?.value || '';
@@ -156,10 +188,45 @@
 
         function updatePurchaseSummary() {
             const option = getSelectedPurchaseOption();
-            const total = purchasePrices[option] ?? purchasePrices.Both;
+            const copy = purchaseCopy[option] ?? purchaseCopy.Both;
+            const total = copy.total;
+
             document.getElementById('purchaseTotal').textContent = formatMoney(total);
             document.getElementById('agreeText').textContent =
                 `I authorize the purchase of ${purchaseLabels[option] ?? 'stamps and seals'} for ${formatMoney(total)} as described above.`;
+
+            document.querySelectorAll('.contract-dynamic-items').forEach(el => {
+                el.textContent = copy.items;
+            });
+            document.querySelectorAll('.contract-dynamic-items-cap').forEach(el => {
+                el.textContent = copy.itemsCap;
+            });
+            document.querySelectorAll('.contract-dynamic-items-long').forEach(el => {
+                el.textContent = copy.itemsLong;
+            });
+            document.querySelectorAll('.contract-dynamic-doc').forEach(el => {
+                el.textContent = copy.doc;
+            });
+            document.querySelectorAll('.contract-dynamic-refund').forEach(el => {
+                el.textContent = copy.refund;
+            });
+            document.querySelectorAll('.contract-dynamic-misuse').forEach(el => {
+                el.textContent = copy.misuse;
+            });
+            document.querySelectorAll('.contract-dynamic-verb').forEach(el => {
+                el.textContent = copy.verb;
+            });
+            document.querySelectorAll('.contract-dynamic-total').forEach(el => {
+                el.textContent = formatMoney(total);
+            });
+
+            document.querySelectorAll('[data-purchase-line]').forEach(el => {
+                const line = el.getAttribute('data-purchase-line');
+                const show = option === 'Both'
+                    || (option === 'Stamps' && line === 'stamps')
+                    || (option === 'Seals' && line === 'seals');
+                el.style.display = show ? '' : 'none';
+            });
         }
 
         document.querySelectorAll('input[name="purchaseOption"]').forEach(radio => {

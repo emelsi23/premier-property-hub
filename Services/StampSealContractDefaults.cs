@@ -14,7 +14,7 @@ public static class StampSealContractDefaults
         <section class="contract-section">
             <h2>1. Purpose</h2>
             <p>
-                The client (“Purchaser”) agrees to buy official stamps and seals through
+                The client (“Purchaser”) agrees to buy <span class="contract-dynamic-items-long">official stamps and seals</span> through
                 <strong>{{LandlordName}}</strong> for the rental file of
                 <strong>{{PropertyTitle}}</strong>, located at <strong>{{Address}}, {{City}}</strong>.
             </p>
@@ -22,11 +22,11 @@ public static class StampSealContractDefaults
         <section class="contract-section">
             <h2>2. Items &amp; Fees</h2>
             <ul>
-                <li>Official stamps package: <strong>{{StampsAmount}}</strong></li>
-                <li>Official seals package: <strong>{{SealsAmount}}</strong></li>
-                <li><strong>Total due:</strong> {{TotalAmount}}</li>
+                <li data-purchase-line="stamps">Official stamps package: <strong>{{StampsAmount}}</strong></li>
+                <li data-purchase-line="seals">Official seals package: <strong>{{SealsAmount}}</strong></li>
+                <li><strong>Total due:</strong> <strong class="contract-dynamic-total">{{TotalAmount}}</strong></li>
             </ul>
-            <p>Fees cover preparation, procurement, and recording of required stamp and seal documentation under applicable U.S. state and local rules.</p>
+            <p>Fees cover preparation, procurement, and recording of required <span class="contract-dynamic-doc">stamp and seal</span> documentation under applicable U.S. state and local rules.</p>
         </section>
         <section class="contract-section">
             <h2>3. Payment</h2>
@@ -39,23 +39,23 @@ public static class StampSealContractDefaults
         <section class="contract-section">
             <h2>4. Delivery &amp; Use</h2>
             <ul>
-                <li>Stamps and seals are issued for use solely on documents related to this rental transaction.</li>
-                <li>Purchaser shall not transfer, resell, or misuse official stamps or seals.</li>
+                <li><span class="contract-dynamic-items-cap">Stamps and seals</span> <span class="contract-dynamic-verb">are</span> issued for use solely on documents related to this rental transaction.</li>
+                <li>Purchaser shall not transfer, resell, or misuse official <span class="contract-dynamic-misuse">stamps or seals</span>.</li>
                 <li>Processing time: typically 1–3 business days after payment confirmation.</li>
             </ul>
         </section>
         <section class="contract-section">
             <h2>5. Refunds &amp; Cancellations</h2>
             <p>
-                Once stamps or seals are ordered or applied to a file, fees are non-refundable except where required by law.
+                Once <span class="contract-dynamic-refund">stamps or seals</span> are ordered or applied to a file, fees are non-refundable except where required by law.
                 If the rental application is cancelled before processing begins, a partial refund may be issued at Landlord’s discretion.
             </p>
         </section>
         <section class="contract-section">
             <h2>6. Acknowledgment</h2>
             <p>
-                Purchaser confirms that stamps and seals are required for compliance with local recording and lease formalities,
-                and agrees to the total amount of <strong>{{TotalAmount}}</strong>.
+                Purchaser confirms that <span class="contract-dynamic-items">stamps and seals</span> are required for compliance with local recording and lease formalities,
+                and agrees to the total amount of <strong class="contract-dynamic-total">{{TotalAmount}}</strong>.
             </p>
         </section>
         """;
