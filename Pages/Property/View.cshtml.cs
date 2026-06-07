@@ -200,7 +200,7 @@ public class ViewModel(AppDbContext context) : PageModel
             ? "Premier Property Hub"
             : propiedad.ZelleDisplayName,
         contact = propiedad.ZelleContact,
-        depositAmount = propiedad.DepositAmount
+        depositAmount = VisitDepositSettings.Amount
     };
 
     private Task<Propiedad?> LoadPropiedadAsync(string slug) =>

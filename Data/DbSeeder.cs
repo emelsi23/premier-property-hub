@@ -35,7 +35,7 @@ public static class DbSeeder
             Amenidades = "Parking, Gym, 24h Security",
             ZelleDisplayName = "Premier Property Hub",
             ZelleContact = "payments@premierpropertyhub.com",
-            DepositAmount = 250,
+            DepositAmount = 150,
             Disponible = true,
                 Fotos =
                 [

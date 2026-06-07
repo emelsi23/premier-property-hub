@@ -23,7 +23,7 @@ public static class PropiedadHelper
         propiedad.Amenidades = input.Amenidades.Trim();
         propiedad.ZelleDisplayName = input.ZelleDisplayName.Trim();
         propiedad.ZelleContact = input.ZelleContact.Trim();
-        propiedad.DepositAmount = input.DepositAmount;
+        propiedad.DepositAmount = VisitDepositSettings.Amount;
     }
 
     public static LeaseContract ApplyContractInput(Propiedad propiedad, PropertyInput input)

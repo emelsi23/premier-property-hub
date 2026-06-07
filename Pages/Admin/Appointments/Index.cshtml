@@ -60,13 +60,9 @@ else
                                     <div class="small text-muted">@appointment.PaymentProofUploadedAt.Value.ToString("MM/dd/yyyy HH:mm") UTC</div>
                                 }
                             }
-                            else if (appointment.Propiedad.DepositAmount > 0)
-                            {
-                                <span class="small text-muted">Deposit: $@appointment.Propiedad.DepositAmount.ToString("N0")</span>
-                            }
                             else
                             {
-                                <span class="small text-muted">No proof yet</span>
+                                <span class="small text-muted">Deposit: $@ApartamentosRenta.Services.VisitDepositSettings.Amount.ToString("N0")</span>
                             }
                         </td>
                         <td>
