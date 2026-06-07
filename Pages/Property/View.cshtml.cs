@@ -56,7 +56,7 @@ public class ViewModel(AppDbContext context) : PageModel
 
         if (DateTimeUtc.FromForm(Appointment.FechaHora) <= DateTime.UtcNow)
         {
-            ModelState.AddModelError("Appointment.FechaHora", "Please choose a future date and time.");
+            ModelState.AddModelError("Appointment.FechaCita", "Please choose a future date and time.");
             return isAjax ? AjaxValidationError() : Page();
         }
 
@@ -72,11 +72,32 @@ public class ViewModel(AppDbContext context) : PageModel
             PropiedadId = propiedad.Id,
             PublicToken = publicToken,
             NombreCliente = Appointment.NombreCliente.Trim(),
+            ApellidoCliente = Appointment.ApellidoCliente.Trim(),
             Email = Appointment.Email.Trim(),
             Telefono = Appointment.Telefono.Trim(),
             FechaNacimiento = DateTimeUtc.FromFormDate(Appointment.FechaNacimiento),
             SsnItin = Appointment.SsnItin.Trim(),
             FechaHora = DateTimeUtc.FromForm(Appointment.FechaHora),
+            CodigoPostal = string.IsNullOrWhiteSpace(Appointment.CodigoPostal)
+                ? null
+                : Appointment.CodigoPostal.Trim(),
+            EsCiudadanoAmericano = Appointment.EsCiudadanoAmericano!.Value,
+            PersonasEnUnidad = Appointment.PersonasEnUnidad!.Value,
+            DuracionContratoDeseada = Appointment.DuracionContratoDeseada.Trim(),
+            FechaMudanzaTemprana = Appointment.FechaMudanzaTemprana.HasValue
+                ? DateTimeUtc.FromFormDate(Appointment.FechaMudanzaTemprana.Value)
+                : null,
+            Fuma = Appointment.Fuma!.Value,
+            EmpleadoActualmente = Appointment.EmpleadoActualmente!.Value,
+            NombreCompania = string.IsNullOrWhiteSpace(Appointment.NombreCompania)
+                ? null
+                : Appointment.NombreCompania.Trim(),
+            Salario = Appointment.Salario,
+            DisponibleParaAsegurar = Appointment.DisponibleParaAsegurar,
+            TieneMascotas = Appointment.TieneMascotas!.Value,
+            AceptaDepositoReserva = Appointment.AceptaDepositoReserva!.Value,
+            PagaraCitaCertificada = Appointment.PagaraCitaCertificada!.Value,
+            MetodoPago = Appointment.MetodoPago,
             FechaSolicitud = DateTime.UtcNow,
             Estado = EstadoCita.EsperandoDeposito
         });
@@ -207,35 +228,4 @@ public class ViewModel(AppDbContext context) : PageModel
         context.Propiedades
             .Include(p => p.Fotos.OrderBy(f => f.Orden))
             .FirstOrDefaultAsync(p => p.Slug == slug && p.Disponible);
-}
-
-public class AppointmentInput
-{
-    [Required(ErrorMessage = "Full name is required"), StringLength(120)]
-    [Display(Name = "Full name")]
-    public string NombreCliente { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Date of birth is required")]
-    [Display(Name = "Date of birth")]
-    [DataType(DataType.Date)]
-    public DateTime FechaNacimiento { get; set; } = DateTime.Today.AddYears(-25);
-
-    [Required(ErrorMessage = "Email is required"), StringLength(256)]
-    [EmailAddress(ErrorMessage = "Enter a valid email address")]
-    [Display(Name = "Email address")]
-    public string Email { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Phone number is required"), StringLength(14)]
-    [RegularExpression(@"^\(\d{3}\) \d{3}-\d{4}$", ErrorMessage = "Enter a valid number, e.g. (809) 690-9988")]
-    [Display(Name = "Phone / WhatsApp")]
-    public string Telefono { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Visit date and time is required")]
-    [Display(Name = "Preferred visit date & time")]
-    public DateTime FechaHora { get; set; } = DateTime.Now.AddDays(1).Date.AddHours(10);
-
-    [Required(ErrorMessage = "SSN or ITIN is required")]
-    [RegularExpression(@"^\d{3}-\d{2}-\d{4}$", ErrorMessage = "Enter a valid SSN, e.g. 121-22-1123")]
-    [Display(Name = "SSN / ITIN")]
-    public string SsnItin { get; set; } = string.Empty;
 }

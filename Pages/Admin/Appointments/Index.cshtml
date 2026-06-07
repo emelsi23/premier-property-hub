@@ -1,7 +1,17 @@
 @page
+@using ApartamentosRenta.Models
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Admin.Appointments.IndexModel
 @{
     ViewData["Title"] = "Appointments";
+    static string YesNo(bool value) => value ? "Yes" : "No";
+    static string MetodoLabel(MetodoPagoCita? metodo) => metodo switch
+    {
+        MetodoPagoCita.Zelle => "Zelle",
+        MetodoPagoCita.ApplePay => "Apple Pay",
+        MetodoPagoCita.Efectivo => "Cash",
+        _ => "—"
+    };
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -33,9 +43,10 @@ else
             <tbody>
                 @foreach (var appointment in Model.Appointments)
                 {
+                    var detailsId = $"details-{appointment.Id}";
                     <tr>
                         <td>
-                            <strong>@appointment.NombreCliente</strong><br />
+                            <strong>@appointment.NombreCompleto</strong><br />
                             <a href="mailto:@appointment.Email" class="small">@appointment.Email</a><br />
                             <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a><br />
                             <span class="small text-muted">SSN: @appointment.SsnItin · DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
@@ -46,6 +57,10 @@ else
                         </td>
                         <td>
                             @appointment.FechaHora.ToString("MM/dd/yyyy HH:mm")
+                            @if (!string.IsNullOrWhiteSpace(appointment.CodigoPostal))
+                            {
+                                <div class="small text-muted">Zip: @appointment.CodigoPostal</div>
+                            }
                         </td>
                         <td>
                             @if (appointment.PaymentProofData is { Length: > 0 })
@@ -62,40 +77,69 @@ else
                             }
                             else
                             {
-                                <span class="small text-muted">Deposit: $@ApartamentosRenta.Services.VisitDepositSettings.Amount.ToString("N0")</span>
+                                <span class="small text-muted">Deposit: $@VisitDepositSettings.Amount.ToString("N0")</span>
+                            }
+                            @if (appointment.MetodoPago.HasValue)
+                            {
+                                <div class="small text-muted">@MetodoLabel(appointment.MetodoPago)</div>
                             }
                         </td>
                         <td>
                             @switch (appointment.Estado)
                             {
-                                case ApartamentosRenta.Models.EstadoCita.Pendiente:
-                                case ApartamentosRenta.Models.EstadoCita.EsperandoDeposito:
+                                case EstadoCita.Pendiente:
+                                case EstadoCita.EsperandoDeposito:
                                     <span class="badge bg-warning text-dark">Awaiting deposit</span>
                                     break;
-                                case ApartamentosRenta.Models.EstadoCita.EsperandoConfirmacion:
+                                case EstadoCita.EsperandoConfirmacion:
                                     <span class="badge bg-info text-dark">Awaiting confirmation</span>
                                     break;
-                                case ApartamentosRenta.Models.EstadoCita.Confirmada:
+                                case EstadoCita.Confirmada:
                                     <span class="badge bg-success">Confirmed</span>
                                     break;
-                                case ApartamentosRenta.Models.EstadoCita.Cancelada:
+                                case EstadoCita.Cancelada:
                                     <span class="badge bg-secondary">Cancelled</span>
                                     break;
                             }
                         </td>
                         <td class="text-end">
-                            @if (appointment.Estado == ApartamentosRenta.Models.EstadoCita.EsperandoConfirmacion)
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-1" data-bs-toggle="collapse" data-bs-target="#@detailsId">
+                                Details
+                            </button>
+                            @if (appointment.Estado == EstadoCita.EsperandoConfirmacion)
                             {
                                 <form method="post" asp-page-handler="Confirm" asp-route-id="@appointment.Id" class="d-inline">
                                     <button type="submit" class="btn btn-sm btn-success">Confirm visit</button>
                                 </form>
                             }
-                            @if (appointment.Estado is not ApartamentosRenta.Models.EstadoCita.Confirmada and not ApartamentosRenta.Models.EstadoCita.Cancelada)
+                            @if (appointment.Estado is not EstadoCita.Confirmada and not EstadoCita.Cancelada)
                             {
                                 <form method="post" asp-page-handler="Cancel" asp-route-id="@appointment.Id" class="d-inline">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                 </form>
                             }
+                        </td>
+                    </tr>
+                    <tr class="collapse-row">
+                        <td colspan="6" class="p-0 border-0">
+                            <div class="collapse" id="@detailsId">
+                                <div class="appointment-details-panel">
+                                    <div class="row g-3 small">
+                                        <div class="col-md-4"><strong>U.S. citizen</strong><br />@YesNo(appointment.EsCiudadanoAmericano)</div>
+                                        <div class="col-md-4"><strong>Occupants</strong><br />@appointment.PersonasEnUnidad</div>
+                                        <div class="col-md-4"><strong>Lease length</strong><br />@(appointment.DuracionContratoDeseada ?? "—")</div>
+                                        <div class="col-md-4"><strong>Earliest move-in</strong><br />@(appointment.FechaMudanzaTemprana?.ToString("MM/dd/yyyy") ?? "—")</div>
+                                        <div class="col-md-4"><strong>Smokes</strong><br />@YesNo(appointment.Fuma)</div>
+                                        <div class="col-md-4"><strong>Pets</strong><br />@YesNo(appointment.TieneMascotas)</div>
+                                        <div class="col-md-4"><strong>Employed</strong><br />@YesNo(appointment.EmpleadoActualmente)</div>
+                                        <div class="col-md-4"><strong>Employer</strong><br />@(appointment.NombreCompania ?? "—")</div>
+                                        <div class="col-md-4"><strong>Income</strong><br />@(appointment.Salario.HasValue ? $"${appointment.Salario:N0}" : "—")</div>
+                                        <div class="col-md-4"><strong>Available funds</strong><br />@(appointment.DisponibleParaAsegurar.HasValue ? $"${appointment.DisponibleParaAsegurar:N0}" : "—")</div>
+                                        <div class="col-md-4"><strong>Accepts reservation deposit</strong><br />@YesNo(appointment.AceptaDepositoReserva)</div>
+                                        <div class="col-md-4"><strong>Will pay certified visit</strong><br />@YesNo(appointment.PagaraCitaCertificada)</div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 }

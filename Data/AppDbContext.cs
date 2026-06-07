@@ -38,6 +38,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(p => p.Citas)
                 .HasForeignKey(c => c.PropiedadId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(c => c.Salario).HasPrecision(10, 2);
+            entity.Property(c => c.DisponibleParaAsegurar).HasPrecision(10, 2);
             entity.HasIndex(c => c.FechaHora);
             entity.HasIndex(c => c.Estado);
             entity.HasIndex(c => c.PublicToken).IsUnique();

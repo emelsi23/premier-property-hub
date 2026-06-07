@@ -1,12 +1,15 @@
 @page "/property/{slug}"
+@using ApartamentosRenta.Models
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.ViewModel
 @{
     ViewData["Title"] = Model.Propiedad.Titulo;
     var fotos = Model.Propiedad.Fotos.ToList();
     var amenidades = Model.Propiedad.Amenidades
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    var minVisit = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    var minVisitDate = DateTime.Today.ToString("yyyy-MM-dd");
     var maxBirth = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
+    var depositAmount = VisitDepositSettings.Amount;
 }
 
 <div class="listing-page">
@@ -81,56 +84,215 @@
 
         <div class="listing-card listing-form-card" id="schedule">
             <div class="form-card-header">
-                <h2 class="form-card-title">Schedule a tour</h2>
-                <p class="form-card-subtitle">Complete the form below and our team will reach out to confirm your visit.</p>
+                <h2 class="form-card-title">Solicitud de alquiler</h2>
+                <p class="form-card-subtitle">Reserva tu cita certificada para visitar la propiedad. Proceso seguro, profesional y con depósito totalmente reembolsable.</p>
+                <div class="form-highlights">
+                    <span>Depósito reembolsable</span>
+                    <span>Cita en 30 minutos</span>
+                    <span>Corredor autorizado</span>
+                </div>
             </div>
 
             <div id="formErrors" class="alert alert-danger d-none" role="alert"></div>
 
             <form method="post" class="cita-form" id="citaForm" novalidate>
                 @Html.AntiForgeryToken()
-                <div class="form-field">
-                    <label asp-for="Appointment.NombreCliente" class="form-label"></label>
-                    <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="John Smith" autocomplete="name" />
-                    <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Información personal</legend>
+                    <div class="row g-3">
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.NombreCliente" class="form-label"></label>
+                            <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="Juan" autocomplete="given-name" />
+                            <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.ApellidoCliente" class="form-label"></label>
+                            <input asp-for="Appointment.ApellidoCliente" class="form-control" placeholder="Pérez" autocomplete="family-name" />
+                            <span asp-validation-for="Appointment.ApellidoCliente" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.Telefono" class="form-label"></label>
+                            <input asp-for="Appointment.Telefono" id="phoneInput" class="form-control" type="tel"
+                                   placeholder="(809) 690-9988" autocomplete="tel" maxlength="14" inputmode="numeric" />
+                            <span asp-validation-for="Appointment.Telefono" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.Email" class="form-label"></label>
+                            <input asp-for="Appointment.Email" class="form-control" type="email"
+                                   placeholder="correo@email.com" autocomplete="email" />
+                            <span asp-validation-for="Appointment.Email" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.FechaNacimiento" class="form-label"></label>
+                            <input asp-for="Appointment.FechaNacimiento" class="form-control" type="date" max="@maxBirth" />
+                            <span asp-validation-for="Appointment.FechaNacimiento" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.SsnItin" class="form-label"></label>
+                            <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
+                                   placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
+                            <span class="form-hint">Required for identity verification.</span>
+                            <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Detalles de la cita</legend>
+                    <div class="row g-3">
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.FechaCita" class="form-label"></label>
+                            <input asp-for="Appointment.FechaCita" class="form-control" type="date" min="@minVisitDate" />
+                            <span asp-validation-for="Appointment.FechaCita" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.HoraCita" class="form-label"></label>
+                            <input asp-for="Appointment.HoraCita" class="form-control" type="time" />
+                            <span asp-validation-for="Appointment.HoraCita" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Zona de la vivienda</legend>
+                    <div class="form-field">
+                        <label asp-for="Appointment.CodigoPostal" class="form-label"></label>
+                        <input asp-for="Appointment.CodigoPostal" class="form-control" placeholder="33101" maxlength="10" inputmode="numeric" />
+                        <span asp-validation-for="Appointment.CodigoPostal" class="field-error"></span>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Información del inquilino</legend>
+                    <div class="row g-3">
+                        <div class="col-md-6 form-field">
+                            <span class="form-label d-block">¿Es usted ciudadano/a americano?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.EsCiudadanoAmericano" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.PersonasEnUnidad" class="form-label"></label>
+                            <input asp-for="Appointment.PersonasEnUnidad" class="form-control" type="number" min="1" max="20" />
+                            <span asp-validation-for="Appointment.PersonasEnUnidad" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.DuracionContratoDeseada" class="form-label"></label>
+                            <input asp-for="Appointment.DuracionContratoDeseada" class="form-control" placeholder="12 months" />
+                            <span asp-validation-for="Appointment.DuracionContratoDeseada" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <label asp-for="Appointment.FechaMudanzaTemprana" class="form-label"></label>
+                            <input asp-for="Appointment.FechaMudanzaTemprana" class="form-control" type="date" min="@minVisitDate" />
+                            <span asp-validation-for="Appointment.FechaMudanzaTemprana" class="field-error"></span>
+                        </div>
+                        <div class="col-12 form-field">
+                            <span class="form-label d-block">¿Usted fuma o alguien que va a vivir en la propiedad fuma?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.Fuma" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Empleo e ingresos</legend>
+                    <div class="row g-3">
+                        <div class="col-12 form-field">
+                            <span class="form-label d-block">¿Está usted empleado actualmente?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.EmpleadoActualmente" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field d-none" id="employmentFields">
+                            <label asp-for="Appointment.NombreCompania" class="form-label"></label>
+                            <input asp-for="Appointment.NombreCompania" class="form-control" placeholder="Company name" />
+                            <span asp-validation-for="Appointment.NombreCompania" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field d-none" id="salaryField">
+                            <label asp-for="Appointment.Salario" class="form-label"></label>
+                            <input asp-for="Appointment.Salario" class="form-control" type="number" min="0" step="0.01" placeholder="2500" />
+                            <span asp-validation-for="Appointment.Salario" class="field-error"></span>
+                        </div>
+                        <div class="col-12 form-field">
+                            <label asp-for="Appointment.DisponibleParaAsegurar" class="form-label"></label>
+                            <input asp-for="Appointment.DisponibleParaAsegurar" class="form-control" type="number" min="0" step="0.01" placeholder="5000" />
+                            <span asp-validation-for="Appointment.DisponibleParaAsegurar" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Información adicional</legend>
+                    <div class="row g-3">
+                        <div class="col-md-6 form-field">
+                            <span class="form-label d-block">¿Tienes mascotas?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.TieneMascotas" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6 form-field">
+                            <span class="form-label d-block">¿Acepta pagar un depósito de reserva si se aprueba?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.AceptaDepositoReserva" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-program-box">
+                    <h3 class="h6 mb-2">Programa de renta y cita certificada</h3>
+                    <p class="small mb-2">
+                        Al ingresar a nuestro Programa de Renta mediante el pago de la Aplicación de Cita Certificada por
+                        <strong>$@depositAmount.ToString("N0") USD</strong>, obtiene acceso exclusivo para visitar y alquilar nuestras propiedades disponibles.
+                    </p>
+                    <ul class="small mb-2">
+                        <li>Si la propiedad no es de su agrado, se reembolsa en su totalidad.</li>
+                        <li>Si decide alquilar, los $@depositAmount.ToString("N0") USD se descuentan del depósito de seguridad.</li>
+                        <li>Reembolso garantizado al llegar puntualmente · Reprogramación con 2 h de aviso.</li>
+                    </ul>
                 </div>
 
-                <div class="form-field">
-                    <label asp-for="Appointment.FechaNacimiento" class="form-label"></label>
-                    <input asp-for="Appointment.FechaNacimiento" class="form-control" type="date" max="@maxBirth" />
-                    <span asp-validation-for="Appointment.FechaNacimiento" class="field-error"></span>
-                </div>
+                <fieldset class="form-section">
+                    <legend class="form-section-title">Opciones de pago</legend>
+                    <div class="row g-3">
+                        <div class="col-12 form-field">
+                            <span class="form-label d-block">¿Pagará la cita certificada de $@depositAmount.ToString("N0") USD?</span>
+                            <div class="yes-no-group">
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> No</label>
+                            </div>
+                            <span asp-validation-for="Appointment.PagaraCitaCertificada" class="field-error"></span>
+                        </div>
+                        <div class="col-12 form-field d-none" id="paymentMethodField">
+                            <label asp-for="Appointment.MetodoPago" class="form-label"></label>
+                            <select asp-for="Appointment.MetodoPago" class="form-select" asp-items="Html.GetEnumSelectList<MetodoPagoCita>()">
+                                <option value="">Selecciona un método de pago</option>
+                            </select>
+                            <span asp-validation-for="Appointment.MetodoPago" class="field-error"></span>
+                        </div>
+                    </div>
+                </fieldset>
 
-                <div class="form-field">
-                    <label asp-for="Appointment.Email" class="form-label"></label>
-                    <input asp-for="Appointment.Email" class="form-control" type="email"
-                           placeholder="john.smith@email.com" autocomplete="email" />
-                    <span asp-validation-for="Appointment.Email" class="field-error"></span>
-                </div>
-
-                <div class="form-field">
-                    <label asp-for="Appointment.Telefono" class="form-label"></label>
-                    <input asp-for="Appointment.Telefono" id="phoneInput" class="form-control" type="tel"
-                           placeholder="+1 (555) 000-0000" autocomplete="tel" maxlength="14" inputmode="numeric" />
-                    <span asp-validation-for="Appointment.Telefono" class="field-error"></span>
-                </div>
-
-                <div class="form-field">
-                    <label asp-for="Appointment.FechaHora" class="form-label"></label>
-                    <input asp-for="Appointment.FechaHora" class="form-control" type="datetime-local" min="@minVisit" />
-                    <span asp-validation-for="Appointment.FechaHora" class="field-error"></span>
-                </div>
-
-                <div class="form-field">
-                    <label asp-for="Appointment.SsnItin" class="form-label"></label>
-                    <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
-                           placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
-                    <span class="form-hint">Required for identity verification. Your information is kept secure.</span>
-                    <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
-                </div>
+                <label class="terms-check mb-3">
+                    <input asp-for="Appointment.AceptaTerminos" />
+                    <span>Estoy de acuerdo con los términos y políticas</span>
+                </label>
+                <span asp-validation-for="Appointment.AceptaTerminos" class="field-error d-block mb-2"></span>
 
                 <button type="submit" class="btn btn-submit w-100" id="submitBtn">
-                    Request tour
+                    Enviar solicitud
                 </button>
             </form>
         </div>
@@ -301,6 +463,37 @@
         bindMask(document.getElementById('phoneInput'), formatPhone);
         bindMask(document.getElementById('ssnInput'), formatSsn);
 
+        const employmentFields = document.getElementById('employmentFields');
+        const salaryField = document.getElementById('salaryField');
+        const paymentMethodField = document.getElementById('paymentMethodField');
+
+        function isEmployedSelected() {
+            return document.querySelector('input[name="Appointment.EmpleadoActualmente"]:checked')?.value === 'true';
+        }
+
+        function willPayVisitSelected() {
+            return document.querySelector('input[name="Appointment.PagaraCitaCertificada"]:checked')?.value === 'true';
+        }
+
+        function updateEmploymentFields() {
+            const show = isEmployedSelected();
+            employmentFields?.classList.toggle('d-none', !show);
+            salaryField?.classList.toggle('d-none', !show);
+        }
+
+        function updatePaymentMethodField() {
+            paymentMethodField?.classList.toggle('d-none', !willPayVisitSelected());
+        }
+
+        document.querySelectorAll('input[name="Appointment.EmpleadoActualmente"]').forEach(radio => {
+            radio.addEventListener('change', updateEmploymentFields);
+        });
+        document.querySelectorAll('input[name="Appointment.PagaraCitaCertificada"]').forEach(radio => {
+            radio.addEventListener('change', updatePaymentMethodField);
+        });
+        updateEmploymentFields();
+        updatePaymentMethodField();
+
         let touchStartX = 0;
         viewer?.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
         viewer?.addEventListener('touchend', e => {
@@ -371,6 +564,23 @@
             }
             if (!ssnPattern.test(ssnInput.value.trim())) {
                 errors.push('Enter a valid SSN: 121-22-1123');
+            }
+
+            const visitDate = form.querySelector('[name="Appointment.FechaCita"]')?.value;
+            const visitTime = form.querySelector('[name="Appointment.HoraCita"]')?.value;
+            if (visitDate && visitTime) {
+                const visitAt = new Date(`${visitDate}T${visitTime}`);
+                if (Number.isNaN(visitAt.getTime()) || visitAt <= new Date()) {
+                    errors.push('Choose a future visit date and time.');
+                }
+            }
+
+            if (!form.querySelector('[name="Appointment.AceptaTerminos"]')?.checked) {
+                errors.push('You must accept the terms and policies.');
+            }
+
+            if (willPayVisitSelected() && !form.querySelector('[name="Appointment.MetodoPago"]')?.value) {
+                errors.push('Select a payment method.');
             }
 
             if (errors.length) {
