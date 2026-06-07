@@ -84,12 +84,12 @@
 
         <div class="listing-card listing-form-card" id="schedule">
             <div class="form-card-header">
-                <h2 class="form-card-title">Solicitud de alquiler</h2>
-                <p class="form-card-subtitle">Reserva tu cita certificada para visitar la propiedad. Proceso seguro, profesional y con depósito totalmente reembolsable.</p>
+                <h2 class="form-card-title">Rental application</h2>
+                <p class="form-card-subtitle">Book your certified visit to tour this property. Secure, professional process with a fully refundable deposit.</p>
                 <div class="form-highlights">
-                    <span>Depósito reembolsable</span>
-                    <span>Cita en 30 minutos</span>
-                    <span>Corredor autorizado</span>
+                    <span>Refundable deposit</span>
+                    <span>30-minute visit</span>
+                    <span>Licensed agent</span>
                 </div>
             </div>
 
@@ -99,16 +99,16 @@
                 @Html.AntiForgeryToken()
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información personal</legend>
+                    <legend class="form-section-title">Personal information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
                             <label asp-for="Appointment.NombreCliente" class="form-label"></label>
-                            <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="Juan" autocomplete="given-name" />
+                            <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="John" autocomplete="given-name" />
                             <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
                             <label asp-for="Appointment.ApellidoCliente" class="form-label"></label>
-                            <input asp-for="Appointment.ApellidoCliente" class="form-control" placeholder="Pérez" autocomplete="family-name" />
+                            <input asp-for="Appointment.ApellidoCliente" class="form-control" placeholder="Smith" autocomplete="family-name" />
                             <span asp-validation-for="Appointment.ApellidoCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
@@ -120,7 +120,7 @@
                         <div class="col-md-6 form-field">
                             <label asp-for="Appointment.Email" class="form-label"></label>
                             <input asp-for="Appointment.Email" class="form-control" type="email"
-                                   placeholder="correo@email.com" autocomplete="email" />
+                                   placeholder="john.smith@email.com" autocomplete="email" />
                             <span asp-validation-for="Appointment.Email" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
@@ -139,7 +139,7 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Detalles de la cita</legend>
+                    <legend class="form-section-title">Visit details</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
                             <label asp-for="Appointment.FechaCita" class="form-label"></label>
@@ -155,7 +155,7 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Zona de la vivienda</legend>
+                    <legend class="form-section-title">Property area</legend>
                     <div class="form-field">
                         <label asp-for="Appointment.CodigoPostal" class="form-label"></label>
                         <input asp-for="Appointment.CodigoPostal" class="form-control" placeholder="33101" maxlength="10" inputmode="numeric" />
@@ -164,12 +164,12 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información del inquilino</legend>
+                    <legend class="form-section-title">Tenant information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">¿Es usted ciudadano/a americano?</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.EsCiudadanoAmericano"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.EsCiudadanoAmericano" class="field-error"></span>
@@ -190,9 +190,9 @@
                             <span asp-validation-for="Appointment.FechaMudanzaTemprana" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">¿Usted fuma o alguien que va a vivir en la propiedad fuma?</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.Fuma"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.Fuma" class="field-error"></span>
@@ -201,12 +201,12 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Empleo e ingresos</legend>
+                    <legend class="form-section-title">Employment &amp; income</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">¿Está usted empleado actualmente?</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.EmpleadoActualmente"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.EmpleadoActualmente" class="field-error"></span>
@@ -230,20 +230,20 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información adicional</legend>
+                    <legend class="form-section-title">Additional information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">¿Tienes mascotas?</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.TieneMascotas"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.TieneMascotas" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">¿Acepta pagar un depósito de reserva si se aprueba?</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.AceptaDepositoReserva"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.AceptaDepositoReserva" class="field-error"></span>
@@ -252,25 +252,25 @@
                 </fieldset>
 
                 <div class="form-program-box">
-                    <h3 class="h6 mb-2">Programa de renta y cita certificada</h3>
+                    <h3 class="h6 mb-2">Certified visit program</h3>
                     <p class="small mb-2">
-                        Al ingresar a nuestro Programa de Renta mediante el pago de la Aplicación de Cita Certificada por
-                        <strong>$@depositAmount.ToString("N0") USD</strong>, obtiene acceso exclusivo para visitar y alquilar nuestras propiedades disponibles.
+                        By joining our rental program and paying the certified visit application fee of
+                        <strong>$@depositAmount.ToString("N0") USD</strong>, you get exclusive access to tour and rent our available properties through an orderly, secure, and professional process.
                     </p>
                     <ul class="small mb-2">
-                        <li>Si la propiedad no es de su agrado, se reembolsa en su totalidad.</li>
-                        <li>Si decide alquilar, los $@depositAmount.ToString("N0") USD se descuentan del depósito de seguridad.</li>
-                        <li>Reembolso garantizado al llegar puntualmente · Reprogramación con 2 h de aviso.</li>
+                        <li>If the property is not a fit, your fee is fully refunded.</li>
+                        <li>If you decide to rent, the $@depositAmount.ToString("N0") USD is fully applied toward your security deposit.</li>
+                        <li>Guaranteed refund when you arrive on time · Reschedule with at least 2 hours notice.</li>
                     </ul>
                 </div>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Opciones de pago</legend>
+                    <legend class="form-section-title">Payment options</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">¿Pagará la cita certificada de $@depositAmount.ToString("N0") USD?</span>
+                            <span class="form-label d-block">Will you pay the certified visit fee of $@depositAmount.ToString("N0") USD?</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> Sí</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> Yes</label>
                                 <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.PagaraCitaCertificada" class="field-error"></span>
@@ -278,7 +278,7 @@
                         <div class="col-12 form-field d-none" id="paymentMethodField">
                             <label asp-for="Appointment.MetodoPago" class="form-label"></label>
                             <select asp-for="Appointment.MetodoPago" class="form-select" asp-items="Html.GetEnumSelectList<MetodoPagoCita>()">
-                                <option value="">Selecciona un método de pago</option>
+                                <option value="">Select a payment method</option>
                             </select>
                             <span asp-validation-for="Appointment.MetodoPago" class="field-error"></span>
                         </div>
@@ -287,12 +287,12 @@
 
                 <label class="terms-check mb-3">
                     <input asp-for="Appointment.AceptaTerminos" />
-                    <span>Estoy de acuerdo con los términos y políticas</span>
+                    <span>I agree to the terms and policies</span>
                 </label>
                 <span asp-validation-for="Appointment.AceptaTerminos" class="field-error d-block mb-2"></span>
 
                 <button type="submit" class="btn btn-submit w-100" id="submitBtn">
-                    Enviar solicitud
+                    Submit application
                 </button>
             </form>
         </div>
