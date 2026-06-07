@@ -8,6 +8,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Propiedad> Propiedades => Set<Propiedad>();
     public DbSet<FotoPropiedad> FotosPropiedad => Set<FotoPropiedad>();
     public DbSet<Cita> Citas => Set<Cita>();
+    public DbSet<LeaseContract> LeaseContracts => Set<LeaseContract>();
+    public DbSet<ContractSubmission> ContractSubmissions => Set<ContractSubmission>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +39,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(c => c.FechaHora);
             entity.HasIndex(c => c.Estado);
             entity.HasIndex(c => c.PublicToken).IsUnique();
+        });
+
+        modelBuilder.Entity<LeaseContract>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+        });
+
+        modelBuilder.Entity<ContractSubmission>(entity =>
+        {
+            entity.HasIndex(c => c.SubmittedAt);
+            entity.HasIndex(c => c.SubmissionType);
         });
     }
 }
