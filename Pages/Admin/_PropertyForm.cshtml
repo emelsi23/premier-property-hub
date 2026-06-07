@@ -57,6 +57,34 @@
     </div>
     <div class="col-12">
         <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Public page display</h2>
+        <p class="form-text">Choose what clients see on <code>/property/…</code> and which language to use.</p>
+    </div>
+    <div class="col-md-4">
+        <div class="form-check">
+            <input asp-for="MostrarAplicacionPublica" class="form-check-input" type="checkbox" />
+            <label asp-for="MostrarAplicacionPublica" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-check">
+            <input asp-for="MostrarContratoPublico" class="form-check-input" type="checkbox" />
+            <label asp-for="MostrarContratoPublico" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-check">
+            <input asp-for="MostrarStampillasPublico" class="form-check-input" type="checkbox" />
+            <label asp-for="MostrarStampillasPublico" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="IdiomaPublico" class="form-label"></label>
+        <select asp-for="IdiomaPublico" class="form-select" asp-items="Html.GetEnumSelectList<ApartamentosRenta.Models.PropertyPublicLanguage>()"></select>
+        <div class="form-text">Bilingual shows an English / Español switcher on the public page.</div>
+    </div>
+    <div class="col-12">
+        <hr class="my-1" />
         <h2 class="h6 text-muted mb-3">Zelle deposit (shown to clients after approval)</h2>
     </div>
     <div class="col-md-4">
@@ -97,6 +125,27 @@
     </div>
     <div class="col-12">
         <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Lease contract — Spanish (optional)</h2>
+        <p class="form-text">Leave blank to use the English version when Spanish is selected.</p>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ContractTitleEs" class="form-label"></label>
+        <input asp-for="ContractTitleEs" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ContractSubtitleEs" class="form-label"></label>
+        <input asp-for="ContractSubtitleEs" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label asp-for="ContractNoticeHtmlEs" class="form-label"></label>
+        <textarea asp-for="ContractNoticeHtmlEs" class="form-control font-monospace" rows="3"></textarea>
+    </div>
+    <div class="col-12">
+        <label asp-for="ContractBodyHtmlEs" class="form-label"></label>
+        <textarea asp-for="ContractBodyHtmlEs" class="form-control font-monospace" rows="12"></textarea>
+    </div>
+    <div class="col-12">
+        <hr class="my-1" />
         <h2 class="h6 text-muted mb-3">Stamps &amp; seals agreement (per property)</h2>
         <p class="form-text">Fixed fees: stamps <strong>$245</strong> + seals <strong>$245</strong> = <strong>$490</strong>. Placeholders: <code>{{StampsAmount}}</code>, <code>{{SealsAmount}}</code>, <code>{{TotalAmount}}</code>, <code>{{PropertyTitle}}</code>, <code>{{ZelleContact}}</code>.</p>
     </div>
@@ -115,5 +164,25 @@
     <div class="col-12">
         <label asp-for="StampSealBodyHtml" class="form-label"></label>
         <textarea asp-for="StampSealBodyHtml" class="form-control font-monospace" rows="10"></textarea>
+    </div>
+    <div class="col-12">
+        <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Stamps &amp; seals — Spanish (optional)</h2>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="StampSealTitleEs" class="form-label"></label>
+        <input asp-for="StampSealTitleEs" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="StampSealSubtitleEs" class="form-label"></label>
+        <input asp-for="StampSealSubtitleEs" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label asp-for="StampSealNoticeHtmlEs" class="form-label"></label>
+        <textarea asp-for="StampSealNoticeHtmlEs" class="form-control font-monospace" rows="3"></textarea>
+    </div>
+    <div class="col-12">
+        <label asp-for="StampSealBodyHtmlEs" class="form-label"></label>
+        <textarea asp-for="StampSealBodyHtmlEs" class="form-control font-monospace" rows="10"></textarea>
     </div>
 </div>

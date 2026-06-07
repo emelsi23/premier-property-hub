@@ -1,0 +1,11 @@
+@using ApartamentosRenta.Models
+@using ApartamentosRenta.Services
+@model (Propiedad Propiedad, PropertyContentLanguage ActiveLanguage, bool ShowSwitcher, PropertyApplicationStrings Strings, string BasePath)
+
+@if (Model.ShowSwitcher)
+{
+    <div class="property-language-bar">
+        <a href="@($"{Model.BasePath}?lang=en")" class="property-language-link @(Model.ActiveLanguage == PropertyContentLanguage.English ? "is-active" : "")">@Model.Strings.LanguageEnglish</a>
+        <a href="@($"{Model.BasePath}?lang=es")" class="property-language-link @(Model.ActiveLanguage == PropertyContentLanguage.Spanish ? "is-active" : "")">@Model.Strings.LanguageSpanish</a>
+    </div>
+}

@@ -22,10 +22,16 @@ public class ViewModel(AppDbContext context) : PageModel
 
     public Propiedad Propiedad { get; private set; } = null!;
 
+    public PropertyApplicationStrings Strings { get; private set; } = null!;
+
+    public PropertyContentLanguage ActiveLanguage { get; private set; }
+
+    public bool ShowLanguageSwitcher { get; private set; }
+
     [BindProperty]
     public AppointmentInput Appointment { get; set; } = new();
 
-    public async Task<IActionResult> OnGetAsync(string slug)
+    public async Task<IActionResult> OnGetAsync(string slug, string? lang)
     {
         var propiedad = await LoadPropiedadAsync(slug);
         if (propiedad is null)
@@ -33,9 +39,17 @@ public class ViewModel(AppDbContext context) : PageModel
             return NotFound();
         }
 
-        Propiedad = propiedad;
-        ViewData["Title"] = propiedad.Titulo;
+        ApplyPageContext(propiedad, lang);
         return Page();
+    }
+
+    private void ApplyPageContext(Propiedad propiedad, string? lang)
+    {
+        Propiedad = propiedad;
+        ActiveLanguage = PropertyPageLanguageHelper.Resolve(propiedad.IdiomaPublico, lang);
+        ShowLanguageSwitcher = PropertyPageLanguageHelper.ShowLanguageSwitcher(propiedad.IdiomaPublico);
+        Strings = PropertyApplicationStrings.Get(ActiveLanguage, VisitDepositSettings.Amount);
+        ViewData["Title"] = propiedad.Titulo;
     }
 
     public async Task<IActionResult> OnPostAsync(string slug)
@@ -47,6 +61,12 @@ public class ViewModel(AppDbContext context) : PageModel
         }
 
         Propiedad = propiedad;
+        if (!propiedad.MostrarAplicacionPublica)
+        {
+            return BadRequest(new { success = false, message = "Application is not available for this property." });
+        }
+
+        ApplyPageContext(propiedad, Request.Query["lang"]);
         var isAjax = Request.Headers.XRequestedWith == "XMLHttpRequest";
 
         if (!ModelState.IsValid)
@@ -56,13 +76,17 @@ public class ViewModel(AppDbContext context) : PageModel
 
         if (DateTimeUtc.FromForm(Appointment.FechaHora) <= DateTime.UtcNow)
         {
-            ModelState.AddModelError("Appointment.FechaCita", "Please choose a future date and time.");
+            ModelState.AddModelError("Appointment.FechaCita", ActiveLanguage == PropertyContentLanguage.Spanish
+                ? "Elija una fecha y hora futuras."
+                : "Please choose a future date and time.");
             return isAjax ? AjaxValidationError() : Page();
         }
 
         if (DateTimeUtc.FromFormDate(Appointment.FechaNacimiento) >= DateTime.UtcNow.Date)
         {
-            ModelState.AddModelError("Appointment.FechaNacimiento", "Please enter a valid date of birth.");
+            ModelState.AddModelError("Appointment.FechaNacimiento", ActiveLanguage == PropertyContentLanguage.Spanish
+                ? "Ingrese una fecha de nacimiento válida."
+                : "Please enter a valid date of birth.");
             return isAjax ? AjaxValidationError() : Page();
         }
 

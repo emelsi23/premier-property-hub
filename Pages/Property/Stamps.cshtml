@@ -1,10 +1,16 @@
 @page "/property/{slug}/stamps"
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.StampsModel
 @{
     var propiedad = Model.Propiedad;
+    var ui = Model.Ui;
+    var stampUi = Model.StampUi;
+    var langQ = PropertyPageLanguageHelper.LangQuery(Model.ActiveLanguage);
+    var languageBasePath = $"/property/{propiedad.Slug}/stamps";
 }
 
 <article class="contract-page">
+    <partial name="_LanguageSwitcher" model="(Model.Propiedad, Model.ActiveLanguage, Model.ShowLanguageSwitcher, Model.Strings, languageBasePath)" />
     <header class="contract-header">
         <p class="contract-brand">Premier Property Hub</p>
         <h1>@Model.RenderedTitle</h1>
@@ -18,32 +24,32 @@
 
     <div class="contract-amounts card border-0 shadow-sm mb-3">
         <div class="card-body">
-            <h2 class="h6 text-muted mb-3">What would you like to purchase?</h2>
+            <h2 class="h6 text-muted mb-3">@stampUi.PurchaseQuestion</h2>
             <div class="contract-action-tabs purchase-option-tabs mb-3">
                 <label class="contract-action-tab purchase-option-tab">
                     <input type="radio" name="purchaseOption" value="Stamps" />
                     <span>
-                        <strong>Stamps only</strong><br />
+                        <strong>@stampUi.StampsOnly</strong><br />
                         <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.StampsAmount.ToString("N0")</span>
                     </span>
                 </label>
                 <label class="contract-action-tab purchase-option-tab">
                     <input type="radio" name="purchaseOption" value="Seals" />
                     <span>
-                        <strong>Seals only</strong><br />
+                        <strong>@stampUi.SealsOnly</strong><br />
                         <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.SealsAmount.ToString("N0")</span>
                     </span>
                 </label>
                 <label class="contract-action-tab purchase-option-tab">
                     <input type="radio" name="purchaseOption" value="Both" checked />
                     <span>
-                        <strong>Stamps &amp; seals</strong><br />
+                        <strong>@stampUi.BothOptions</strong><br />
                         <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</span>
                     </span>
                 </label>
             </div>
             <p class="mb-0 small text-muted">
-                Your total: <strong id="purchaseTotal">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong>
+                @stampUi.YourTotal <strong id="purchaseTotal">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong>
             </p>
         </div>
     </div>
@@ -53,8 +59,8 @@
     </div>
 
     <section class="contract-section contract-sign-panel" id="signPanel">
-        <h2>Client signature</h2>
-        <p class="mb-3">Select stamps, seals, or both, then sign to authorize the purchase or submit proposed changes.</p>
+        <h2>@stampUi.ClientSignature</h2>
+        <p class="mb-3">@stampUi.SelectPurchase</p>
 
         <form id="stampSignForm" novalidate>
             @Html.AntiForgeryToken()
@@ -76,11 +82,11 @@
             <div class="contract-action-tabs mt-4">
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="sign" checked />
-                    <span>Sign agreement</span>
+                    <span>@ui.SignAgreement</span>
                 </label>
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="changes" />
-                    <span>Request changes</span>
+                    <span>@ui.RequestChanges</span>
                 </label>
             </div>
 
@@ -113,8 +119,8 @@
 
     <footer class="contract-footer">
         <p>
-            <a href="/property/@propiedad.Slug">← Back to property</a> ·
-            <a href="/property/@propiedad.Slug/contract">Lease contract</a>
+            <a href="/property/@propiedad.Slug?lang=@langQ">@ui.BackToProperty</a> ·
+            <a href="/property/@propiedad.Slug/contract?lang=@langQ">@stampUi.LeaseContractLink</a>
         </p>
         <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Print</button>
     </footer>

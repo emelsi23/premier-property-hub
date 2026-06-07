@@ -73,6 +73,42 @@ public class PropertyInput
     [Display(Name = "Stamps & seals body (HTML)")]
     public string StampSealBodyHtml { get; set; } = StampSealContractDefaults.BodyHtml;
 
+    [Display(Name = "Show rental application on public page")]
+    public bool MostrarAplicacionPublica { get; set; } = true;
+
+    [Display(Name = "Show lease contract link on public page")]
+    public bool MostrarContratoPublico { get; set; }
+
+    [Display(Name = "Show stamps & seals link on public page")]
+    public bool MostrarStampillasPublico { get; set; }
+
+    [Display(Name = "Public page language")]
+    public PropertyPublicLanguage IdiomaPublico { get; set; } = PropertyPublicLanguage.English;
+
+    [StringLength(200), Display(Name = "Contract title (Spanish)")]
+    public string ContractTitleEs { get; set; } = string.Empty;
+
+    [StringLength(200), Display(Name = "Contract subtitle (Spanish)")]
+    public string ContractSubtitleEs { get; set; } = string.Empty;
+
+    [Display(Name = "Contract notice (Spanish HTML)")]
+    public string ContractNoticeHtmlEs { get; set; } = string.Empty;
+
+    [Display(Name = "Contract body (Spanish HTML)")]
+    public string ContractBodyHtmlEs { get; set; } = string.Empty;
+
+    [StringLength(200), Display(Name = "Stamps & seals title (Spanish)")]
+    public string StampSealTitleEs { get; set; } = string.Empty;
+
+    [StringLength(200), Display(Name = "Stamps & seals subtitle (Spanish)")]
+    public string StampSealSubtitleEs { get; set; } = string.Empty;
+
+    [Display(Name = "Stamps & seals notice (Spanish HTML)")]
+    public string StampSealNoticeHtmlEs { get; set; } = string.Empty;
+
+    [Display(Name = "Stamps & seals body (Spanish HTML)")]
+    public string StampSealBodyHtmlEs { get; set; } = string.Empty;
+
     public IEnumerable<string> ParseFotoUrls() =>
         FotosUrls
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -101,6 +137,18 @@ public class PropertyInput
         StampSealTitle = entity.StampSealContract?.Title ?? "Stamps & Seals Purchase Agreement",
         StampSealSubtitle = entity.StampSealContract?.Subtitle ?? "Official documentation · United States",
         StampSealNoticeHtml = entity.StampSealContract?.NoticeHtml ?? StampSealContractDefaults.NoticeHtml,
-        StampSealBodyHtml = entity.StampSealContract?.BodyHtml ?? StampSealContractDefaults.BodyHtml
+        StampSealBodyHtml = entity.StampSealContract?.BodyHtml ?? StampSealContractDefaults.BodyHtml,
+        MostrarAplicacionPublica = entity.MostrarAplicacionPublica,
+        MostrarContratoPublico = entity.MostrarContratoPublico,
+        MostrarStampillasPublico = entity.MostrarStampillasPublico,
+        IdiomaPublico = entity.IdiomaPublico,
+        ContractTitleEs = entity.LeaseContract?.TitleEs ?? string.Empty,
+        ContractSubtitleEs = entity.LeaseContract?.SubtitleEs ?? string.Empty,
+        ContractNoticeHtmlEs = entity.LeaseContract?.NoticeHtmlEs ?? string.Empty,
+        ContractBodyHtmlEs = entity.LeaseContract?.BodyHtmlEs ?? string.Empty,
+        StampSealTitleEs = entity.StampSealContract?.TitleEs ?? string.Empty,
+        StampSealSubtitleEs = entity.StampSealContract?.SubtitleEs ?? string.Empty,
+        StampSealNoticeHtmlEs = entity.StampSealContract?.NoticeHtmlEs ?? string.Empty,
+        StampSealBodyHtmlEs = entity.StampSealContract?.BodyHtmlEs ?? string.Empty
     };
 }

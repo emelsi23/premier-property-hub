@@ -49,6 +49,14 @@ public class Propiedad
     [Range(0, 999999)]
     public decimal DepositAmount { get; set; }
 
+    public bool MostrarAplicacionPublica { get; set; } = true;
+
+    public bool MostrarContratoPublico { get; set; }
+
+    public bool MostrarStampillasPublico { get; set; }
+
+    public PropertyPublicLanguage IdiomaPublico { get; set; } = PropertyPublicLanguage.English;
+
     public ICollection<FotoPropiedad> Fotos { get; set; } = [];
 
     public ICollection<Cita> Citas { get; set; } = [];
