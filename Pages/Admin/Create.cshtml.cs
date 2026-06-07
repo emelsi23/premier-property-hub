@@ -41,6 +41,8 @@ public class CreateModel(AppDbContext context) : PageModel
 
         var contract = PropiedadHelper.ApplyContractInput(propiedad, Input);
         context.LeaseContracts.Add(contract);
+        var stampSeal = PropiedadHelper.ApplyStampSealInput(propiedad, Input);
+        context.StampSealContracts.Add(stampSeal);
         await context.SaveChangesAsync();
 
         return RedirectToPage("Index");

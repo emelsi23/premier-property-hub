@@ -1,0 +1,222 @@
+@page "/property/{slug}/stamps"
+@model ApartamentosRenta.Pages.Property.StampsModel
+@{
+    var propiedad = Model.Propiedad;
+}
+
+<article class="contract-page">
+    <header class="contract-header">
+        <p class="contract-brand">Premier Property Hub</p>
+        <h1>@Model.RenderedTitle</h1>
+        <p class="contract-subtitle">@Model.RenderedSubtitle</p>
+        <p class="contract-effective">@propiedad.Titulo · @propiedad.Direccion</p>
+    </header>
+
+    <div class="contract-notice">
+        @Html.Raw(Model.RenderedNoticeHtml)
+    </div>
+
+    <div class="contract-amounts card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <h2 class="h6 text-muted mb-3">Stamps &amp; seals fees</h2>
+            <div class="row g-2 small">
+                <div class="col-6 col-md-4"><span class="text-muted">Stamps</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.StampsAmount.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Seals</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.SealsAmount.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Total</span><br /><strong>$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contract-body">
+        @Html.Raw(Model.RenderedBodyHtml)
+    </div>
+
+    <section class="contract-section contract-sign-panel" id="signPanel">
+        <h2>Client signature</h2>
+        <p class="mb-3">Sign to authorize purchase of stamps and seals, or submit proposed changes.</p>
+
+        <form id="stampSignForm" novalidate>
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="clientName" class="form-label">Full legal name</label>
+                    <input type="text" id="clientName" class="form-control" maxlength="120" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="clientEmail" class="form-label">Email</label>
+                    <input type="email" id="clientEmail" class="form-control" maxlength="256" required />
+                </div>
+                <div class="col-md-6">
+                    <label for="clientPhone" class="form-label">Phone (optional)</label>
+                    <input type="tel" id="clientPhone" class="form-control" maxlength="30" />
+                </div>
+            </div>
+
+            <div class="contract-action-tabs mt-4">
+                <label class="contract-action-tab">
+                    <input type="radio" name="submitAction" value="sign" checked />
+                    <span>Sign agreement</span>
+                </label>
+                <label class="contract-action-tab">
+                    <input type="radio" name="submitAction" value="changes" />
+                    <span>Request changes</span>
+                </label>
+            </div>
+
+            <div id="signFields" class="mt-3">
+                <label class="form-label">Draw your signature</label>
+                <div class="signature-pad-wrap">
+                    <canvas id="signaturePad" width="600" height="180" aria-label="Signature pad"></canvas>
+                    <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Clear</button>
+                </div>
+                <label class="terms-check mt-3">
+                    <input type="checkbox" id="agreeCheckbox" />
+                    <span>I authorize the purchase of stamps and seals as described above.</span>
+                </label>
+            </div>
+
+            <div id="changesFields" class="mt-3 d-none">
+                <label for="proposedChanges" class="form-label">Proposed changes</label>
+                <textarea id="proposedChanges" class="form-control" rows="5" maxlength="4000"></textarea>
+            </div>
+
+            <div id="optionalChangesWrap" class="mt-3">
+                <label for="optionalChanges" class="form-label">Additional notes (optional)</label>
+                <textarea id="optionalChanges" class="form-control" rows="3" maxlength="4000"></textarea>
+            </div>
+
+            <p id="signFormError" class="text-danger small d-none mt-2"></p>
+            <button type="submit" class="btn btn-submit w-100 mt-3" id="submitBtn">Submit signature</button>
+        </form>
+    </section>
+
+    <footer class="contract-footer">
+        <p>
+            <a href="/property/@propiedad.Slug">← Back to property</a> ·
+            <a href="/property/@propiedad.Slug/contract">Lease contract</a>
+        </p>
+        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Print</button>
+    </footer>
+</article>
+
+<div id="successModal" class="status-modal" aria-hidden="true">
+    <div class="status-modal-backdrop"></div>
+    <div class="status-modal-dialog is-success" role="dialog" aria-modal="true">
+        <div class="modal-success-icon" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <p class="success-badge" id="successBadge">Submitted</p>
+        <h3 class="modal-title success-title" id="successTitle">Signature submitted</h3>
+        <p class="modal-text success-contact mb-0" id="successText">Your signature has been supplied. We will process your stamps and seals order shortly.</p>
+        <button type="button" class="btn btn-submit w-100 mt-3" id="closeModal">OK</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const signForm = document.getElementById('stampSignForm');
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false, hasSignature = false;
+
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+            ctx.strokeStyle = '#1a1a1b';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function getPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches?.[0] ?? e.changedTouches?.[0];
+            const x = (touch ? touch.clientX : e.clientX) - rect.left;
+            const y = (touch ? touch.clientY : e.clientY) - rect.top;
+            return { x, y };
+        }
+
+        canvas.addEventListener('mousedown', e => { e.preventDefault(); drawing = true; hasSignature = true; const p = getPoint(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+        canvas.addEventListener('mousemove', e => { if (!drawing) return; e.preventDefault(); const p = getPoint(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseleave', () => drawing = false);
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; hasSignature = true; const p = getPoint(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+        canvas.addEventListener('touchmove', e => { if (!drawing) return; e.preventDefault(); const p = getPoint(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }, { passive: false });
+        canvas.addEventListener('touchend', () => drawing = false);
+        document.getElementById('clearSignature')?.addEventListener('click', () => { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSignature = false; });
+        resizeCanvas();
+
+        document.querySelectorAll('input[name="submitAction"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const isSign = document.querySelector('input[name="submitAction"]:checked')?.value === 'sign';
+                document.getElementById('signFields').classList.toggle('d-none', !isSign);
+                document.getElementById('changesFields').classList.toggle('d-none', isSign);
+                document.getElementById('optionalChangesWrap').classList.toggle('d-none', !isSign);
+                document.getElementById('submitBtn').textContent = isSign ? 'Submit signature' : 'Submit changes';
+            });
+        });
+
+        const modal = document.getElementById('successModal');
+        document.getElementById('closeModal')?.addEventListener('click', () => {
+            modal.classList.remove('is-visible');
+            modal.setAttribute('aria-hidden', 'true');
+        });
+
+        signForm?.addEventListener('submit', async e => {
+            e.preventDefault();
+            const err = document.getElementById('signFormError');
+            err.classList.add('d-none');
+            const action = document.querySelector('input[name="submitAction"]:checked')?.value;
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientEmail = document.getElementById('clientEmail').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const proposedChanges = document.getElementById('proposedChanges').value.trim();
+            const optionalChanges = document.getElementById('optionalChanges').value.trim();
+
+            if (!clientName || !clientEmail) { err.textContent = 'Name and email are required.'; err.classList.remove('d-none'); return; }
+            if (action === 'sign') {
+                if (!document.getElementById('agreeCheckbox').checked) { err.textContent = 'Please confirm authorization.'; err.classList.remove('d-none'); return; }
+                if (!hasSignature) { err.textContent = 'Please draw your signature.'; err.classList.remove('d-none'); return; }
+            } else if (!proposedChanges) { err.textContent = 'Describe the changes you are requesting.'; err.classList.remove('d-none'); return; }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${window.location.pathname}?handler=Submit`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'RequestVerificationToken': signForm.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        clientName, clientEmail, clientPhone: clientPhone || null, action,
+                        signatureDataUrl: action === 'sign' ? canvas.toDataURL('image/png') : null,
+                        proposedChanges: action === 'changes' ? proposedChanges : (optionalChanges || null)
+                    })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) { err.textContent = data.message || 'Something went wrong.'; err.classList.remove('d-none'); btn.disabled = false; return; }
+
+                document.getElementById('successTitle').textContent = action === 'sign' ? 'Signature submitted' : 'Changes submitted';
+                document.getElementById('successText').textContent = action === 'sign'
+                    ? 'Your signature has been supplied. We will process your stamps and seals order shortly.'
+                    : 'Your proposed changes have been received. We will contact you shortly.';
+                document.getElementById('successBadge').textContent = action === 'sign' ? 'Signature supplied' : 'Changes received';
+                modal.classList.add('is-visible');
+                modal.setAttribute('aria-hidden', 'false');
+                signForm.reset();
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                hasSignature = false;
+            } catch {
+                err.textContent = 'Something went wrong.'; err.classList.remove('d-none');
+            }
+            btn.disabled = false;
+        });
+    </script>
+}

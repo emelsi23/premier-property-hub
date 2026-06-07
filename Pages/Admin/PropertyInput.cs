@@ -61,6 +61,18 @@ public class PropertyInput
     [Display(Name = "Contract body (HTML)")]
     public string ContractBodyHtml { get; set; } = LeaseContractDefaults.BodyHtml;
 
+    [StringLength(200), Display(Name = "Stamps & seals title")]
+    public string StampSealTitle { get; set; } = "Stamps & Seals Purchase Agreement";
+
+    [StringLength(200), Display(Name = "Stamps & seals subtitle")]
+    public string StampSealSubtitle { get; set; } = "Official documentation · United States";
+
+    [Display(Name = "Stamps & seals notice (HTML)")]
+    public string StampSealNoticeHtml { get; set; } = StampSealContractDefaults.NoticeHtml;
+
+    [Display(Name = "Stamps & seals body (HTML)")]
+    public string StampSealBodyHtml { get; set; } = StampSealContractDefaults.BodyHtml;
+
     public IEnumerable<string> ParseFotoUrls() =>
         FotosUrls
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -85,6 +97,10 @@ public class PropertyInput
         ContractTitle = entity.LeaseContract?.Title ?? "Residential Lease Agreement",
         ContractSubtitle = entity.LeaseContract?.Subtitle ?? "Apartment rental · United States",
         ContractNoticeHtml = entity.LeaseContract?.NoticeHtml ?? LeaseContractDefaults.NoticeHtml,
-        ContractBodyHtml = entity.LeaseContract?.BodyHtml ?? LeaseContractDefaults.BodyHtml
+        ContractBodyHtml = entity.LeaseContract?.BodyHtml ?? LeaseContractDefaults.BodyHtml,
+        StampSealTitle = entity.StampSealContract?.Title ?? "Stamps & Seals Purchase Agreement",
+        StampSealSubtitle = entity.StampSealContract?.Subtitle ?? "Official documentation · United States",
+        StampSealNoticeHtml = entity.StampSealContract?.NoticeHtml ?? StampSealContractDefaults.NoticeHtml,
+        StampSealBodyHtml = entity.StampSealContract?.BodyHtml ?? StampSealContractDefaults.BodyHtml
     };
 }

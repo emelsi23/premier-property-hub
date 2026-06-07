@@ -38,8 +38,23 @@ public static class PropiedadHelper
         return contract;
     }
 
-    public static async Task EnsureContractsForAllPropertiesAsync(AppDbContext context) =>
+    public static StampSealContract ApplyStampSealInput(Propiedad propiedad, PropertyInput input)
+    {
+        var contract = propiedad.StampSealContract ?? new StampSealContract { PropiedadId = propiedad.Id };
+        contract.Title = input.StampSealTitle.Trim();
+        contract.Subtitle = input.StampSealSubtitle.Trim();
+        contract.NoticeHtml = input.StampSealNoticeHtml.Trim();
+        contract.BodyHtml = input.StampSealBodyHtml.Trim();
+        contract.UpdatedAt = DateTime.UtcNow;
+        contract.PropiedadId = propiedad.Id;
+        return contract;
+    }
+
+    public static async Task EnsureContractsForAllPropertiesAsync(AppDbContext context)
+    {
         await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(context);
+        await StampSealSeedHelper.EnsureForAllPropertiesAsync(context);
+    }
 
     public static async Task ApplyFotosAsync(AppDbContext context, Propiedad propiedad, IEnumerable<string> urls)
     {

@@ -11,6 +11,7 @@ public static class DbSeeder
         if (await context.Propiedades.AnyAsync())
         {
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(context);
+            await StampSealSeedHelper.EnsureForAllPropertiesAsync(context);
             return;
         }
         {
@@ -49,6 +50,7 @@ public static class DbSeeder
             await context.SaveChangesAsync();
 
             context.LeaseContracts.Add(LeaseContractDefaults.CreateForProperty(propiedad.Id));
+            context.StampSealContracts.Add(StampSealContractDefaults.CreateForProperty(propiedad.Id));
             await context.SaveChangesAsync();
             Console.WriteLine("Sample property seeded.");
         }

@@ -54,4 +54,6 @@ public class Propiedad
     public ICollection<Cita> Citas { get; set; } = [];
 
     public LeaseContract? LeaseContract { get; set; }
+
+    public StampSealContract? StampSealContract { get; set; }
 }

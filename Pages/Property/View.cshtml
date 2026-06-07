@@ -79,8 +79,9 @@
 
             <div class="contract-link-box mt-4">
                 <h2 class="section-title">Lease agreement</h2>
-                <p class="text-muted small mb-2">Review and sign the rental contract for this property. Amounts are based on the monthly rent of $@Model.Propiedad.PrecioMensual.ToString("N0").</p>
-                <a href="/property/@Model.Propiedad.Slug/contract" class="btn btn-outline-primary w-100">View &amp; sign contract</a>
+                <p class="text-muted small mb-2">Review and sign the rental contract for this property.</p>
+                <a href="/property/@Model.Propiedad.Slug/contract" class="btn btn-outline-primary w-100 mb-2">View &amp; sign lease contract</a>
+                <a href="/property/@Model.Propiedad.Slug/stamps" class="btn btn-outline-secondary w-100">Stamps &amp; seals agreement ($150)</a>
             </div>
         </div>
 

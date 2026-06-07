@@ -83,6 +83,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             await db.Database.MigrateAsync();
             await DbSeeder.SeedAsync(db);
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
+            await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);
             Console.WriteLine("Database initialized successfully.");
             return;
         }

@@ -10,6 +10,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Cita> Citas => Set<Cita>();
     public DbSet<LeaseContract> LeaseContracts => Set<LeaseContract>();
     public DbSet<ContractSubmission> ContractSubmissions => Set<ContractSubmission>();
+    public DbSet<StampSealContract> StampSealContracts => Set<StampSealContract>();
+    public DbSet<StampSealSubmission> StampSealSubmissions => Set<StampSealSubmission>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,6 +51,28 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasForeignKey<LeaseContract>(c => c.PropiedadId)
                 .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(c => c.PropiedadId).IsUnique();
+        });
+
+        modelBuilder.Entity<StampSealContract>(entity =>
+        {
+            entity.Property(c => c.Id).UseIdentityByDefaultColumn();
+            entity.HasOne(c => c.Propiedad)
+                .WithOne(p => p.StampSealContract)
+                .HasForeignKey<StampSealContract>(c => c.PropiedadId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(c => c.PropiedadId).IsUnique();
+        });
+
+        modelBuilder.Entity<StampSealSubmission>(entity =>
+        {
+            entity.Property(c => c.Id).UseIdentityByDefaultColumn();
+            entity.HasOne(s => s.Propiedad)
+                .WithMany()
+                .HasForeignKey(s => s.PropiedadId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(c => c.SubmittedAt);
+            entity.HasIndex(c => c.SubmissionType);
+            entity.HasIndex(c => c.PropiedadId);
         });
 
         modelBuilder.Entity<ContractSubmission>(entity =>

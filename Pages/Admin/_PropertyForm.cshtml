@@ -95,4 +95,25 @@
         <label asp-for="ContractBodyHtml" class="form-label"></label>
         <textarea asp-for="ContractBodyHtml" class="form-control font-monospace" rows="12"></textarea>
     </div>
+    <div class="col-12">
+        <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Stamps &amp; seals agreement (per property)</h2>
+        <p class="form-text">Fixed fees: stamps <strong>$75</strong> + seals <strong>$75</strong> = <strong>$150</strong>. Placeholders: <code>{{StampsAmount}}</code>, <code>{{SealsAmount}}</code>, <code>{{TotalAmount}}</code>, <code>{{PropertyTitle}}</code>, <code>{{ZelleContact}}</code>.</p>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="StampSealTitle" class="form-label"></label>
+        <input asp-for="StampSealTitle" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="StampSealSubtitle" class="form-label"></label>
+        <input asp-for="StampSealSubtitle" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label asp-for="StampSealNoticeHtml" class="form-label"></label>
+        <textarea asp-for="StampSealNoticeHtml" class="form-control font-monospace" rows="3"></textarea>
+    </div>
+    <div class="col-12">
+        <label asp-for="StampSealBodyHtml" class="form-label"></label>
+        <textarea asp-for="StampSealBodyHtml" class="form-control font-monospace" rows="10"></textarea>
+    </div>
 </div>

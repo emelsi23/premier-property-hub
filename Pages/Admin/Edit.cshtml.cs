@@ -12,12 +12,14 @@ public class EditModel(AppDbContext context) : PageModel
 
     public string LinkPreview { get; private set; } = string.Empty;
     public string ContractLinkPreview { get; private set; } = string.Empty;
+    public string StampsLinkPreview { get; private set; } = string.Empty;
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
         var propiedad = await context.Propiedades
             .Include(p => p.Fotos)
             .Include(p => p.LeaseContract)
+            .Include(p => p.StampSealContract)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (propiedad is null)
@@ -28,6 +30,7 @@ public class EditModel(AppDbContext context) : PageModel
         Input = PropertyInput.FromEntity(propiedad);
         LinkPreview = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}";
         ContractLinkPreview = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}/contract";
+        StampsLinkPreview = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}/stamps";
         return Page();
     }
 
@@ -47,6 +50,7 @@ public class EditModel(AppDbContext context) : PageModel
         var propiedad = await context.Propiedades
             .Include(p => p.Fotos)
             .Include(p => p.LeaseContract)
+            .Include(p => p.StampSealContract)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (propiedad is null)
@@ -61,6 +65,13 @@ public class EditModel(AppDbContext context) : PageModel
         {
             propiedad.LeaseContract = contract;
             context.LeaseContracts.Add(contract);
+        }
+
+        var stampSeal = PropiedadHelper.ApplyStampSealInput(propiedad, Input);
+        if (propiedad.StampSealContract is null)
+        {
+            propiedad.StampSealContract = stampSeal;
+            context.StampSealContracts.Add(stampSeal);
         }
 
         await PropiedadHelper.ApplyFotosAsync(context, propiedad, Input.ParseFotoUrls());

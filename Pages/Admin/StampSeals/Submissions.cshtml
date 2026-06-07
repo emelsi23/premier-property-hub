@@ -1,0 +1,75 @@
+@page
+@using ApartamentosRenta.Models
+@model ApartamentosRenta.Pages.Admin.StampSeals.SubmissionsModel
+@{
+    ViewData["Title"] = "Stamps & seals submissions";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Stamps &amp; seals submissions</h1>
+        <p class="text-muted mb-0">Signatures for stamp and seal purchase agreements.</p>
+    </div>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
+</div>
+
+@if (!Model.Submissions.Any())
+{
+    <div class="alert alert-info">No submissions yet.</div>
+}
+else
+{
+    <div class="table-responsive card shadow-sm border-0">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Property</th>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Signature</th>
+                    <th>Notes</th>
+                    <th>Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Submissions)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.Propiedad.Titulo</strong><br />
+                            <a href="/property/@item.Propiedad.Slug/stamps" target="_blank" class="small">View agreement</a>
+                        </td>
+                        <td>
+                            <strong>@item.ClientName</strong><br />
+                            <a href="mailto:@item.ClientEmail" class="small">@item.ClientEmail</a>
+                        </td>
+                        <td>
+                            @if (item.SubmissionType == ContractSubmissionType.Signature)
+                            {
+                                <span class="badge bg-success">Signature</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark">Change request</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.SignatureImageData is { Length: > 0 })
+                            {
+                                <a asp-page-handler="Signature" asp-route-id="@item.Id" target="_blank">
+                                    <img src="@Url.Page(null, "Signature", new { id = item.Id })" alt="Signature" class="payment-proof-thumb" />
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                        <td class="small" style="max-width: 240px; white-space: pre-wrap;">@(item.ProposedChanges ?? "—")</td>
+                        <td class="small text-muted">@item.SubmittedAt.ToString("MM/dd/yyyy HH:mm") UTC</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

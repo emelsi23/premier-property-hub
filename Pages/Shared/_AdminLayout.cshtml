@@ -3,6 +3,7 @@
     var isProperties = currentPage == "/Admin/Index" || currentPage.StartsWith("/Admin/Create", StringComparison.Ordinal) || currentPage.StartsWith("/Admin/Edit", StringComparison.Ordinal);
     var isAppointments = currentPage.StartsWith("/Admin/Appointments", StringComparison.OrdinalIgnoreCase);
     var isContract = currentPage.StartsWith("/Admin/Contract", StringComparison.OrdinalIgnoreCase);
+    var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +22,8 @@
             <div class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
                 <a class="nav-link @(isProperties ? "active fw-semibold" : "")" asp-page="/Admin/Index">Properties</a>
                 <a class="nav-link @(isAppointments ? "active fw-semibold" : "")" asp-page="/Admin/Appointments/Index">Appointments</a>
-                <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Signatures</a>
+                <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Lease signs</a>
+                <a class="nav-link @(isStampSeals ? "active fw-semibold" : "")" asp-page="/Admin/StampSeals/Submissions">Stamp signs</a>
                 <form method="post" asp-page="/Admin/Logout" class="d-inline ms-lg-2">
                     <button type="submit" class="btn btn-sm btn-outline-secondary">Sign out</button>
                 </form>
