@@ -7,28 +7,43 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApartamentosRenta.Pages.Contract;
+namespace ApartamentosRenta.Pages.Property;
 
-public class IndexModel(AppDbContext context) : PageModel
+public class ContractModel(AppDbContext context) : PageModel
 {
     private static readonly Regex DataUrlPattern = new(
         @"^data:(image/(?:png|jpeg|webp));base64,(.+)$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    public LeaseContract Contract { get; private set; } = null!;
+    public Propiedad Propiedad { get; private set; } = null!;
+    public string RenderedTitle { get; private set; } = string.Empty;
+    public string RenderedSubtitle { get; private set; } = string.Empty;
+    public string RenderedNoticeHtml { get; private set; } = string.Empty;
+    public string RenderedBodyHtml { get; private set; } = string.Empty;
 
-    public async Task<IActionResult> OnGetAsync()
+    public async Task<IActionResult> OnGetAsync(string slug)
     {
-        Contract = await LoadContractAsync();
-        ViewData["Title"] = Contract.Title;
+        var propiedad = await LoadPropiedadAsync(slug);
+        if (propiedad is null)
+        {
+            return NotFound();
+        }
+
+        ApplyRenderedContract(propiedad);
         return Page();
     }
 
-    public async Task<IActionResult> OnPostSubmitAsync([FromBody] ContractSubmitRequest request)
+    public async Task<IActionResult> OnPostSubmitAsync(string slug, [FromBody] ContractSubmitRequest request)
     {
         if (Request.Headers.XRequestedWith != "XMLHttpRequest")
         {
             return BadRequest();
+        }
+
+        var propiedad = await LoadPropiedadAsync(slug);
+        if (propiedad is null)
+        {
+            return NotFound(new { success = false, message = "Property not found." });
         }
 
         if (string.IsNullOrWhiteSpace(request.TenantName))
@@ -88,6 +103,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
         var submission = new ContractSubmission
         {
+            PropiedadId = propiedad.Id,
             TenantName = request.TenantName.Trim(),
             TenantEmail = request.TenantEmail.Trim(),
             TenantPhone = string.IsNullOrWhiteSpace(request.TenantPhone) ? null : request.TenantPhone.Trim(),
@@ -113,11 +129,22 @@ public class IndexModel(AppDbContext context) : PageModel
         });
     }
 
-    private async Task<LeaseContract> LoadContractAsync()
+    private void ApplyRenderedContract(Propiedad propiedad)
     {
-        var contract = await context.LeaseContracts.AsNoTracking().FirstOrDefaultAsync(c => c.Id == 1);
-        return contract ?? LeaseContractDefaults.Create();
+        Propiedad = propiedad;
+        var contract = propiedad.LeaseContract ?? LeaseContractDefaults.CreateForProperty(propiedad.Id);
+
+        RenderedTitle = ContractTemplateRenderer.Render(contract.Title, propiedad);
+        RenderedSubtitle = ContractTemplateRenderer.Render(contract.Subtitle, propiedad);
+        RenderedNoticeHtml = ContractTemplateRenderer.Render(contract.NoticeHtml, propiedad);
+        RenderedBodyHtml = ContractTemplateRenderer.Render(contract.BodyHtml, propiedad);
+        ViewData["Title"] = RenderedTitle;
     }
+
+    private Task<Propiedad?> LoadPropiedadAsync(string slug) =>
+        context.Propiedades
+            .Include(p => p.LeaseContract)
+            .FirstOrDefaultAsync(p => p.Slug == slug && p.Disponible);
 }
 
 public class ContractSubmitRequest

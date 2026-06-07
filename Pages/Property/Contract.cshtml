@@ -1,28 +1,38 @@
-@page "/contract"
-@model ApartamentosRenta.Pages.Contract.IndexModel
+@page "/property/{slug}/contract"
+@model ApartamentosRenta.Pages.Property.ContractModel
 @{
-    ViewData["Title"] = Model.Contract.Title;
-    var contract = Model.Contract;
+    var propiedad = Model.Propiedad;
 }
 
 <article class="contract-page">
     <header class="contract-header">
         <p class="contract-brand">Premier Property Hub</p>
-        <h1>@contract.Title</h1>
-        <p class="contract-subtitle">@contract.Subtitle</p>
-        <p class="contract-effective">Effective upon execution by Landlord and Tenant</p>
+        <h1>@Model.RenderedTitle</h1>
+        <p class="contract-subtitle">@Model.RenderedSubtitle</p>
+        <p class="contract-effective">@propiedad.Titulo · $@propiedad.PrecioMensual.ToString("N0")/mo</p>
     </header>
 
     <div class="contract-notice">
-        @Html.Raw(contract.NoticeHtml)
+        @Html.Raw(Model.RenderedNoticeHtml)
+    </div>
+
+    <div class="contract-amounts card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <h2 class="h6 text-muted mb-3">Amount summary (from monthly rent)</h2>
+            <div class="row g-2 small">
+                <div class="col-6 col-md-4"><span class="text-muted">Monthly rent</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Security deposit</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Visit deposit</span><br /><strong>$@((propiedad.DepositAmount > 0 ? propiedad.DepositAmount : propiedad.PrecioMensual).ToString("N0"))</strong></div>
+            </div>
+        </div>
     </div>
 
     <div class="contract-body">
-        @Html.Raw(contract.BodyHtml)
+        @Html.Raw(Model.RenderedBodyHtml)
     </div>
 
     <section class="contract-section contract-sign-panel" id="signPanel">
-        <h2>18. Tenant signature</h2>
+        <h2>Tenant signature</h2>
         <p class="mb-3">Review the agreement above, then sign or submit proposed changes.</p>
 
         <form id="contractSignForm" novalidate>
@@ -83,7 +93,7 @@
     </section>
 
     <footer class="contract-footer">
-        <p>Premier Property Hub · <a href="/contract">/contract</a></p>
+        <p><a href="/property/@propiedad.Slug">← Back to property</a></p>
         <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Print contract</button>
     </footer>
 </article>

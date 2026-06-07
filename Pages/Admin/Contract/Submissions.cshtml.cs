@@ -13,6 +13,7 @@ public class SubmissionsModel(AppDbContext context) : PageModel
     public async Task OnGetAsync()
     {
         Submissions = await context.ContractSubmissions
+            .Include(s => s.Propiedad)
             .OrderByDescending(s => s.SubmittedAt)
             .ToListAsync();
     }

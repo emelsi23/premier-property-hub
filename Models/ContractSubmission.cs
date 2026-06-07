@@ -12,6 +12,10 @@ public class ContractSubmission
 {
     public int Id { get; set; }
 
+    public int PropiedadId { get; set; }
+
+    public Propiedad Propiedad { get; set; } = null!;
+
     [Required, StringLength(120)]
     public string TenantName { get; set; } = string.Empty;
 

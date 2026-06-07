@@ -9,8 +9,10 @@
 @if (!string.IsNullOrEmpty(Model.LinkPreview))
 {
     <div class="alert alert-light border mb-4">
-        <strong>Current link:</strong>
-        <a href="@Model.LinkPreview" target="_blank" class="font-monospace small">@Model.LinkPreview</a>
+        <strong>Property page:</strong>
+        <a href="@Model.LinkPreview" target="_blank" class="font-monospace small">@Model.LinkPreview</a><br />
+        <strong class="mt-2 d-inline-block">Contract link:</strong>
+        <a href="@Model.ContractLinkPreview" target="_blank" class="font-monospace small">@Model.ContractLinkPreview</a>
     </div>
 }
 

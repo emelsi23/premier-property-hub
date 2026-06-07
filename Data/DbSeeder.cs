@@ -8,9 +8,11 @@ public static class DbSeeder
 {
     public static async Task SeedAsync(AppDbContext context)
     {
-        await SeedContractAsync(context);
-
         if (await context.Propiedades.AnyAsync())
+        {
+            await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(context);
+            return;
+        }
         {
             return;
         }
@@ -45,30 +47,14 @@ public static class DbSeeder
 
             context.Propiedades.Add(propiedad);
             await context.SaveChangesAsync();
+
+            context.LeaseContracts.Add(LeaseContractDefaults.CreateForProperty(propiedad.Id));
+            await context.SaveChangesAsync();
             Console.WriteLine("Sample property seeded.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Seed skipped: {ex.Message} | {ex.InnerException?.Message}");
-        }
-    }
-
-    public static async Task SeedContractAsync(AppDbContext context)
-    {
-        if (await context.LeaseContracts.AnyAsync())
-        {
-            return;
-        }
-
-        try
-        {
-            context.LeaseContracts.Add(LeaseContractDefaults.Create());
-            await context.SaveChangesAsync();
-            Console.WriteLine("Default lease contract seeded.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Contract seed skipped: {ex.Message} | {ex.InnerException?.Message}");
         }
     }
 }

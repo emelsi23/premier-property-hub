@@ -821,6 +821,15 @@ body {
   padding: 1.5rem 1.25rem 3rem;
 }
 
+.contract-amounts {
+  border-radius: 1rem;
+}
+
+.contract-link-box {
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
 .contract-header {
   background: #fff;
   border-radius: 1rem;

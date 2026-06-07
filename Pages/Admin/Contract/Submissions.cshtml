@@ -7,12 +7,9 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
         <h1 class="h3 mb-1">Contract submissions</h1>
-        <p class="text-muted mb-0">Signatures and change requests from clients.</p>
+        <p class="text-muted mb-0">Signatures and change requests per property. Edit contract text in each property’s Edit page.</p>
     </div>
-    <div class="d-flex gap-2">
-        <a asp-page="Edit" class="btn btn-outline-primary">Edit contract</a>
-        <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
-    </div>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
 </div>
 
 @if (!Model.Submissions.Any())
@@ -25,6 +22,7 @@ else
         <table class="table table-hover mb-0 align-middle">
             <thead class="table-light">
                 <tr>
+                    <th>Property</th>
                     <th>Client</th>
                     <th>Type</th>
                     <th>Signature</th>
@@ -36,6 +34,10 @@ else
                 @foreach (var item in Model.Submissions)
                 {
                     <tr>
+                        <td>
+                            <strong>@item.Propiedad.Titulo</strong><br />
+                            <a href="/property/@item.Propiedad.Slug/contract" target="_blank" class="small">View contract</a>
+                        </td>
                         <td>
                             <strong>@item.TenantName</strong><br />
                             <a href="mailto:@item.TenantEmail" class="small">@item.TenantEmail</a>

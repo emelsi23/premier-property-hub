@@ -4,7 +4,11 @@ namespace ApartamentosRenta.Models;
 
 public class LeaseContract
 {
-    public int Id { get; set; } = 1;
+    public int Id { get; set; }
+
+    public int PropiedadId { get; set; }
+
+    public Propiedad Propiedad { get; set; } = null!;
 
     [Required, StringLength(200)]
     public string Title { get; set; } = "Residential Lease Agreement";

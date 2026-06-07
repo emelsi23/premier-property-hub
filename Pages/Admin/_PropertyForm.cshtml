@@ -73,4 +73,25 @@
         <input asp-for="ZelleContact" class="form-control" placeholder="payments@email.com" />
         <div class="form-text">Zelle email or mobile number.</div>
     </div>
+    <div class="col-12">
+        <hr class="my-1" />
+        <h2 class="h6 text-muted mb-3">Lease contract (per property)</h2>
+        <p class="form-text">Use placeholders like <code>{{MonthlyRent}}</code>, <code>{{SecurityDeposit}}</code>, <code>{{PropertyTitle}}</code>, <code>{{Address}}</code>, <code>{{VisitDeposit}}</code>. Amounts are calculated from monthly rent when clients view the contract.</p>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ContractTitle" class="form-label"></label>
+        <input asp-for="ContractTitle" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ContractSubtitle" class="form-label"></label>
+        <input asp-for="ContractSubtitle" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label asp-for="ContractNoticeHtml" class="form-label"></label>
+        <textarea asp-for="ContractNoticeHtml" class="form-control font-monospace" rows="3"></textarea>
+    </div>
+    <div class="col-12">
+        <label asp-for="ContractBodyHtml" class="form-label"></label>
+        <textarea asp-for="ContractBodyHtml" class="form-control font-monospace" rows="12"></textarea>
+    </div>
 </div>

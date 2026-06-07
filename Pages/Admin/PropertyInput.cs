@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services;
 
 namespace ApartamentosRenta.Pages.Admin;
 
@@ -48,6 +49,18 @@ public class PropertyInput
     [Range(0, 999999), Display(Name = "Visit deposit amount")]
     public decimal DepositAmount { get; set; }
 
+    [StringLength(200), Display(Name = "Contract title")]
+    public string ContractTitle { get; set; } = "Residential Lease Agreement";
+
+    [StringLength(200), Display(Name = "Contract subtitle")]
+    public string ContractSubtitle { get; set; } = "Apartment rental · United States";
+
+    [Display(Name = "Contract notice (HTML)")]
+    public string ContractNoticeHtml { get; set; } = LeaseContractDefaults.NoticeHtml;
+
+    [Display(Name = "Contract body (HTML)")]
+    public string ContractBodyHtml { get; set; } = LeaseContractDefaults.BodyHtml;
+
     public IEnumerable<string> ParseFotoUrls() =>
         FotosUrls
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -68,6 +81,10 @@ public class PropertyInput
         ZelleDisplayName = entity.ZelleDisplayName,
         ZelleContact = entity.ZelleContact,
         DepositAmount = entity.DepositAmount,
-        FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url))
+        FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url)),
+        ContractTitle = entity.LeaseContract?.Title ?? "Residential Lease Agreement",
+        ContractSubtitle = entity.LeaseContract?.Subtitle ?? "Apartment rental · United States",
+        ContractNoticeHtml = entity.LeaseContract?.NoticeHtml ?? LeaseContractDefaults.NoticeHtml,
+        ContractBodyHtml = entity.LeaseContract?.BodyHtml ?? LeaseContractDefaults.BodyHtml
     };
 }

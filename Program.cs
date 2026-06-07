@@ -20,29 +20,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 6 * 1024 * 1024;
 });
 
-builder.Services.Configure<AdminAuthSettings>(builder.Configuration.GetSection(AdminAuthSettings.SectionName));
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Admin/Login";
-        options.LogoutPath = "/Admin/Logout";
-        options.AccessDeniedPath = "/Admin/Login";
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
-        options.SlidingExpiration = true;
-        options.Cookie.Name = "PremierPropertyHub.Admin";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
-            ? CookieSecurePolicy.SameAsRequest
-            : CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-    });
-builder.Services.AddAuthorization();
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizeFolder("/Admin");
-    options.Conventions.AllowAnonymousToPage("/Admin/Login");
-    options.Conventions.AllowAnonymousToPage("/Admin/Logout");
-});
+builder.Services.AddRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
 builder.Services.AddAntiforgery(options =>
 {
@@ -81,6 +59,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => Results.Redirect("/Admin/Login"));
+app.MapGet("/contract", () => Results.Redirect("/Admin/Index"));
 app.MapGet("/casa/{slug}", (string slug) => Results.Redirect($"/property/{slug}", permanent: true));
 app.MapGet("/casa/{slug}/gracias", (string slug) => Results.Redirect($"/property/{slug}/thank-you", permanent: true));
 app.MapGet("/Admin/Citas/{**path}", () => Results.Redirect("/Admin/Appointments", permanent: true));
@@ -103,6 +82,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();
             await DbSeeder.SeedAsync(db);
+            await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
             Console.WriteLine("Database initialized successfully.");
             return;
         }

@@ -11,11 +11,13 @@ public class EditModel(AppDbContext context) : PageModel
     public PropertyInput Input { get; set; } = new();
 
     public string LinkPreview { get; private set; } = string.Empty;
+    public string ContractLinkPreview { get; private set; } = string.Empty;
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
         var propiedad = await context.Propiedades
             .Include(p => p.Fotos)
+            .Include(p => p.LeaseContract)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (propiedad is null)
@@ -25,6 +27,7 @@ public class EditModel(AppDbContext context) : PageModel
 
         Input = PropertyInput.FromEntity(propiedad);
         LinkPreview = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}";
+        ContractLinkPreview = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}/contract";
         return Page();
     }
 
@@ -43,6 +46,7 @@ public class EditModel(AppDbContext context) : PageModel
 
         var propiedad = await context.Propiedades
             .Include(p => p.Fotos)
+            .Include(p => p.LeaseContract)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (propiedad is null)
@@ -52,6 +56,12 @@ public class EditModel(AppDbContext context) : PageModel
 
         propiedad.Slug = await PropiedadHelper.BuildSlugAsync(context, Input.Direccion, Input.Ciudad, id);
         PropiedadHelper.ApplyInput(propiedad, Input);
+        var contract = PropiedadHelper.ApplyContractInput(propiedad, Input);
+        if (propiedad.LeaseContract is null)
+        {
+            propiedad.LeaseContract = contract;
+            context.LeaseContracts.Add(contract);
+        }
 
         await PropiedadHelper.ApplyFotosAsync(context, propiedad, Input.ParseFotoUrls());
         await context.SaveChangesAsync();

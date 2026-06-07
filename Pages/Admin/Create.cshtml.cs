@@ -39,6 +39,10 @@ public class CreateModel(AppDbContext context) : PageModel
         context.Propiedades.Add(propiedad);
         await context.SaveChangesAsync();
 
+        var contract = PropiedadHelper.ApplyContractInput(propiedad, Input);
+        context.LeaseContracts.Add(contract);
+        await context.SaveChangesAsync();
+
         return RedirectToPage("Index");
     }
 }

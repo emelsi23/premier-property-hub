@@ -43,13 +43,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<LeaseContract>(entity =>
         {
-            entity.HasKey(c => c.Id);
+            entity.HasOne(c => c.Propiedad)
+                .WithOne(p => p.LeaseContract)
+                .HasForeignKey<LeaseContract>(c => c.PropiedadId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(c => c.PropiedadId).IsUnique();
         });
 
         modelBuilder.Entity<ContractSubmission>(entity =>
         {
+            entity.HasOne(s => s.Propiedad)
+                .WithMany()
+                .HasForeignKey(s => s.PropiedadId)
+                .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(c => c.SubmittedAt);
             entity.HasIndex(c => c.SubmissionType);
+            entity.HasIndex(c => c.PropiedadId);
         });
     }
 }

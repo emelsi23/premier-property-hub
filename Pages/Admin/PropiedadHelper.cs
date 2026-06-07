@@ -26,6 +26,21 @@ public static class PropiedadHelper
         propiedad.DepositAmount = input.DepositAmount;
     }
 
+    public static LeaseContract ApplyContractInput(Propiedad propiedad, PropertyInput input)
+    {
+        var contract = propiedad.LeaseContract ?? new LeaseContract { PropiedadId = propiedad.Id };
+        contract.Title = input.ContractTitle.Trim();
+        contract.Subtitle = input.ContractSubtitle.Trim();
+        contract.NoticeHtml = input.ContractNoticeHtml.Trim();
+        contract.BodyHtml = input.ContractBodyHtml.Trim();
+        contract.UpdatedAt = DateTime.UtcNow;
+        contract.PropiedadId = propiedad.Id;
+        return contract;
+    }
+
+    public static async Task EnsureContractsForAllPropertiesAsync(AppDbContext context) =>
+        await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(context);
+
     public static async Task ApplyFotosAsync(AppDbContext context, Propiedad propiedad, IEnumerable<string> urls)
     {
         var urlList = urls.ToList();

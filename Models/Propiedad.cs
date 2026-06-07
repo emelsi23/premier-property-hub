@@ -52,4 +52,6 @@ public class Propiedad
     public ICollection<FotoPropiedad> Fotos { get; set; } = [];
 
     public ICollection<Cita> Citas { get; set; } = [];
+
+    public LeaseContract? LeaseContract { get; set; }
 }
