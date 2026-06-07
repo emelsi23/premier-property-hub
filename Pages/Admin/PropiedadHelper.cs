@@ -24,10 +24,6 @@ public static class PropiedadHelper
         propiedad.ZelleDisplayName = input.ZelleDisplayName.Trim();
         propiedad.ZelleContact = input.ZelleContact.Trim();
         propiedad.DepositAmount = VisitDepositSettings.Amount;
-        propiedad.MostrarAplicacionPublica = input.MostrarAplicacionPublica;
-        propiedad.MostrarContratoPublico = input.MostrarContratoPublico;
-        propiedad.MostrarStampillasPublico = input.MostrarStampillasPublico;
-        propiedad.IdiomaPublico = input.IdiomaPublico;
     }
 
     public static LeaseContract ApplyContractInput(Propiedad propiedad, PropertyInput input)
@@ -37,10 +33,6 @@ public static class PropiedadHelper
         contract.Subtitle = input.ContractSubtitle.Trim();
         contract.NoticeHtml = input.ContractNoticeHtml.Trim();
         contract.BodyHtml = input.ContractBodyHtml.Trim();
-        contract.TitleEs = NullIfWhiteSpace(input.ContractTitleEs);
-        contract.SubtitleEs = NullIfWhiteSpace(input.ContractSubtitleEs);
-        contract.NoticeHtmlEs = NullIfWhiteSpace(input.ContractNoticeHtmlEs);
-        contract.BodyHtmlEs = NullIfWhiteSpace(input.ContractBodyHtmlEs);
         contract.UpdatedAt = DateTime.UtcNow;
         contract.PropiedadId = propiedad.Id;
         return contract;
@@ -53,10 +45,6 @@ public static class PropiedadHelper
         contract.Subtitle = input.StampSealSubtitle.Trim();
         contract.NoticeHtml = input.StampSealNoticeHtml.Trim();
         contract.BodyHtml = input.StampSealBodyHtml.Trim();
-        contract.TitleEs = NullIfWhiteSpace(input.StampSealTitleEs);
-        contract.SubtitleEs = NullIfWhiteSpace(input.StampSealSubtitleEs);
-        contract.NoticeHtmlEs = NullIfWhiteSpace(input.StampSealNoticeHtmlEs);
-        contract.BodyHtmlEs = NullIfWhiteSpace(input.StampSealBodyHtmlEs);
         contract.UpdatedAt = DateTime.UtcNow;
         contract.PropiedadId = propiedad.Id;
         return contract;
@@ -94,7 +82,4 @@ public static class PropiedadHelper
         var baseSlug = SlugHelper.FromPropiedad(direccion, ciudad);
         return await SlugHelper.EnsureUniqueAsync(context, baseSlug, excludeId);
     }
-
-    private static string? NullIfWhiteSpace(string? value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

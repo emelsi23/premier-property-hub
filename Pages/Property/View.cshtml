@@ -9,10 +9,7 @@
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     var minVisitDate = DateTime.Today.ToString("yyyy-MM-dd");
     var maxBirth = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
-    var s = Model.Strings;
-    var langQ = PropertyPageLanguageHelper.LangQuery(Model.ActiveLanguage);
-    var slug = Model.Propiedad.Slug;
-    var languageBasePath = $"/property/{slug}";
+    var depositAmount = VisitDepositSettings.Amount;
 }
 
 <div class="listing-page">
@@ -27,7 +24,6 @@
     </header>
 
     <div class="listing-content">
-    <partial name="_LanguageSwitcher" model="(Model.Propiedad, Model.ActiveLanguage, Model.ShowLanguageSwitcher, Model.Strings, languageBasePath)" />
     @if (fotos.Count > 0)
     {
         <div class="gallery-shell">
@@ -86,34 +82,14 @@
 
         </div>
 
-        @if (Model.Propiedad.MostrarContratoPublico || Model.Propiedad.MostrarStampillasPublico)
-        {
-            <div class="listing-card property-services-card">
-                <h2 class="section-title">@s.ServicesTitle</h2>
-                <p class="text-muted small mb-3">@s.ServicesSubtitle</p>
-                <div class="property-services-links">
-                    @if (Model.Propiedad.MostrarContratoPublico)
-                    {
-                        <a href="/property/@slug/contract?lang=@langQ" class="btn btn-outline-primary">@s.LeaseLink</a>
-                    }
-                    @if (Model.Propiedad.MostrarStampillasPublico)
-                    {
-                        <a href="/property/@slug/stamps?lang=@langQ" class="btn btn-outline-primary">@s.StampsLink</a>
-                    }
-                </div>
-            </div>
-        }
-
-        @if (Model.Propiedad.MostrarAplicacionPublica)
-        {
         <div class="listing-card listing-form-card" id="schedule">
             <div class="form-card-header">
-                <h2 class="form-card-title">@s.FormTitle</h2>
-                <p class="form-card-subtitle">@s.FormSubtitle</p>
+                <h2 class="form-card-title">Rental application</h2>
+                <p class="form-card-subtitle">Book your certified visit to tour this property. Secure, professional process with a fully refundable deposit.</p>
                 <div class="form-highlights">
-                    <span>@s.HighlightRefundable</span>
-                    <span>@s.HighlightVisit</span>
-                    <span>@s.HighlightAgent</span>
+                    <span>Refundable deposit</span>
+                    <span>30-minute visit</span>
+                    <span>Licensed agent</span>
                 </div>
             </div>
 
@@ -123,55 +99,55 @@
                 @Html.AntiForgeryToken()
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionPersonal</legend>
+                    <legend class="form-section-title">Personal information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.NombreCliente" class="form-label">@s.FirstName</label>
+                            <label asp-for="Appointment.NombreCliente" class="form-label"></label>
                             <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="John" autocomplete="given-name" />
                             <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.ApellidoCliente" class="form-label">@s.LastName</label>
+                            <label asp-for="Appointment.ApellidoCliente" class="form-label"></label>
                             <input asp-for="Appointment.ApellidoCliente" class="form-control" placeholder="Smith" autocomplete="family-name" />
                             <span asp-validation-for="Appointment.ApellidoCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.Telefono" class="form-label">@s.Phone</label>
+                            <label asp-for="Appointment.Telefono" class="form-label"></label>
                             <input asp-for="Appointment.Telefono" id="phoneInput" class="form-control" type="tel"
                                    placeholder="(809) 690-9988" autocomplete="tel" maxlength="14" inputmode="numeric" />
                             <span asp-validation-for="Appointment.Telefono" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.Email" class="form-label">@s.Email</label>
+                            <label asp-for="Appointment.Email" class="form-label"></label>
                             <input asp-for="Appointment.Email" class="form-control" type="email"
                                    placeholder="john.smith@email.com" autocomplete="email" />
                             <span asp-validation-for="Appointment.Email" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaNacimiento" class="form-label">@s.DateOfBirth</label>
+                            <label asp-for="Appointment.FechaNacimiento" class="form-label"></label>
                             <input asp-for="Appointment.FechaNacimiento" class="form-control" type="date" max="@maxBirth" />
                             <span asp-validation-for="Appointment.FechaNacimiento" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.SsnItin" class="form-label">@s.SsnItin</label>
+                            <label asp-for="Appointment.SsnItin" class="form-label"></label>
                             <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
                                    placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
-                            <span class="form-hint">@s.SsnHint</span>
+                            <span class="form-hint">Required for identity verification.</span>
                             <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionVisit</legend>
+                    <legend class="form-section-title">Visit details</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaCita" class="form-label">@s.VisitDate</label>
+                            <label asp-for="Appointment.FechaCita" class="form-label"></label>
                             <input asp-for="Appointment.FechaCita" class="form-control" type="date" min="@minVisitDate" />
                             <span asp-validation-for="Appointment.FechaCita" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.HoraCita" class="form-label">@s.VisitTime</label>
+                            <label asp-for="Appointment.HoraCita" class="form-label"></label>
                             <input asp-for="Appointment.HoraCita" class="form-control" type="time" />
                             <span asp-validation-for="Appointment.HoraCita" class="field-error"></span>
                         </div>
@@ -179,45 +155,45 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionArea</legend>
+                    <legend class="form-section-title">Property area</legend>
                     <div class="form-field">
-                        <label asp-for="Appointment.CodigoPostal" class="form-label">@s.ZipCode</label>
+                        <label asp-for="Appointment.CodigoPostal" class="form-label"></label>
                         <input asp-for="Appointment.CodigoPostal" class="form-control" placeholder="33101" maxlength="10" inputmode="numeric" />
                         <span asp-validation-for="Appointment.CodigoPostal" class="field-error"></span>
                     </div>
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionTenant</legend>
+                    <legend class="form-section-title">Tenant information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">@s.UsCitizen</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.EsCiudadanoAmericano"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.EsCiudadanoAmericano" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.PersonasEnUnidad" class="form-label">@s.Occupants</label>
+                            <label asp-for="Appointment.PersonasEnUnidad" class="form-label"></label>
                             <input asp-for="Appointment.PersonasEnUnidad" class="form-control" type="number" min="1" max="20" />
                             <span asp-validation-for="Appointment.PersonasEnUnidad" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.DuracionContratoDeseada" class="form-label">@s.LeaseLength</label>
+                            <label asp-for="Appointment.DuracionContratoDeseada" class="form-label"></label>
                             <input asp-for="Appointment.DuracionContratoDeseada" class="form-control" placeholder="12 months" />
                             <span asp-validation-for="Appointment.DuracionContratoDeseada" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaMudanzaTemprana" class="form-label">@s.MoveInDate</label>
+                            <label asp-for="Appointment.FechaMudanzaTemprana" class="form-label"></label>
                             <input asp-for="Appointment.FechaMudanzaTemprana" class="form-control" type="date" min="@minVisitDate" />
                             <span asp-validation-for="Appointment.FechaMudanzaTemprana" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">@s.Smokes</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.Fuma"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.Fuma" class="field-error"></span>
                         </div>
@@ -225,28 +201,28 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionEmployment</legend>
+                    <legend class="form-section-title">Employment &amp; income</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">@s.Employed</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.EmpleadoActualmente"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.EmpleadoActualmente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field d-none" id="employmentFields">
-                            <label asp-for="Appointment.NombreCompania" class="form-label">@s.Employer</label>
+                            <label asp-for="Appointment.NombreCompania" class="form-label"></label>
                             <input asp-for="Appointment.NombreCompania" class="form-control" placeholder="Company name" />
                             <span asp-validation-for="Appointment.NombreCompania" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field d-none" id="salaryField">
-                            <label asp-for="Appointment.Salario" class="form-label">@s.Income</label>
+                            <label asp-for="Appointment.Salario" class="form-label"></label>
                             <input asp-for="Appointment.Salario" class="form-control" type="number" min="0" step="0.01" placeholder="2500" />
                             <span asp-validation-for="Appointment.Salario" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field">
-                            <label asp-for="Appointment.DisponibleParaAsegurar" class="form-label">@s.AvailableFunds</label>
+                            <label asp-for="Appointment.DisponibleParaAsegurar" class="form-label"></label>
                             <input asp-for="Appointment.DisponibleParaAsegurar" class="form-control" type="number" min="0" step="0.01" placeholder="5000" />
                             <span asp-validation-for="Appointment.DisponibleParaAsegurar" class="field-error"></span>
                         </div>
@@ -254,21 +230,21 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionAdditional</legend>
+                    <legend class="form-section-title">Additional information</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">@s.Pets</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.TieneMascotas"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.TieneMascotas" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block">@s.AcceptReservationDeposit</span>
+                            <span class="form-label d-block"><label asp-for="Appointment.AceptaDepositoReserva"></label></span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.AceptaDepositoReserva" class="field-error"></span>
                         </div>
@@ -276,30 +252,33 @@
                 </fieldset>
 
                 <div class="form-program-box">
-                    <h3 class="h6 mb-2">@s.ProgramTitle</h3>
-                    <p class="small mb-2">@s.ProgramIntro</p>
+                    <h3 class="h6 mb-2">Certified visit program</h3>
+                    <p class="small mb-2">
+                        By joining our rental program and paying the certified visit application fee of
+                        <strong>$@depositAmount.ToString("N0") USD</strong>, you get exclusive access to tour and rent our available properties through an orderly, secure, and professional process.
+                    </p>
                     <ul class="small mb-2">
-                        <li>@s.ProgramBullet1</li>
-                        <li>@s.ProgramBullet2</li>
-                        <li>@s.ProgramBullet3</li>
+                        <li>If the property is not a fit, your fee is fully refunded.</li>
+                        <li>If you decide to rent, the $@depositAmount.ToString("N0") USD is fully applied toward your security deposit.</li>
+                        <li>Guaranteed refund when you arrive on time · Reschedule with at least 2 hours notice.</li>
                     </ul>
                 </div>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">@s.SectionPayment</legend>
+                    <legend class="form-section-title">Payment options</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">@s.WillPayVisit</span>
+                            <span class="form-label d-block">Will you pay the certified visit fee of $@depositAmount.ToString("N0") USD?</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> @s.Yes</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> @s.No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> Yes</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> No</label>
                             </div>
                             <span asp-validation-for="Appointment.PagaraCitaCertificada" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field d-none" id="paymentMethodField">
-                            <label asp-for="Appointment.MetodoPago" class="form-label">@s.PaymentMethod</label>
+                            <label asp-for="Appointment.MetodoPago" class="form-label"></label>
                             <select asp-for="Appointment.MetodoPago" class="form-select" asp-items="Html.GetEnumSelectList<MetodoPagoCita>()">
-                                <option value="">@s.SelectPaymentMethod</option>
+                                <option value="">Select a payment method</option>
                             </select>
                             <span asp-validation-for="Appointment.MetodoPago" class="field-error"></span>
                         </div>
@@ -308,16 +287,15 @@
 
                 <label class="terms-check mb-3">
                     <input asp-for="Appointment.AceptaTerminos" />
-                    <span>@s.TermsLabel</span>
+                    <span>I agree to the terms and policies</span>
                 </label>
                 <span asp-validation-for="Appointment.AceptaTerminos" class="field-error d-block mb-2"></span>
 
                 <button type="submit" class="btn btn-submit w-100" id="submitBtn">
-                    @s.SubmitButton
+                    Submit application
                 </button>
             </form>
         </div>
-        }
     </div>
 </div>
 

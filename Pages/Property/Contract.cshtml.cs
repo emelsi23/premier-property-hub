@@ -16,24 +16,20 @@ public class ContractModel(AppDbContext context) : PageModel
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public Propiedad Propiedad { get; private set; } = null!;
-    public PropertyApplicationStrings Strings { get; private set; } = null!;
-    public PropertyContractUiStrings Ui { get; private set; } = null!;
-    public PropertyContentLanguage ActiveLanguage { get; private set; }
-    public bool ShowLanguageSwitcher { get; private set; }
     public string RenderedTitle { get; private set; } = string.Empty;
     public string RenderedSubtitle { get; private set; } = string.Empty;
     public string RenderedNoticeHtml { get; private set; } = string.Empty;
     public string RenderedBodyHtml { get; private set; } = string.Empty;
 
-    public async Task<IActionResult> OnGetAsync(string slug, string? lang)
+    public async Task<IActionResult> OnGetAsync(string slug)
     {
         var propiedad = await LoadPropiedadAsync(slug);
-        if (propiedad is null || !propiedad.MostrarContratoPublico)
+        if (propiedad is null)
         {
             return NotFound();
         }
 
-        ApplyPageContext(propiedad, lang);
+        ApplyRenderedContract(propiedad);
         return Page();
     }
 
@@ -45,7 +41,7 @@ public class ContractModel(AppDbContext context) : PageModel
         }
 
         var propiedad = await LoadPropiedadAsync(slug);
-        if (propiedad is null || !propiedad.MostrarContratoPublico)
+        if (propiedad is null)
         {
             return NotFound(new { success = false, message = "Property not found." });
         }
@@ -133,21 +129,15 @@ public class ContractModel(AppDbContext context) : PageModel
         });
     }
 
-    private void ApplyPageContext(Propiedad propiedad, string? lang)
+    private void ApplyRenderedContract(Propiedad propiedad)
     {
         Propiedad = propiedad;
-        ActiveLanguage = PropertyPageLanguageHelper.Resolve(propiedad.IdiomaPublico, lang);
-        ShowLanguageSwitcher = PropertyPageLanguageHelper.ShowLanguageSwitcher(propiedad.IdiomaPublico);
-        Strings = PropertyApplicationStrings.Get(ActiveLanguage, VisitDepositSettings.Amount);
-        Ui = PropertyContractUiStrings.Get(ActiveLanguage);
-
         var contract = propiedad.LeaseContract ?? LeaseContractDefaults.CreateForProperty(propiedad.Id);
-        var content = PropertyContractContentHelper.GetLeaseContent(contract, ActiveLanguage);
 
-        RenderedTitle = ContractTemplateRenderer.Render(content.Title, propiedad);
-        RenderedSubtitle = ContractTemplateRenderer.Render(content.Subtitle, propiedad);
-        RenderedNoticeHtml = ContractTemplateRenderer.Render(content.NoticeHtml, propiedad);
-        RenderedBodyHtml = ContractTemplateRenderer.Render(content.BodyHtml, propiedad);
+        RenderedTitle = ContractTemplateRenderer.Render(contract.Title, propiedad);
+        RenderedSubtitle = ContractTemplateRenderer.Render(contract.Subtitle, propiedad);
+        RenderedNoticeHtml = ContractTemplateRenderer.Render(contract.NoticeHtml, propiedad);
+        RenderedBodyHtml = ContractTemplateRenderer.Render(contract.BodyHtml, propiedad);
         ViewData["Title"] = RenderedTitle;
     }
 

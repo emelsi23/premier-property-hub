@@ -1,15 +1,10 @@
 @page "/property/{slug}/contract"
-@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.ContractModel
 @{
     var propiedad = Model.Propiedad;
-    var ui = Model.Ui;
-    var langQ = PropertyPageLanguageHelper.LangQuery(Model.ActiveLanguage);
-    var languageBasePath = $"/property/{propiedad.Slug}/contract";
 }
 
 <article class="contract-page">
-    <partial name="_LanguageSwitcher" model="(Model.Propiedad, Model.ActiveLanguage, Model.ShowLanguageSwitcher, Model.Strings, languageBasePath)" />
     <header class="contract-header">
         <p class="contract-brand">Premier Property Hub</p>
         <h1>@Model.RenderedTitle</h1>
@@ -23,11 +18,11 @@
 
     <div class="contract-amounts card border-0 shadow-sm mb-3">
         <div class="card-body">
-            <h2 class="h6 text-muted mb-3">@ui.AmountSummary</h2>
+            <h2 class="h6 text-muted mb-3">Amount summary (from monthly rent)</h2>
             <div class="row g-2 small">
-                <div class="col-6 col-md-4"><span class="text-muted">@ui.MonthlyRent</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">@ui.SecurityDeposit</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">@ui.VisitDeposit</span><br /><strong>$@VisitDepositSettings.Amount.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Monthly rent</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Security deposit</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Visit deposit</span><br /><strong>$@ApartamentosRenta.Services.VisitDepositSettings.Amount.ToString("N0")</strong></div>
             </div>
         </div>
     </div>
@@ -37,22 +32,22 @@
     </div>
 
     <section class="contract-section contract-sign-panel" id="signPanel">
-        <h2>@ui.TenantSignature</h2>
-        <p class="mb-3">@ui.ReviewSign</p>
+        <h2>Tenant signature</h2>
+        <p class="mb-3">Review the agreement above, then sign or submit proposed changes.</p>
 
         <form id="contractSignForm" novalidate>
             @Html.AntiForgeryToken()
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="tenantName" class="form-label">@ui.FullName</label>
+                    <label for="tenantName" class="form-label">Full legal name</label>
                     <input type="text" id="tenantName" class="form-control" maxlength="120" required />
                 </div>
                 <div class="col-md-6">
-                    <label for="tenantEmail" class="form-label">@ui.Email</label>
+                    <label for="tenantEmail" class="form-label">Email</label>
                     <input type="email" id="tenantEmail" class="form-control" maxlength="256" required />
                 </div>
                 <div class="col-md-6">
-                    <label for="tenantPhone" class="form-label">@ui.PhoneOptional</label>
+                    <label for="tenantPhone" class="form-label">Phone (optional)</label>
                     <input type="tel" id="tenantPhone" class="form-control" maxlength="30" />
                 </div>
             </div>
@@ -60,46 +55,46 @@
             <div class="contract-action-tabs mt-4">
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="sign" checked />
-                    <span>@ui.SignAgreement</span>
+                    <span>Sign agreement</span>
                 </label>
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="changes" />
-                    <span>@ui.RequestChanges</span>
+                    <span>Request changes</span>
                 </label>
             </div>
 
             <div id="signFields" class="mt-3">
-                <label class="form-label">@ui.DrawSignature</label>
+                <label class="form-label">Draw your signature</label>
                 <div class="signature-pad-wrap">
                     <canvas id="signaturePad" width="600" height="180" aria-label="Signature pad"></canvas>
-                    <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">@ui.Clear</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Clear</button>
                 </div>
                 <label class="terms-check mt-3">
                     <input type="checkbox" id="agreeCheckbox" />
-                    <span>@ui.AgreeLease</span>
+                    <span>I have read this agreement and agree to its terms.</span>
                 </label>
             </div>
 
             <div id="changesFields" class="mt-3 d-none">
-                <label for="proposedChanges" class="form-label">@ui.ProposedChanges</label>
+                <label for="proposedChanges" class="form-label">Proposed changes</label>
                 <textarea id="proposedChanges" class="form-control" rows="5" maxlength="4000"
                           placeholder="Describe the clauses you would like to modify…"></textarea>
             </div>
 
             <div id="optionalChangesWrap" class="mt-3">
-                <label for="optionalChanges" class="form-label">@ui.AdditionalNotes</label>
+                <label for="optionalChanges" class="form-label">Additional notes (optional)</label>
                 <textarea id="optionalChanges" class="form-control" rows="3" maxlength="4000"
                           placeholder="Optional comments to include with your signature…"></textarea>
             </div>
 
             <p id="signFormError" class="text-danger small d-none mt-2"></p>
-            <button type="submit" class="btn btn-submit w-100 mt-3" id="submitContractBtn">@ui.SubmitSignature</button>
+            <button type="submit" class="btn btn-submit w-100 mt-3" id="submitContractBtn">Submit signature</button>
         </form>
     </section>
 
     <footer class="contract-footer">
-        <p><a href="/property/@propiedad.Slug?lang=@langQ">@ui.BackToProperty</a></p>
-        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">@ui.Print</button>
+        <p><a href="/property/@propiedad.Slug">← Back to property</a></p>
+        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Print contract</button>
     </footer>
 </article>
 

@@ -228,15 +228,8 @@ namespace ApartamentosRenta.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("BodyHtmlEs")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("NoticeHtml")
                         .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NoticeHtmlEs")
                         .HasMaxLength(4000)
                         .HasColumnType("TEXT");
 
@@ -248,16 +241,8 @@ namespace ApartamentosRenta.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("SubtitleEs")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TitleEs")
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
@@ -314,21 +299,9 @@ namespace ApartamentosRenta.Migrations
                     b.Property<int>("Habitaciones")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IdiomaPublico")
-                        .HasColumnType("INTEGER");
-
                     b.Property<decimal>("MetrosCuadrados")
                         .HasPrecision(8, 2)
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("MostrarAplicacionPublica")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("MostrarContratoPublico")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("MostrarStampillasPublico")
-                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("PrecioMensual")
                         .HasPrecision(10, 2)
@@ -375,15 +348,8 @@ namespace ApartamentosRenta.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("BodyHtmlEs")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("NoticeHtml")
                         .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NoticeHtmlEs")
                         .HasMaxLength(4000)
                         .HasColumnType("TEXT");
 
@@ -395,16 +361,8 @@ namespace ApartamentosRenta.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("SubtitleEs")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TitleEs")
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 

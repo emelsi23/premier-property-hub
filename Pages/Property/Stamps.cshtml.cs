@@ -16,25 +16,20 @@ public class StampsModel(AppDbContext context) : PageModel
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public Propiedad Propiedad { get; private set; } = null!;
-    public PropertyApplicationStrings Strings { get; private set; } = null!;
-    public PropertyContractUiStrings Ui { get; private set; } = null!;
-    public PropertyStampUiStrings StampUi { get; private set; } = null!;
-    public PropertyContentLanguage ActiveLanguage { get; private set; }
-    public bool ShowLanguageSwitcher { get; private set; }
     public string RenderedTitle { get; private set; } = string.Empty;
     public string RenderedSubtitle { get; private set; } = string.Empty;
     public string RenderedNoticeHtml { get; private set; } = string.Empty;
     public string RenderedBodyHtml { get; private set; } = string.Empty;
 
-    public async Task<IActionResult> OnGetAsync(string slug, string? lang)
+    public async Task<IActionResult> OnGetAsync(string slug)
     {
         var propiedad = await LoadPropiedadAsync(slug);
-        if (propiedad is null || !propiedad.MostrarStampillasPublico)
+        if (propiedad is null)
         {
             return NotFound();
         }
 
-        ApplyPageContext(propiedad, lang);
+        ApplyRendered(propiedad);
         return Page();
     }
 
@@ -46,7 +41,7 @@ public class StampsModel(AppDbContext context) : PageModel
         }
 
         var propiedad = await LoadPropiedadAsync(slug);
-        if (propiedad is null || !propiedad.MostrarStampillasPublico)
+        if (propiedad is null)
         {
             return NotFound(new { success = false, message = "Property not found." });
         }
@@ -139,23 +134,16 @@ public class StampsModel(AppDbContext context) : PageModel
         });
     }
 
-    private void ApplyPageContext(Propiedad propiedad, string? lang)
+    private void ApplyRendered(Propiedad propiedad)
     {
         Propiedad = propiedad;
-        ActiveLanguage = PropertyPageLanguageHelper.Resolve(propiedad.IdiomaPublico, lang);
-        ShowLanguageSwitcher = PropertyPageLanguageHelper.ShowLanguageSwitcher(propiedad.IdiomaPublico);
-        Strings = PropertyApplicationStrings.Get(ActiveLanguage, StampSealSettings.TotalAmount);
-        Ui = PropertyContractUiStrings.Get(ActiveLanguage);
-        StampUi = PropertyStampUiStrings.Get(ActiveLanguage);
-
         var contract = propiedad.StampSealContract ?? StampSealContractDefaults.CreateForProperty(propiedad.Id);
-        var content = PropertyContractContentHelper.GetStampSealContent(contract, ActiveLanguage);
 
-        RenderedTitle = StampSealTemplateRenderer.Render(content.Title, propiedad);
-        RenderedSubtitle = StampSealTemplateRenderer.Render(content.Subtitle, propiedad);
-        RenderedNoticeHtml = StampSealTemplateRenderer.Render(content.NoticeHtml, propiedad);
+        RenderedTitle = StampSealTemplateRenderer.Render(contract.Title, propiedad);
+        RenderedSubtitle = StampSealTemplateRenderer.Render(contract.Subtitle, propiedad);
+        RenderedNoticeHtml = StampSealTemplateRenderer.Render(contract.NoticeHtml, propiedad);
         RenderedBodyHtml = StampSealContractDynamicEnricher.Enrich(
-            StampSealTemplateRenderer.Render(content.BodyHtml, propiedad));
+            StampSealTemplateRenderer.Render(contract.BodyHtml, propiedad));
         ViewData["Title"] = RenderedTitle;
     }
 
