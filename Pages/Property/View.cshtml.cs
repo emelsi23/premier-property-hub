@@ -2,13 +2,15 @@ using System.ComponentModel.DataAnnotations;
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
 using ApartamentosRenta.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Property;
 
-public class ViewModel(AppDbContext context) : PageModel
+[IgnoreAntiforgeryToken]
+public class ViewModel(AppDbContext context, IAntiforgery antiforgery) : PageModel
 {
     private static readonly HashSet<string> AllowedImageTypes =
     [
@@ -124,12 +126,15 @@ public class ViewModel(AppDbContext context) : PageModel
             throw;
         }
 
+        var antiforgeryTokens = isAjax ? antiforgery.GetAndStoreTokens(HttpContext) : null;
+
         return isAjax
             ? new JsonResult(new
             {
                 success = true,
                 token = publicToken,
-                zelle = BuildZellePayload(propiedad)
+                zelle = BuildZellePayload(propiedad),
+                antiforgeryToken = antiforgeryTokens?.RequestToken
             })
             : RedirectToPage("/Property/ThankYou", new { slug });
     }
@@ -152,7 +157,7 @@ public class ViewModel(AppDbContext context) : PageModel
             return BadRequest(new { success = false, message = "Image must be 5 MB or smaller." });
         }
 
-        if (!AllowedImageTypes.Contains(paymentProof.ContentType))
+        if (!IsAllowedPaymentProof(paymentProof))
         {
             return BadRequest(new { success = false, message = "Upload a JPG, PNG, WEBP, or GIF image." });
         }
@@ -175,7 +180,7 @@ public class ViewModel(AppDbContext context) : PageModel
         await paymentProof.CopyToAsync(stream);
 
         cita.PaymentProofData = stream.ToArray();
-        cita.PaymentProofContentType = paymentProof.ContentType;
+        cita.PaymentProofContentType = ResolvePaymentProofContentType(paymentProof);
         cita.PaymentProofUploadedAt = DateTime.UtcNow;
         cita.Estado = EstadoCita.EsperandoConfirmacion;
 
@@ -213,6 +218,40 @@ public class ViewModel(AppDbContext context) : PageModel
                 x => x.Value!.Errors.Select(e => e.ErrorMessage).First());
 
         return BadRequest(new { success = false, errors });
+    }
+
+    private static bool IsAllowedPaymentProof(IFormFile file)
+    {
+        if (AllowedImageTypes.Contains(file.ContentType))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(file.ContentType)
+            && file.ContentType != "application/octet-stream")
+        {
+            return false;
+        }
+
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        return extension is ".jpg" or ".jpeg" or ".png" or ".webp" or ".gif";
+    }
+
+    private static string ResolvePaymentProofContentType(IFormFile file)
+    {
+        if (AllowedImageTypes.Contains(file.ContentType))
+        {
+            return file.ContentType;
+        }
+
+        return Path.GetExtension(file.FileName).ToLowerInvariant() switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            ".gif" => "image/gif",
+            _ => "image/jpeg"
+        };
     }
 
     private static object BuildZellePayload(Propiedad propiedad) => new

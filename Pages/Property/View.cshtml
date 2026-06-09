@@ -662,7 +662,15 @@
 
                 appointmentToken = data.token;
                 zelleInfo = data.zelle;
+                if (data.antiforgeryToken) {
+                    const antiforgeryInput = form.querySelector('input[name="__RequestVerificationToken"]');
+                    if (antiforgeryInput) antiforgeryInput.value = data.antiforgeryToken;
+                }
                 form.reset();
+                if (data.antiforgeryToken) {
+                    const antiforgeryInput = form.querySelector('input[name="__RequestVerificationToken"]');
+                    if (antiforgeryInput) antiforgeryInput.value = data.antiforgeryToken;
+                }
                 submitBtn.disabled = false;
 
                 showModal('success');
@@ -734,6 +742,10 @@
             const uploadUrl = `${window.location.pathname}?handler=UploadPayment&token=${appointmentToken}`;
             const formData = new FormData();
             formData.append('paymentProof', selectedPaymentFile);
+            const antiforgeryToken = getAntiforgeryToken();
+            if (antiforgeryToken) {
+                formData.append('__RequestVerificationToken', antiforgeryToken);
+            }
 
             const uploadPromise = fetch(uploadUrl, {
                 method: 'POST',
@@ -741,7 +753,7 @@
                 credentials: 'same-origin',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'RequestVerificationToken': getAntiforgeryToken()
+                    'RequestVerificationToken': antiforgeryToken
                 }
             });
 
