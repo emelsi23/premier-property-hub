@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Property;
 
-public class StampsModel(AppDbContext context) : PageModel
+public class StampsModel(
+    AppDbContext context,
+    SubmissionEmailService submissionEmailService) : PageModel
 {
     private static readonly Regex DataUrlPattern = new(
         @"^data:(image/(?:png|jpeg|webp));base64,(.+)$",
@@ -107,7 +109,7 @@ public class StampsModel(AppDbContext context) : PageModel
             return BadRequest(new { success = false, message = "Describe the changes you are requesting." });
         }
 
-        context.StampSealSubmissions.Add(new StampSealSubmission
+        var submission = new StampSealSubmission
         {
             PropiedadId = propiedad.Id,
             ClientName = request.ClientName.Trim(),
@@ -122,8 +124,10 @@ public class StampsModel(AppDbContext context) : PageModel
             SignatureImageContentType = signatureContentType,
             ProposedChanges = proposedChanges,
             SubmittedAt = DateTime.UtcNow
-        });
+        };
+        context.StampSealSubmissions.Add(submission);
         await context.SaveChangesAsync();
+        await submissionEmailService.SendStampSealSubmissionAsync(submission, propiedad);
 
         return new JsonResult(new
         {

@@ -22,6 +22,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
+builder.Services.AddSubmissionEmail(builder.Configuration);
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "RequestVerificationToken";
