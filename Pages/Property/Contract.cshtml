@@ -1,4 +1,5 @@
 @page "/property/{slug}/contract"
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.ContractModel
 @{
     var propiedad = Model.Propiedad;
@@ -22,7 +23,7 @@
             <div class="row g-2 small">
                 <div class="col-6 col-md-4"><span class="text-muted">Monthly rent</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
                 <div class="col-6 col-md-4"><span class="text-muted">Security deposit</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">Visit deposit</span><br /><strong>$@ApartamentosRenta.Services.VisitDepositSettings.Amount.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Visit deposit</span><br /><strong>$@VisitDepositSettings.GetAmount(propiedad).ToString("N0")</strong></div>
             </div>
         </div>
     </div>

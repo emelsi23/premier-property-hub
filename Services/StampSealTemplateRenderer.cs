@@ -21,9 +21,9 @@ public static class StampSealTemplateRenderer
             ["Address"] = propiedad.Direccion,
             ["City"] = propiedad.Ciudad,
             ["MonthlyRent"] = FormatMoney(propiedad.PrecioMensual),
-            ["StampsAmount"] = FormatMoney(StampSealSettings.StampsAmount),
-            ["SealsAmount"] = FormatMoney(StampSealSettings.SealsAmount),
-            ["TotalAmount"] = FormatMoney(StampSealSettings.TotalAmount),
+            ["StampsAmount"] = FormatMoney(StampSealSettings.GetStampsAmount(propiedad)),
+            ["SealsAmount"] = FormatMoney(StampSealSettings.GetSealsAmount(propiedad)),
+            ["TotalAmount"] = FormatMoney(StampSealSettings.GetTotalAmount(propiedad)),
             ["ZelleName"] = landlord,
             ["ZelleContact"] = string.IsNullOrWhiteSpace(propiedad.ZelleContact) ? "—" : propiedad.ZelleContact,
             ["LandlordName"] = landlord

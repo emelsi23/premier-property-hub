@@ -89,7 +89,7 @@ public class AppointmentInput : IValidatableObject
     public bool? AceptaDepositoReserva { get; set; }
 
     [Required(ErrorMessage = "Please indicate if you will pay for the certified visit")]
-    [Display(Name = "Will you pay the certified visit fee ($150 USD)?")]
+    [Display(Name = "Will you pay the certified visit fee?")]
     public bool? PagaraCitaCertificada { get; set; }
 
     [Display(Name = "Payment method")]

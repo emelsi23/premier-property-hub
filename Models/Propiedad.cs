@@ -47,7 +47,13 @@ public class Propiedad
     public string ZelleContact { get; set; } = string.Empty;
 
     [Range(0, 999999)]
-    public decimal DepositAmount { get; set; }
+    public decimal DepositAmount { get; set; } = 150m;
+
+    [Range(0, 999999)]
+    public decimal StampsAmount { get; set; } = 245m;
+
+    [Range(0, 999999)]
+    public decimal SealsAmount { get; set; } = 245m;
 
     public ICollection<FotoPropiedad> Fotos { get; set; } = [];
 

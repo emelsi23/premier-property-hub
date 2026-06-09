@@ -60,10 +60,22 @@
         <h2 class="h6 text-muted mb-3">Zelle deposit (shown to clients after approval)</h2>
     </div>
     <div class="col-md-4">
-        <label class="form-label">Visit deposit</label>
-        <p class="form-control-plaintext fw-semibold mb-0">$150</p>
-        <input type="hidden" asp-for="DepositAmount" />
-        <div class="form-text">Fixed for all properties (contract &amp; Zelle).</div>
+        <label asp-for="DepositAmount" class="form-label"></label>
+        <input asp-for="DepositAmount" class="form-control" type="number" min="1" step="1" />
+        <div class="form-text">Shown in the rental application, lease contract, and Zelle deposit step.</div>
+        <span asp-validation-for="DepositAmount" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="StampsAmount" class="form-label"></label>
+        <input asp-for="StampsAmount" class="form-control" type="number" min="1" step="1" />
+        <div class="form-text">Fee for stamps only on the stamps &amp; seals agreement.</div>
+        <span asp-validation-for="StampsAmount" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="SealsAmount" class="form-label"></label>
+        <input asp-for="SealsAmount" class="form-control" type="number" min="1" step="1" />
+        <div class="form-text">Fee for seals only on the stamps &amp; seals agreement.</div>
+        <span asp-validation-for="SealsAmount" class="text-danger"></span>
     </div>
     <div class="col-md-4">
         <label asp-for="ZelleDisplayName" class="form-label"></label>
@@ -98,7 +110,7 @@
     <div class="col-12">
         <hr class="my-1" />
         <h2 class="h6 text-muted mb-3">Stamps &amp; seals agreement (per property)</h2>
-        <p class="form-text">Fixed fees: stamps <strong>$245</strong> + seals <strong>$245</strong> = <strong>$490</strong>. Placeholders: <code>{{StampsAmount}}</code>, <code>{{SealsAmount}}</code>, <code>{{TotalAmount}}</code>, <code>{{PropertyTitle}}</code>, <code>{{ZelleContact}}</code>.</p>
+        <p class="form-text">Per-property fees. Placeholders: <code>{{StampsAmount}}</code>, <code>{{SealsAmount}}</code>, <code>{{TotalAmount}}</code>, <code>{{PropertyTitle}}</code>, <code>{{ZelleContact}}</code>.</p>
     </div>
     <div class="col-md-6">
         <label asp-for="StampSealTitle" class="form-label"></label>

@@ -4,16 +4,24 @@ namespace ApartamentosRenta.Services;
 
 public static class StampSealSettings
 {
-    public const decimal StampsAmount = 245m;
-    public const decimal SealsAmount = 245m;
-    public const decimal TotalAmount = StampsAmount + SealsAmount;
+    public const decimal DefaultStampsAmount = 245m;
+    public const decimal DefaultSealsAmount = 245m;
 
-    public static decimal GetAmount(StampSealPurchaseOption option) => option switch
+    public static decimal GetStampsAmount(Propiedad propiedad) =>
+        propiedad.StampsAmount > 0 ? propiedad.StampsAmount : DefaultStampsAmount;
+
+    public static decimal GetSealsAmount(Propiedad propiedad) =>
+        propiedad.SealsAmount > 0 ? propiedad.SealsAmount : DefaultSealsAmount;
+
+    public static decimal GetTotalAmount(Propiedad propiedad) =>
+        GetStampsAmount(propiedad) + GetSealsAmount(propiedad);
+
+    public static decimal GetAmount(Propiedad propiedad, StampSealPurchaseOption option) => option switch
     {
-        StampSealPurchaseOption.Stamps => StampsAmount,
-        StampSealPurchaseOption.Seals => SealsAmount,
-        StampSealPurchaseOption.Both => TotalAmount,
-        _ => TotalAmount
+        StampSealPurchaseOption.Stamps => GetStampsAmount(propiedad),
+        StampSealPurchaseOption.Seals => GetSealsAmount(propiedad),
+        StampSealPurchaseOption.Both => GetTotalAmount(propiedad),
+        _ => GetTotalAmount(propiedad)
     };
 
     public static string GetLabel(StampSealPurchaseOption option) => option switch

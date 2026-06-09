@@ -1,7 +1,11 @@
 @page "/property/{slug}/stamps"
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.StampsModel
 @{
     var propiedad = Model.Propiedad;
+    var stampsFee = StampSealSettings.GetStampsAmount(propiedad);
+    var sealsFee = StampSealSettings.GetSealsAmount(propiedad);
+    var totalFee = StampSealSettings.GetTotalAmount(propiedad);
 }
 
 <article class="contract-page">
@@ -24,26 +28,26 @@
                     <input type="radio" name="purchaseOption" value="Stamps" />
                     <span>
                         <strong>Stamps only</strong><br />
-                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.StampsAmount.ToString("N0")</span>
+                        <span class="purchase-option-price">$@stampsFee.ToString("N0")</span>
                     </span>
                 </label>
                 <label class="contract-action-tab purchase-option-tab">
                     <input type="radio" name="purchaseOption" value="Seals" />
                     <span>
                         <strong>Seals only</strong><br />
-                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.SealsAmount.ToString("N0")</span>
+                        <span class="purchase-option-price">$@sealsFee.ToString("N0")</span>
                     </span>
                 </label>
                 <label class="contract-action-tab purchase-option-tab">
                     <input type="radio" name="purchaseOption" value="Both" checked />
                     <span>
                         <strong>Stamps &amp; seals</strong><br />
-                        <span class="purchase-option-price">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</span>
+                        <span class="purchase-option-price">$@totalFee.ToString("N0")</span>
                     </span>
                 </label>
             </div>
             <p class="mb-0 small text-muted">
-                Your total: <strong id="purchaseTotal">$@ApartamentosRenta.Services.StampSealSettings.TotalAmount.ToString("N0")</strong>
+                Your total: <strong id="purchaseTotal">$@totalFee.ToString("N0")</strong>
             </p>
         </div>
     </div>
@@ -136,9 +140,9 @@
 @section Scripts {
     <script>
         const purchasePrices = {
-            Stamps: @ApartamentosRenta.Services.StampSealSettings.StampsAmount,
-            Seals: @ApartamentosRenta.Services.StampSealSettings.SealsAmount,
-            Both: @ApartamentosRenta.Services.StampSealSettings.TotalAmount
+            Stamps: @stampsFee,
+            Seals: @sealsFee,
+            Both: @totalFee
         };
         const purchaseLabels = {
             Stamps: 'stamps only',

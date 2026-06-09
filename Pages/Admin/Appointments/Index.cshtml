@@ -77,7 +77,7 @@ else
                             }
                             else
                             {
-                                <span class="small text-muted">Deposit: $@VisitDepositSettings.Amount.ToString("N0")</span>
+                                <span class="small text-muted">Deposit: $@VisitDepositSettings.GetAmount(appointment.Propiedad).ToString("N0")</span>
                             }
                             @if (appointment.MetodoPago.HasValue)
                             {

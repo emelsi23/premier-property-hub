@@ -67,7 +67,7 @@ public class StampsModel(AppDbContext context) : PageModel
             return BadRequest(new { success = false, message = "Select stamps, seals, or both." });
         }
 
-        var selectedAmount = StampSealSettings.GetAmount(purchaseOption);
+        var selectedAmount = StampSealSettings.GetAmount(propiedad, purchaseOption);
         byte[]? signatureBytes = null;
         string? signatureContentType = null;
         var proposedChanges = string.IsNullOrWhiteSpace(request.ProposedChanges)
@@ -143,7 +143,8 @@ public class StampsModel(AppDbContext context) : PageModel
         RenderedSubtitle = StampSealTemplateRenderer.Render(contract.Subtitle, propiedad);
         RenderedNoticeHtml = StampSealTemplateRenderer.Render(contract.NoticeHtml, propiedad);
         RenderedBodyHtml = StampSealContractDynamicEnricher.Enrich(
-            StampSealTemplateRenderer.Render(contract.BodyHtml, propiedad));
+            StampSealTemplateRenderer.Render(contract.BodyHtml, propiedad),
+            propiedad);
         ViewData["Title"] = RenderedTitle;
     }
 

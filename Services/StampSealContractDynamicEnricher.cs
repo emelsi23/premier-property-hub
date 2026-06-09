@@ -1,19 +1,20 @@
 using System.Text.RegularExpressions;
+using ApartamentosRenta.Models;
 
 namespace ApartamentosRenta.Services;
 
 public static partial class StampSealContractDynamicEnricher
 {
-    public static string Enrich(string html)
+    public static string Enrich(string html, Propiedad propiedad)
     {
         if (string.IsNullOrEmpty(html) || html.Contains("contract-dynamic-items", StringComparison.Ordinal))
         {
             return html;
         }
 
-        var stampsAmount = FormatMoney(StampSealSettings.StampsAmount);
-        var sealsAmount = FormatMoney(StampSealSettings.SealsAmount);
-        var totalAmount = FormatMoney(StampSealSettings.TotalAmount);
+        var stampsAmount = FormatMoney(StampSealSettings.GetStampsAmount(propiedad));
+        var sealsAmount = FormatMoney(StampSealSettings.GetSealsAmount(propiedad));
+        var totalAmount = FormatMoney(StampSealSettings.GetTotalAmount(propiedad));
 
         var result = html;
 

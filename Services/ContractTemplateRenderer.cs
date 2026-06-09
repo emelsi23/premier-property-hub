@@ -14,7 +14,7 @@ public static class ContractTemplateRenderer
         var monthly = propiedad.PrecioMensual;
         var securityDeposit = monthly;
         var lateFee = Math.Round(monthly * 0.05m, 0, MidpointRounding.AwayFromZero);
-        var visitDeposit = VisitDepositSettings.Amount;
+        var visitDeposit = VisitDepositSettings.GetAmount(propiedad);
         var firstMonthTotal = monthly + securityDeposit;
         var moveInTotal = firstMonthTotal + visitDeposit;
         var landlord = string.IsNullOrWhiteSpace(propiedad.ZelleDisplayName)

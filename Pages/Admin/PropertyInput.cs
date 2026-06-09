@@ -46,8 +46,14 @@ public class PropertyInput
     [StringLength(120), Display(Name = "Zelle email or phone")]
     public string ZelleContact { get; set; } = string.Empty;
 
-    [Range(0, 999999), Display(Name = "Visit deposit amount")]
-    public decimal DepositAmount { get; set; }
+    [Range(1, 999999), Display(Name = "Zelle visit deposit (USD)")]
+    public decimal DepositAmount { get; set; } = VisitDepositSettings.DefaultAmount;
+
+    [Range(1, 999999), Display(Name = "Stamps fee (USD)")]
+    public decimal StampsAmount { get; set; } = StampSealSettings.DefaultStampsAmount;
+
+    [Range(1, 999999), Display(Name = "Seals fee (USD)")]
+    public decimal SealsAmount { get; set; } = StampSealSettings.DefaultSealsAmount;
 
     [StringLength(200), Display(Name = "Contract title")]
     public string ContractTitle { get; set; } = "Residential Lease Agreement";
@@ -92,7 +98,9 @@ public class PropertyInput
         Amenidades = entity.Amenidades,
         ZelleDisplayName = entity.ZelleDisplayName,
         ZelleContact = entity.ZelleContact,
-        DepositAmount = entity.DepositAmount,
+        DepositAmount = entity.DepositAmount > 0 ? entity.DepositAmount : VisitDepositSettings.DefaultAmount,
+        StampsAmount = entity.StampsAmount > 0 ? entity.StampsAmount : StampSealSettings.DefaultStampsAmount,
+        SealsAmount = entity.SealsAmount > 0 ? entity.SealsAmount : StampSealSettings.DefaultSealsAmount,
         FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url)),
         ContractTitle = entity.LeaseContract?.Title ?? "Residential Lease Agreement",
         ContractSubtitle = entity.LeaseContract?.Subtitle ?? "Apartment rental · United States",

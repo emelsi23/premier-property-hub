@@ -9,7 +9,7 @@
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     var minVisitDate = DateTime.Today.ToString("yyyy-MM-dd");
     var maxBirth = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
-    var depositAmount = VisitDepositSettings.Amount;
+    var depositAmount = VisitDepositSettings.GetAmount(Model.Propiedad);
 }
 
 <div class="listing-page">
