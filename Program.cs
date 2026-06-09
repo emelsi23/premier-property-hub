@@ -22,7 +22,6 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
-builder.Services.AddSubmissionEmail(builder.Configuration);
 builder.Services.AddAdminAuth(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddAntiforgery(options =>
 {

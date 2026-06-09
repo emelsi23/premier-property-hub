@@ -9,9 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Property;
 
-public class ContractModel(
-    AppDbContext context,
-    SubmissionEmailService submissionEmailService) : PageModel
+public class ContractModel(AppDbContext context) : PageModel
 {
     private static readonly Regex DataUrlPattern = new(
         @"^data:(image/(?:png|jpeg|webp));base64,(.+)$",
@@ -120,7 +118,6 @@ public class ContractModel(
 
         context.ContractSubmissions.Add(submission);
         await context.SaveChangesAsync();
-        await submissionEmailService.SendLeaseSubmissionAsync(submission, propiedad);
 
         return new JsonResult(new
         {
