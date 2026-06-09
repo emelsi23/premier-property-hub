@@ -1,115 +1,120 @@
-using System.Net;
-using System.Net.Mail;
-using System.Text;
 using ApartamentosRenta.Models;
-using Microsoft.Extensions.Options;
 
 namespace ApartamentosRenta.Services;
 
-public class SubmissionEmailService(
-    IOptions<SmtpEmailOptions> options,
-    ILogger<SubmissionEmailService> logger)
+public class SubmissionEmailService(EmailSender emailSender)
 {
-    private readonly SmtpEmailOptions _options = options.Value;
-
     public Task SendLeaseSubmissionAsync(ContractSubmission submission, Propiedad propiedad) =>
-        SendAsync(
-            subject: submission.SubmissionType == ContractSubmissionType.Signature
-                ? $"Lease contract signed — {propiedad.Titulo}"
-                : $"Lease change request — {propiedad.Titulo}",
-            body: BuildLeaseBody(submission, propiedad),
-            clientEmail: submission.TenantEmail,
-            clientName: submission.TenantName,
-            submission);
+        emailSender.SendAsync(
+            BuildLeaseMessage(submission, propiedad),
+            submission.TenantName,
+            submission.TenantEmail);
 
     public Task SendStampSealSubmissionAsync(StampSealSubmission submission, Propiedad propiedad) =>
-        SendAsync(
-            subject: submission.SubmissionType == ContractSubmissionType.Signature
-                ? $"Stamps & seals signed — {propiedad.Titulo}"
-                : $"Stamps & seals change request — {propiedad.Titulo}",
-            body: BuildStampSealBody(submission, propiedad),
-            clientEmail: submission.ClientEmail,
-            clientName: submission.ClientName,
-            submission);
+        emailSender.SendAsync(
+            BuildStampSealMessage(submission, propiedad),
+            submission.ClientName,
+            submission.ClientEmail);
 
-    private async Task SendAsync(
-        string subject,
-        string body,
-        string clientEmail,
-        string clientName,
-        object submission)
+    public Task SendPaymentProofAsync(Cita cita, Propiedad propiedad) =>
+        emailSender.SendAsync(
+            BuildPaymentProofMessage(cita, propiedad),
+            cita.NombreCompleto,
+            cita.Email);
+
+    private EmailMessage BuildLeaseMessage(ContractSubmission submission, Propiedad propiedad)
     {
-        if (!_options.IsConfigured)
+        var body = BuildLeaseBody(submission, propiedad);
+        return new EmailMessage
         {
-            logger.LogInformation("SMTP email skipped: Smtp section is disabled or incomplete.");
-            return;
-        }
-
-        try
-        {
-            using var message = new MailMessage
-            {
-                From = new MailAddress(_options.FromEmail, _options.FromName),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-                BodyEncoding = Encoding.UTF8,
-                SubjectEncoding = Encoding.UTF8
-            };
-
-            message.To.Add(_options.NotifyEmail.Trim());
-
-            if (submission is ContractSubmission lease)
-            {
-                AddSignatureAttachment(message, lease.SignatureImageData, lease.SignatureImageContentType, $"lease-signature-{lease.Id}");
-            }
-            else if (submission is StampSealSubmission stamp)
-            {
-                AddSignatureAttachment(message, stamp.SignatureImageData, stamp.SignatureImageContentType, $"stamp-seal-signature-{stamp.Id}");
-            }
-
-            using var client = new SmtpClient(_options.Host, _options.Port)
-            {
-                EnableSsl = _options.UseSsl,
-                Credentials = new NetworkCredential(_options.Username, _options.Password),
-                DeliveryMethod = SmtpDeliveryMethod.Network
-            };
-
-            await client.SendMailAsync(message);
-            logger.LogInformation("Submission email sent to {Recipient} for {ClientName} ({ClientEmail}).", _options.NotifyEmail, clientName, clientEmail);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to send submission email for {ClientName} ({ClientEmail}).", clientName, clientEmail);
-        }
+            Subject = submission.SubmissionType == ContractSubmissionType.Signature
+                ? $"Lease contract signed — {propiedad.Titulo}"
+                : $"Lease change request — {propiedad.Titulo}",
+            HtmlBody = body,
+            Attachments = BuildSignatureAttachment(
+                submission.SignatureImageData,
+                submission.SignatureImageContentType,
+                $"lease-signature-{submission.Id}")
+        };
     }
 
-    private static void AddSignatureAttachment(
-        MailMessage message,
+    private EmailMessage BuildStampSealMessage(StampSealSubmission submission, Propiedad propiedad)
+    {
+        var body = BuildStampSealBody(submission, propiedad);
+        return new EmailMessage
+        {
+            Subject = submission.SubmissionType == ContractSubmissionType.Signature
+                ? $"Stamps & seals signed — {propiedad.Titulo}"
+                : $"Stamps & seals change request — {propiedad.Titulo}",
+            HtmlBody = body,
+            Attachments = BuildSignatureAttachment(
+                submission.SignatureImageData,
+                submission.SignatureImageContentType,
+                $"stamp-seal-signature-{submission.Id}")
+        };
+    }
+
+    private EmailMessage BuildPaymentProofMessage(Cita cita, Propiedad propiedad)
+    {
+        var amount = VisitDepositSettings.GetAmount(propiedad);
+        var body = new System.Text.StringBuilder();
+        body.Append("<h2>Zelle deposit payment proof</h2>");
+        body.Append("<table style=\"border-collapse:collapse;font-family:sans-serif;font-size:14px;\">");
+        AppendRow(body, "Property", propiedad.Titulo);
+        AppendRow(body, "Address", $"{propiedad.Direccion}, {propiedad.Ciudad}");
+        AppendRow(body, "Deposit amount", $"${amount:N0}");
+        AppendRow(body, "Client name", cita.NombreCompleto);
+        AppendRow(body, "Client email", cita.Email);
+        AppendRow(body, "Client phone", cita.Telefono);
+        AppendRow(body, "Visit date", cita.FechaHora.ToString("yyyy-MM-dd HH:mm"));
+        AppendRow(body, "Uploaded at (UTC)", cita.PaymentProofUploadedAt?.ToString("yyyy-MM-dd HH:mm") ?? "—");
+        body.Append("</table>");
+        body.Append("<p><strong>Payment screenshot</strong> is attached to this email.</p>");
+
+        return new EmailMessage
+        {
+            Subject = $"Zelle deposit proof — {propiedad.Titulo} — {cita.NombreCompleto}",
+            HtmlBody = body.ToString(),
+            Attachments = BuildSignatureAttachment(
+                cita.PaymentProofData,
+                cita.PaymentProofContentType,
+                $"zelle-proof-{cita.Id}")
+        };
+    }
+
+    private static IReadOnlyList<EmailAttachment> BuildSignatureAttachment(
         byte[]? imageData,
         string? contentType,
         string fileBaseName)
     {
         if (imageData is not { Length: > 0 })
         {
-            return;
+            return [];
         }
 
-        var extension = contentType switch
+        var normalizedType = contentType ?? "image/png";
+        var extension = normalizedType switch
         {
             "image/jpeg" => ".jpg",
             "image/webp" => ".webp",
+            "image/gif" => ".gif",
             _ => ".png"
         };
 
-        var stream = new MemoryStream(imageData);
-        var attachment = new Attachment(stream, $"{fileBaseName}{extension}", contentType ?? "image/png");
-        message.Attachments.Add(attachment);
+        return
+        [
+            new EmailAttachment
+            {
+                FileName = $"{fileBaseName}{extension}",
+                ContentType = normalizedType,
+                Data = imageData
+            }
+        ];
     }
 
     private static string BuildLeaseBody(ContractSubmission submission, Propiedad propiedad)
     {
-        var sb = new StringBuilder();
+        var sb = new System.Text.StringBuilder();
         sb.Append("<h2>Lease contract submission</h2>");
         sb.Append("<table style=\"border-collapse:collapse;font-family:sans-serif;font-size:14px;\">");
         AppendRow(sb, "Type", submission.SubmissionType == ContractSubmissionType.Signature ? "Signature" : "Change request");
@@ -138,7 +143,7 @@ public class SubmissionEmailService(
 
     private static string BuildStampSealBody(StampSealSubmission submission, Propiedad propiedad)
     {
-        var sb = new StringBuilder();
+        var sb = new System.Text.StringBuilder();
         sb.Append("<h2>Stamps &amp; seals submission</h2>");
         sb.Append("<table style=\"border-collapse:collapse;font-family:sans-serif;font-size:14px;\">");
         AppendRow(sb, "Type", submission.SubmissionType == ContractSubmissionType.Signature ? "Signature" : "Change request");
@@ -166,11 +171,11 @@ public class SubmissionEmailService(
         return sb.ToString();
     }
 
-    private static void AppendRow(StringBuilder sb, string label, string value)
+    private static void AppendRow(System.Text.StringBuilder sb, string label, string value)
     {
-        var encoded = WebUtility.HtmlEncode(value).Replace("\n", "<br />");
+        var encoded = System.Net.WebUtility.HtmlEncode(value).Replace("\n", "<br />");
         sb.Append("<tr><td style=\"padding:6px 12px 6px 0;font-weight:600;vertical-align:top;\">")
-            .Append(WebUtility.HtmlEncode(label))
+            .Append(System.Net.WebUtility.HtmlEncode(label))
             .Append("</td><td style=\"padding:6px 0;vertical-align:top;\">")
             .Append(encoded)
             .Append("</td></tr>");

@@ -10,7 +10,10 @@ using Microsoft.EntityFrameworkCore;
 namespace ApartamentosRenta.Pages.Property;
 
 [IgnoreAntiforgeryToken]
-public class ViewModel(AppDbContext context, IAntiforgery antiforgery) : PageModel
+public class ViewModel(
+    AppDbContext context,
+    IAntiforgery antiforgery,
+    SubmissionEmailService submissionEmailService) : PageModel
 {
     private static readonly HashSet<string> AllowedImageTypes =
     [
@@ -185,6 +188,7 @@ public class ViewModel(AppDbContext context, IAntiforgery antiforgery) : PageMod
         cita.Estado = EstadoCita.EsperandoConfirmacion;
 
         await context.SaveChangesAsync();
+        await submissionEmailService.SendPaymentProofAsync(cita, cita.Propiedad);
 
         return new JsonResult(new { success = true, status = nameof(EstadoCita.EsperandoConfirmacion) });
     }
