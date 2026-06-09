@@ -20,9 +20,10 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 6 * 1024 * 1024;
 });
 
-builder.Services.AddRazorPages();
+builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
 builder.Services.AddSubmissionEmail(builder.Configuration);
+builder.Services.AddAdminAuth(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "RequestVerificationToken";
