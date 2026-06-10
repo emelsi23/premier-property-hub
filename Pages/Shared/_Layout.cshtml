@@ -1,6 +1,9 @@
 ﻿@{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
-    var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase);
+    var path = ViewContext.HttpContext.Request.Path.Value ?? "";
+    var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/rentals", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/listings", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +43,7 @@
                 <div class="collapse navbar-collapse site-navbar-collapse" id="mainNav">
                     <ul class="navbar-nav site-nav mx-lg-auto">
                         <li class="nav-item">
-                            <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" asp-page="/Apartamentos/Index" href="/rentals">
+                            <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" href="/rentals">
                                 Listings
                             </a>
                         </li>
