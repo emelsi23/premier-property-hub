@@ -275,7 +275,7 @@ public class ViewModel(
     {
         var hasPaymentMethod = WhatsAppLinkHelper.HasConfiguredPaymentMethod(propiedad.ZelleContact);
         var whatsappUrl = await siteSettings.GetAgentWhatsAppChatUrlAsync(
-            $"Hi, I submitted a visit request for {propiedad.Titulo}. I'd like help completing my deposit.");
+            "Hi, I submitted a visit request for premier-property-hub. I'd like help completing my deposit.");
 
         return new
         {
