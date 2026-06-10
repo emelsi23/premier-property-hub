@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Apartamentos;
 
-public class IndexModel(AppDbContext context) : PageModel
+public class IndexModel(AppDbContext context, SiteSettingsService siteSettings) : PageModel
 {
     [BindProperty(SupportsGet = true)]
     public CatalogFilterInput Filters { get; set; } = new();
@@ -16,6 +16,8 @@ public class IndexModel(AppDbContext context) : PageModel
     public int TotalAvailable { get; private set; }
     public decimal MinListingRent { get; private set; }
     public decimal MaxListingRent { get; private set; }
+    public string WhatsAppUrl { get; private set; } = string.Empty;
+    public string WhatsAppDisplay { get; private set; } = string.Empty;
 
     public async Task OnGetAsync()
     {
@@ -48,5 +50,9 @@ public class IndexModel(AppDbContext context) : PageModel
             .ToList();
 
         Listings = PropertyCatalogHelper.ApplyFilters(allListings, Filters).ToList();
+
+        WhatsAppDisplay = await siteSettings.GetAgentWhatsAppDisplayAsync();
+        WhatsAppUrl = await siteSettings.GetAgentWhatsAppChatUrlAsync(
+            "Hi, I'd like help finding a rental on Premier Property Hub.");
     }
 }

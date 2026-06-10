@@ -1,0 +1,49 @@
+@page
+@model ApartamentosRenta.Pages.Admin.SettingsModel
+@{
+    ViewData["Title"] = "Site settings";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+            <div>
+                <h1 class="h3 mb-1">Site settings</h1>
+                <p class="text-muted mb-0">WhatsApp shown on the catalog and when a property has no Zelle configured.</p>
+            </div>
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary">Back to properties</a>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+        {
+            <div class="alert alert-success">@Model.StatusMessage</div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.AgentWhatsApp" class="form-label"></label>
+                        <input asp-for="Input.AgentWhatsApp" class="form-control" placeholder="+1 (945) 384-6408" />
+                        <div class="form-text">Used for the catalog WhatsApp button and “Contact agent” links on property pages.</div>
+                        <span asp-validation-for="Input.AgentWhatsApp" class="text-danger"></span>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.PreviewUrl))
+                    {
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <p class="small text-muted mb-2">Preview link</p>
+                            <a href="@Model.PreviewUrl" target="_blank" rel="noopener" class="btn btn-success">
+                                Open WhatsApp · @Model.PreviewDisplay
+                            </a>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn btn-primary">Save settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

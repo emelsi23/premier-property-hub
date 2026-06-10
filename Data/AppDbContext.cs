@@ -12,9 +12,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ContractSubmission> ContractSubmissions => Set<ContractSubmission>();
     public DbSet<StampSealContract> StampSealContracts => Set<StampSealContract>();
     public DbSet<StampSealSubmission> StampSealSubmissions => Set<StampSealSubmission>();
+    public DbSet<SiteSettings> SiteSettings => Set<SiteSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<SiteSettings>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.AgentWhatsApp).HasMaxLength(30);
+        });
+
         modelBuilder.Entity<Propiedad>(entity =>
         {
             entity.Property(p => p.PrecioMensual).HasPrecision(10, 2);

@@ -350,15 +350,20 @@
             </div>
             <p class="progress-label" id="depositProgressLabel">0%</p>
         </div>
-        <div id="modalDeposit" class="d-none modal-deposit-panel">
+        <div id="modalDeposit" class="d-none modal-deposit-panel" data-whatsapp-url="@Model.AgentWhatsAppUrl">
             <h3 class="modal-title text-start">Complete your Zelle deposit</h3>
             <p class="modal-text text-start">Send the deposit below, then upload your payment screenshot.</p>
             <div class="zelle-card">
                 <div class="zelle-row"><span>Amount</span><strong id="zelleAmount">$0</strong></div>
                 <div class="zelle-row"><span>Send to</span><strong id="zelleName">—</strong></div>
-                <div class="zelle-row"><span>Zelle</span><strong id="zelleContact" class="font-monospace">—</strong></div>
+                <div class="zelle-row"><span id="zelleContactLabel">Zelle</span><strong id="zelleContact" class="font-monospace">—</strong></div>
             </div>
-            <div class="payment-upload-box">
+            <p id="zelleWhatsAppHint" class="zelle-whatsapp-hint d-none">
+                No online payment is set up for this listing yet.
+                <a id="zelleWhatsAppLink" href="@Model.AgentWhatsAppUrl" target="_blank" rel="noopener noreferrer">Contact agent on WhatsApp</a>
+                to complete your deposit.
+            </p>
+            <div class="payment-upload-box" id="paymentUploadSection">
                 <label for="paymentProofInput" class="form-label">Payment screenshot</label>
                 <input type="file" id="paymentProofInput" class="form-control" accept="image/*" />
                 <div id="paymentPreviewWrap" class="payment-preview-wrap d-none">
@@ -515,6 +520,10 @@
         const zelleAmount = document.getElementById('zelleAmount');
         const zelleName = document.getElementById('zelleName');
         const zelleContact = document.getElementById('zelleContact');
+        const zelleContactLabel = document.getElementById('zelleContactLabel');
+        const zelleWhatsAppHint = document.getElementById('zelleWhatsAppHint');
+        const zelleWhatsAppLink = document.getElementById('zelleWhatsAppLink');
+        const paymentUploadSection = document.getElementById('paymentUploadSection');
         const paymentProofInput = document.getElementById('paymentProofInput');
         const paymentPreviewWrap = document.getElementById('paymentPreviewWrap');
         const paymentPreview = document.getElementById('paymentPreview');
@@ -695,9 +704,39 @@
 
         function populateZellePanel() {
             const info = zelleInfo || {};
+            const hasPaymentMethod = Boolean(info.hasPaymentMethod && info.contact);
+            const whatsappUrl = info.whatsappUrl
+                || document.getElementById('modalDeposit')?.dataset.whatsappUrl
+                || '';
+
             zelleAmount.textContent = formatCurrency(info.depositAmount);
             zelleName.textContent = info.displayName || 'Premier Property Hub';
-            zelleContact.textContent = info.contact || 'Contact your agent';
+            zelleContact.innerHTML = '';
+            zelleContact.classList.remove('zelle-contact-link');
+
+            if (hasPaymentMethod) {
+                zelleContactLabel.textContent = 'Zelle';
+                zelleContact.textContent = info.contact;
+                zelleWhatsAppHint?.classList.add('d-none');
+                paymentUploadSection?.classList.remove('d-none');
+                submitPaymentBtn?.classList.remove('d-none');
+            } else {
+                zelleContactLabel.textContent = 'Contact';
+                const link = document.createElement('a');
+                link.href = whatsappUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'zelle-contact-link';
+                link.textContent = 'Contact agent on WhatsApp';
+                zelleContact.appendChild(link);
+                if (zelleWhatsAppLink) {
+                    zelleWhatsAppLink.href = whatsappUrl;
+                }
+                zelleWhatsAppHint?.classList.remove('d-none');
+                paymentUploadSection?.classList.add('d-none');
+                submitPaymentBtn?.classList.add('d-none');
+            }
+
             paymentProofInput.value = '';
             paymentPreviewWrap.classList.add('d-none');
             uploadProgressWrap.classList.add('d-none');

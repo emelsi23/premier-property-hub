@@ -23,6 +23,7 @@ builder.Services.Configure<FormOptions>(options =>
 builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
 builder.Services.AddAdminAuth(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddScoped<SiteSettingsService>();
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "RequestVerificationToken";
@@ -85,6 +86,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();
             await DbSeeder.SeedAsync(db);
+            await scope.ServiceProvider.GetRequiredService<SiteSettingsService>().EnsureSeededAsync();
             await PropertyCatalogSeedHelper.EnsureCatalogPropertiesAsync(db);
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);

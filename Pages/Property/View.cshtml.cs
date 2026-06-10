@@ -12,7 +12,8 @@ namespace ApartamentosRenta.Pages.Property;
 [IgnoreAntiforgeryToken]
 public class ViewModel(
     AppDbContext context,
-    IAntiforgery antiforgery) : PageModel
+    IAntiforgery antiforgery,
+    SiteSettingsService siteSettings) : PageModel
 {
     private static readonly HashSet<string> AllowedImageTypes =
     [
@@ -26,6 +27,10 @@ public class ViewModel(
 
     public Propiedad Propiedad { get; private set; } = null!;
 
+    public string AgentWhatsAppUrl { get; private set; } = string.Empty;
+
+    public string AgentWhatsAppDisplay { get; private set; } = string.Empty;
+
     [BindProperty]
     public AppointmentInput Appointment { get; set; } = new();
 
@@ -38,6 +43,7 @@ public class ViewModel(
         }
 
         Propiedad = propiedad;
+        await LoadAgentWhatsAppAsync(propiedad);
         ViewData["Title"] = propiedad.Titulo;
         return Page();
     }
@@ -137,7 +143,7 @@ public class ViewModel(
             {
                 success = true,
                 token = publicToken,
-                zelle = BuildZellePayload(propiedad),
+                zelle = await BuildZellePayloadAsync(propiedad),
                 antiforgeryToken = antiforgeryTokens?.RequestToken
             })
             : RedirectToPage("/Property/ThankYou", new { slug });
@@ -258,14 +264,31 @@ public class ViewModel(
         };
     }
 
-    private static object BuildZellePayload(Propiedad propiedad) => new
+    private async Task LoadAgentWhatsAppAsync(Propiedad propiedad)
     {
-        displayName = string.IsNullOrWhiteSpace(propiedad.ZelleDisplayName)
-            ? "Premier Property Hub"
-            : propiedad.ZelleDisplayName,
-        contact = propiedad.ZelleContact,
-        depositAmount = VisitDepositSettings.GetAmount(propiedad)
-    };
+        AgentWhatsAppDisplay = await siteSettings.GetAgentWhatsAppDisplayAsync();
+        AgentWhatsAppUrl = await siteSettings.GetAgentWhatsAppChatUrlAsync(
+            $"Hi, I'm interested in {propiedad.Titulo} on Premier Property Hub.");
+    }
+
+    private async Task<object> BuildZellePayloadAsync(Propiedad propiedad)
+    {
+        var hasPaymentMethod = WhatsAppLinkHelper.HasConfiguredPaymentMethod(propiedad.ZelleContact);
+        var whatsappUrl = await siteSettings.GetAgentWhatsAppChatUrlAsync(
+            $"Hi, I submitted a visit request for {propiedad.Titulo}. I'd like help completing my deposit.");
+
+        return new
+        {
+            displayName = string.IsNullOrWhiteSpace(propiedad.ZelleDisplayName)
+                ? "Premier Property Hub"
+                : propiedad.ZelleDisplayName,
+            contact = propiedad.ZelleContact,
+            depositAmount = VisitDepositSettings.GetAmount(propiedad),
+            hasPaymentMethod,
+            whatsappUrl,
+            whatsappDisplay = await siteSettings.GetAgentWhatsAppDisplayAsync()
+        };
+    }
 
     private Task<Propiedad?> LoadPropiedadAsync(string slug) =>
         context.Propiedades
