@@ -35,10 +35,13 @@
                     </span>
                 </a>
 
-                <button class="navbar-toggler site-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                        aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="site-navbar-mobile-tools d-lg-none">
+                    @await Component.InvokeAsync("WhatsAppNavLink")
+                    <button class="navbar-toggler site-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                            aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
 
                 <div class="collapse navbar-collapse site-navbar-collapse" id="mainNav">
                     <ul class="navbar-nav site-nav mx-lg-auto">
@@ -49,7 +52,9 @@
                         </li>
                     </ul>
                     <div class="site-nav-actions">
-                        @await Component.InvokeAsync("WhatsAppNavLink")
+                        <div class="site-navbar-desktop-whatsapp d-none d-lg-flex">
+                            @await Component.InvokeAsync("WhatsAppNavLink")
+                        </div>
                         <a class="btn btn-site-cta" href="/rentals">
                             Browse rentals
                         </a>
