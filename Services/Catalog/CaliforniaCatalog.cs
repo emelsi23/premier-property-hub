@@ -63,11 +63,12 @@ internal static class CaliforniaCatalog
             title,
             address,
             city,
-            rent,
+            BulkCatalogGenerator.ApplySilentDiscount(rent),
             beds,
             baths,
             sqft,
             CatalogDefaults.BuildDescription(title, city, detail),
             amenities,
-            photoVariant);
+            photoVariant,
+            CatalogPhotoLibrary.GetPhotosForSlug(slug));
 }

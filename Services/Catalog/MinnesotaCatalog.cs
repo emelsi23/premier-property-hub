@@ -49,12 +49,14 @@ internal static class MinnesotaCatalog
     ];
 
     private static readonly string[] IvesPhotos =
-    [
-        "https://ivesinvergrove.com/application/files/5617/7920/5117/penthouse-living-room-kitchen..jpg",
-        "https://ivesinvergrove.com/application/files/6817/7928/9201/ives-inver-grove-pool.jpg",
-        "https://ivesinvergrove.com/application/files/3617/7915/8363/ives-inver-grove-apartments-exterior.jpg",
-        "https://ivesinvergrove.com/application/files/8917/7919/1596/apartment-rooftop-terrace.jpg"
-    ];
+        CatalogPhotoLibrary.MergeWithListingPhotos(
+        [
+            "https://ivesinvergrove.com/application/files/5617/7920/5117/penthouse-living-room-kitchen..jpg",
+            "https://ivesinvergrove.com/application/files/6817/7928/9201/ives-inver-grove-pool.jpg",
+            "https://ivesinvergrove.com/application/files/3617/7915/8363/ives-inver-grove-apartments-exterior.jpg",
+            "https://ivesinvergrove.com/application/files/8917/7919/1596/apartment-rooftop-terrace.jpg"
+        ],
+        "7025-agate-trail-inver-grove-heights-mn");
 
     private static CatalogProperty Entry(
         string slug,
@@ -74,12 +76,12 @@ internal static class MinnesotaCatalog
             title,
             address,
             city,
-            rent,
+            BulkCatalogGenerator.ApplySilentDiscount(rent),
             beds,
             baths,
             sqft,
             CatalogDefaults.BuildDescription(title, city, detail),
             amenities,
             photoVariant,
-            customPhotos);
+            customPhotos ?? CatalogPhotoLibrary.GetPhotosForSlug(slug));
 }
