@@ -1222,6 +1222,45 @@ body {
   color: #fff !important;
 }
 
+.site-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 992px) {
+  .site-nav-actions {
+    margin-top: 0;
+  }
+}
+
+.site-nav-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff !important;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.site-nav-whatsapp:hover {
+  background: #1ebe57;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.site-nav-whatsapp-number {
+  font-weight: 600;
+  opacity: 0.95;
+}
+
 .site-footer {
   background: #0f172a;
   color: #94a3b8;
@@ -1344,59 +1383,6 @@ body:has(.catalog-page) .container-xl.py-4 {
   font-size: 0.8125rem;
   color: #64748b;
   font-weight: 500;
-}
-
-.catalog-whatsapp-banner {
-  margin-top: 1.75rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem 1.5rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 55%, #ffffff 100%);
-  border: 1px solid #bbf7d0;
-  box-shadow: 0 10px 30px rgba(22, 163, 74, 0.08);
-}
-
-.catalog-whatsapp-eyebrow {
-  margin: 0 0 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #15803d;
-}
-
-.catalog-whatsapp-lead {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #14532d;
-  max-width: 36rem;
-}
-
-.catalog-whatsapp-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: 999px;
-  background: #25d366;
-  color: #fff !important;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-  white-space: nowrap;
-}
-
-.catalog-whatsapp-btn:hover {
-  background: #1ebe57;
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
 }
 
 .zelle-contact-link {
