@@ -35,8 +35,8 @@ public class Cita
 
     public DateTime FechaNacimiento { get; set; }
 
-    [Required, StringLength(11)]
-    public string SsnItin { get; set; } = string.Empty;
+    [StringLength(11)]
+    public string? SsnItin { get; set; }
 
     public DateTime FechaHora { get; set; }
 

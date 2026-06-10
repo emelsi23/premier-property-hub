@@ -95,10 +95,10 @@ public class AppointmentInput : IValidatableObject
     [Display(Name = "Payment method")]
     public MetodoPagoCita? MetodoPago { get; set; }
 
-    [Required(ErrorMessage = "SSN or ITIN is required")]
-    [RegularExpression(@"^\d{3}-\d{2}-\d{4}$", ErrorMessage = "Enter a valid SSN, e.g. 121-22-1123")]
-    [Display(Name = "SSN / ITIN")]
-    public string SsnItin { get; set; } = string.Empty;
+    [StringLength(11)]
+    [RegularExpression(@"^(\d{3}-\d{2}-\d{4})?$", ErrorMessage = "Enter a valid SSN, e.g. 121-22-1123")]
+    [Display(Name = "SSN / ITIN (optional)")]
+    public string? SsnItin { get; set; }
 
     [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the terms and policies")]
     [Display(Name = "I agree to the terms and policies")]

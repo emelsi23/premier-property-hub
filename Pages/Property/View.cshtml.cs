@@ -80,7 +80,9 @@ public class ViewModel(
             Email = Appointment.Email.Trim(),
             Telefono = Appointment.Telefono.Trim(),
             FechaNacimiento = DateTimeUtc.FromFormDate(Appointment.FechaNacimiento),
-            SsnItin = Appointment.SsnItin.Trim(),
+            SsnItin = string.IsNullOrWhiteSpace(Appointment.SsnItin)
+                ? null
+                : Appointment.SsnItin.Trim(),
             FechaHora = DateTimeUtc.FromForm(Appointment.FechaHora),
             CodigoPostal = string.IsNullOrWhiteSpace(Appointment.CodigoPostal)
                 ? null

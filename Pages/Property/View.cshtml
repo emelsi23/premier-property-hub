@@ -131,8 +131,8 @@
                         <div class="col-md-6 form-field">
                             <label asp-for="Appointment.SsnItin" class="form-label"></label>
                             <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
-                                   placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
-                            <span class="form-hint">Required for identity verification.</span>
+                                   placeholder="XXX-XX-XXXX (optional)" autocomplete="off" inputmode="numeric" maxlength="11" />
+                            <span class="form-hint">Optional — for identity verification if provided.</span>
                             <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
                         </div>
                     </div>
@@ -562,7 +562,8 @@
             if (!phonePattern.test(phoneInput.value.trim())) {
                 errors.push('Enter a valid phone number: (809) 690-9988');
             }
-            if (!ssnPattern.test(ssnInput.value.trim())) {
+            const ssnValue = ssnInput.value.trim();
+            if (ssnValue && !ssnPattern.test(ssnValue)) {
                 errors.push('Enter a valid SSN: 121-22-1123');
             }
 

@@ -49,7 +49,7 @@ else
                             <strong>@appointment.NombreCompleto</strong><br />
                             <a href="mailto:@appointment.Email" class="small">@appointment.Email</a><br />
                             <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a><br />
-                            <span class="small text-muted">SSN: @appointment.SsnItin · DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
+                            <span class="small text-muted">SSN: @(string.IsNullOrWhiteSpace(appointment.SsnItin) ? "—" : appointment.SsnItin) · DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
                         </td>
                         <td>
                             @appointment.Propiedad.Titulo<br />
