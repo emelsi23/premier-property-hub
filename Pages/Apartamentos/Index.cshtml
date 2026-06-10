@@ -1,0 +1,216 @@
+@page "/Apartamentos/Index"
+@using ApartamentosRenta.Services
+@model ApartamentosRenta.Pages.Apartamentos.IndexModel
+@{
+    ViewData["Title"] = "Browse rentals";
+    var filters = Model.Filters;
+}
+
+<div class="catalog-page">
+    <section class="catalog-hero">
+        <div class="catalog-hero-glow" aria-hidden="true"></div>
+        <div class="catalog-hero-inner">
+            <p class="catalog-eyebrow">Premier Property Hub · By Zillow</p>
+            <h1 class="catalog-hero-title">Find a verified rental you can trust</h1>
+            <p class="catalog-hero-lead">
+                Browse @Model.TotalAvailable curated homes across top markets. Every listing includes a secure visit booking,
+                official lease documentation, and transparent deposit handling.
+            </p>
+            <div class="catalog-hero-stats">
+                <div class="catalog-stat">
+                    <strong>@Model.TotalAvailable</strong>
+                    <span>Available homes</span>
+                </div>
+                <div class="catalog-stat">
+                    <strong>@Model.StateOptions.Count</strong>
+                    <span>States covered</span>
+                </div>
+                <div class="catalog-stat">
+                    <strong>100%</strong>
+                    <span>Verified process</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalog-filters-wrap">
+        <form method="get" class="catalog-filters card border-0 shadow-sm">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-4">
+                    <label class="form-label catalog-filter-label" for="searchQuery">Search</label>
+                    <input type="search" id="searchQuery" name="Filters.Query" value="@filters.Query"
+                           class="form-control catalog-input" placeholder="City, address, amenities…" />
+                </div>
+                <div class="col-md-6 col-lg-2">
+                    <label class="form-label catalog-filter-label" for="filterState">State</label>
+                    <select id="filterState" name="Filters.State" class="form-select catalog-input">
+                        <option value="">All states</option>
+                        @foreach (var state in Model.StateOptions)
+                        {
+                            <option value="@state.Code" selected="@(filters.State == state.Code ? "selected" : null)">
+                                @state.Name (@state.Count)
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-lg-1">
+                    <label class="form-label catalog-filter-label" for="filterBeds">Beds</label>
+                    <select id="filterBeds" name="Filters.Bedrooms" class="form-select catalog-input">
+                        <option value="">Any</option>
+                        @for (var b = 1; b <= 4; b++)
+                        {
+                            <option value="@b" selected="@(filters.Bedrooms == b ? "selected" : null)">@b+</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-lg-2">
+                    <label class="form-label catalog-filter-label" for="filterMinRent">Min rent</label>
+                    <input type="number" id="filterMinRent" name="Filters.MinRent" value="@filters.MinRent"
+                           class="form-control catalog-input" min="0" step="50" placeholder="@Model.MinListingRent.ToString("N0")" />
+                </div>
+                <div class="col-6 col-md-3 col-lg-2">
+                    <label class="form-label catalog-filter-label" for="filterMaxRent">Max rent</label>
+                    <input type="number" id="filterMaxRent" name="Filters.MaxRent" value="@filters.MaxRent"
+                           class="form-control catalog-input" min="0" step="50" placeholder="@Model.MaxListingRent.ToString("N0")" />
+                </div>
+                <div class="col-6 col-md-3 col-lg-1">
+                    <label class="form-label catalog-filter-label" for="filterSort">Sort</label>
+                    <select id="filterSort" name="Filters.Sort" class="form-select catalog-input">
+                        <option value="price-asc" selected="@(filters.Sort == "price-asc" ? "selected" : null)">Price ↑</option>
+                        <option value="price-desc" selected="@(filters.Sort == "price-desc" ? "selected" : null)">Price ↓</option>
+                        <option value="beds-desc" selected="@(filters.Sort == "beds-desc" ? "selected" : null)">Beds</option>
+                        <option value="newest" selected="@(filters.Sort == "newest" ? "selected" : null)">Newest</option>
+                    </select>
+                </div>
+            </div>
+            <div class="catalog-filter-actions">
+                <button type="submit" class="btn btn-primary catalog-btn-search">Search listings</button>
+                <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Clear filters</a>
+                <span class="catalog-results-count">@Model.Listings.Count result@(Model.Listings.Count == 1 ? "" : "s")</span>
+            </div>
+        </form>
+    </section>
+
+    @if (!Model.Listings.Any())
+    {
+        <div class="catalog-empty card border-0 shadow-sm">
+            <h2>No listings match your search</h2>
+            <p>Try a different state, price range, or search term.</p>
+            <a asp-page="/Apartamentos/Index" class="btn btn-primary">View all rentals</a>
+        </div>
+    }
+    else
+    {
+        <section class="catalog-grid" aria-label="Rental listings">
+            @foreach (var item in Model.Listings)
+            {
+                <article class="catalog-card">
+                    <a href="@item.ScheduleUrl" class="catalog-card-media">
+                        @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
+                        {
+                            <img src="@item.PhotoUrl" alt="@item.Titulo" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="catalog-card-placeholder">No photo</div>
+                        }
+                        <span class="catalog-card-badge">@item.StateName</span>
+                        <span class="catalog-card-verified">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            Verified
+                        </span>
+                    </a>
+                    <div class="catalog-card-body">
+                        <p class="catalog-card-location">@item.CityLabel</p>
+                        <h2 class="catalog-card-title">
+                            <a href="@item.ScheduleUrl">@item.Titulo</a>
+                        </h2>
+                        <p class="catalog-card-address">@item.Direccion</p>
+                        <p class="catalog-card-price">$@item.PrecioMensual.ToString("N0")<span>/mo</span></p>
+                        <div class="catalog-card-stats">
+                            <span>@item.Habitaciones bd</span>
+                            <span>@item.Banos ba</span>
+                            <span>@item.MetrosCuadrados.ToString("N0") sq ft</span>
+                        </div>
+                        @if (item.AmenityTags.Any())
+                        {
+                            <div class="catalog-card-tags">
+                                @foreach (var tag in item.AmenityTags)
+                                {
+                                    <span>@tag</span>
+                                }
+                            </div>
+                        }
+                        <div class="catalog-card-footer">
+                            <span class="catalog-deposit-note">Visit deposit from $@item.DepositAmount.ToString("N0")</span>
+                            <a href="@item.ScheduleUrl" class="btn btn-primary catalog-card-cta">Schedule visit</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+
+    <section class="catalog-trust" aria-label="Why renters trust us">
+        <div class="catalog-trust-header">
+            <p class="catalog-eyebrow">Trusted rental process</p>
+            <h2>Built for confidence at every step</h2>
+            <p>From your first search to signed documentation, Premier Property Hub keeps the process professional, secure, and transparent.</p>
+        </div>
+        <div class="catalog-trust-grid">
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-blue" aria-hidden="true">🛡️</div>
+                <h3>Verified listings</h3>
+                <p>Every property is reviewed before publication. No spam, no fake ads — only real homes ready to tour.</p>
+            </article>
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-green" aria-hidden="true">✓</div>
+                <h3>Secure visit booking</h3>
+                <p>Schedule a certified 30-minute visit with a refundable deposit and clear next steps.</p>
+            </article>
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-gold" aria-hidden="true">📜</div>
+                <h3>Official lease contracts</h3>
+                <p>Digital lease agreements tailored to each property with e-signature support.</p>
+            </article>
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-purple" aria-hidden="true">🏷️</div>
+                <h3>Stamps &amp; seals</h3>
+                <p>Official documentation packages available when required — stamps, seals, or both.</p>
+            </article>
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-teal" aria-hidden="true">🔒</div>
+                <h3>Encrypted payments</h3>
+                <p>Deposit handling via Zelle with payment proof upload and admin verification.</p>
+            </article>
+            <article class="catalog-trust-card">
+                <div class="catalog-trust-icon catalog-trust-icon-navy" aria-hidden="true">👤</div>
+                <h3>Licensed support</h3>
+                <p>Our team confirms appointments by phone or WhatsApp once your deposit is approved.</p>
+            </article>
+        </div>
+
+        <div class="catalog-seals-strip">
+            <div class="catalog-seal">
+                <span class="catalog-seal-ring">PREMIER</span>
+                <small>Property Hub</small>
+            </div>
+            <div class="catalog-seal">
+                <span class="catalog-seal-ring">ZILLOW</span>
+                <small>Partner network</small>
+            </div>
+            <div class="catalog-seal">
+                <span class="catalog-seal-ring">SSL</span>
+                <small>Secure browsing</small>
+            </div>
+            <div class="catalog-seal">
+                <span class="catalog-seal-ring">OFFICIAL</span>
+                <small>Lease &amp; stamps</small>
+            </div>
+            <div class="catalog-seal">
+                <span class="catalog-seal-ring">REFUND</span>
+                <small>Visit deposit</small>
+            </div>
+        </div>
+    </section>
+</div>

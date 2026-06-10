@@ -20,7 +20,7 @@
         <div class="site-header-accent" aria-hidden="true"></div>
         <nav class="navbar navbar-expand-lg site-navbar">
             <div class="container-xl site-navbar-inner">
-                <a class="navbar-brand site-brand" asp-page="/Apartamentos/Index" aria-label="Premier Property Hub By Zillow - Home">
+                <a class="navbar-brand site-brand" href="/rentals" aria-label="Premier Property Hub By Zillow - Home">
                     <img src="~/images/logo-icon.png"
                          alt=""
                          class="site-brand-icon"
@@ -40,13 +40,13 @@
                 <div class="collapse navbar-collapse site-navbar-collapse" id="mainNav">
                     <ul class="navbar-nav site-nav mx-lg-auto">
                         <li class="nav-item">
-                            <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" asp-page="/Apartamentos/Index">
+                            <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" asp-page="/Apartamentos/Index" href="/rentals">
                                 Listings
                             </a>
                         </li>
                     </ul>
                     <div class="site-nav-actions">
-                        <a class="btn btn-site-cta" asp-page="/Apartamentos/Index">
+                        <a class="btn btn-site-cta" href="/rentals">
                             Browse rentals
                         </a>
                     </div>
