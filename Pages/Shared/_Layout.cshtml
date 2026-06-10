@@ -36,7 +36,7 @@
                 </a>
 
                 <div class="site-navbar-mobile-tools d-lg-none">
-                    @await Component.InvokeAsync("WhatsAppNavLink")
+                    @await Component.InvokeAsync("WhatsAppNavLink", new { compact = true })
                     <button class="navbar-toggler site-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                             aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
                         <span class="navbar-toggler-icon"></span>
@@ -53,7 +53,7 @@
                     </ul>
                     <div class="site-nav-actions">
                         <div class="site-navbar-desktop-whatsapp d-none d-lg-flex">
-                            @await Component.InvokeAsync("WhatsAppNavLink")
+                            @await Component.InvokeAsync("WhatsAppNavLink", new { compact = false })
                         </div>
                         <a class="btn btn-site-cta" href="/rentals">
                             Browse rentals
