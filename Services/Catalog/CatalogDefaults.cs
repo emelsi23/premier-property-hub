@@ -16,8 +16,6 @@ internal sealed record CatalogProperty(
 
 internal static class CatalogDefaults
 {
-    public const string ZelleDisplayName = "Wilmairy Tejeda Corporan";
-    public const string ZelleContact = "216-203-0074";
     public const decimal DepositAmount = 150m;
 
     private static readonly string[][] PhotoSets =
