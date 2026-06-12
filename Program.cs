@@ -76,7 +76,7 @@ app.Run();
 
 static async Task InitializeDatabaseAsync(IServiceProvider services)
 {
-    const int maxAttempts = 12;
+    const int maxAttempts = 60;
 
     for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {
@@ -97,7 +97,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
         {
             var detail = ex.InnerException?.Message ?? ex.ToString();
             Console.WriteLine($"Database init attempt {attempt} failed: {ex.Message} | {detail}. Retrying in 5s...");
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(10));
         }
     }
 

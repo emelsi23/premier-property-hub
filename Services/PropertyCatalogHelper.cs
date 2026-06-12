@@ -1,9 +1,11 @@
 using ApartamentosRenta.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Services;
 
 public static class PropertyCatalogHelper
 {
+    public const int DefaultPageSize = 24;
     private static readonly Dictionary<string, string> StateNames = new(StringComparer.OrdinalIgnoreCase)
     {
         ["AL"] = "Alabama", ["AK"] = "Alaska", ["AZ"] = "Arizona", ["AR"] = "Arkansas",
@@ -59,30 +61,78 @@ public static class PropertyCatalogHelper
     public static string BuildScheduleUrl(string slug) => $"/property/{slug}#schedule";
 
     public static IEnumerable<CatalogListing> ToCatalogListings(IEnumerable<Propiedad> propiedades) =>
-        propiedades.Select(p =>
+        propiedades.Select(ToCatalogListing);
+
+    public static CatalogListing ToCatalogListing(Propiedad p)
+    {
+        var stateCode = ParseStateCode(p.Ciudad);
+        return new CatalogListing
         {
-            var stateCode = ParseStateCode(p.Ciudad);
-            return new CatalogListing
-            {
-                Id = p.Id,
-                Slug = p.Slug,
-                Titulo = p.Titulo,
-                Direccion = p.Direccion,
-                Ciudad = p.Ciudad,
-                CityLabel = GetCityLabel(p.Ciudad),
-                StateCode = stateCode,
-                StateName = GetStateName(stateCode),
-                PrecioMensual = p.PrecioMensual,
-                Habitaciones = p.Habitaciones,
-                Banos = p.Banos,
-                MetrosCuadrados = p.MetrosCuadrados,
-                Amenidades = p.Amenidades,
-                Descripcion = p.Descripcion,
-                PhotoUrl = p.Fotos.OrderBy(f => f.Orden).FirstOrDefault()?.Url,
-                DepositAmount = VisitDepositSettings.GetAmount(p),
-                ScheduleUrl = BuildScheduleUrl(p.Slug)
-            };
-        });
+            Id = p.Id,
+            Slug = p.Slug,
+            Titulo = p.Titulo,
+            Direccion = p.Direccion,
+            Ciudad = p.Ciudad,
+            CityLabel = GetCityLabel(p.Ciudad),
+            StateCode = stateCode,
+            StateName = GetStateName(stateCode),
+            PrecioMensual = p.PrecioMensual,
+            Habitaciones = p.Habitaciones,
+            Banos = p.Banos,
+            MetrosCuadrados = p.MetrosCuadrados,
+            Amenidades = p.Amenidades,
+            Descripcion = p.Descripcion,
+            PhotoUrl = p.Fotos.OrderBy(f => f.Orden).FirstOrDefault()?.Url,
+            DepositAmount = VisitDepositSettings.GetAmount(p),
+            ScheduleUrl = BuildScheduleUrl(p.Slug)
+        };
+    }
+
+    public static IQueryable<Propiedad> ApplyFiltersToQuery(IQueryable<Propiedad> query, CatalogFilterInput filters)
+    {
+        if (!string.IsNullOrWhiteSpace(filters.State))
+        {
+            var state = filters.State.Trim().ToUpperInvariant();
+            query = query.Where(p => p.Ciudad.EndsWith(", " + state));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filters.Query))
+        {
+            var term = filters.Query.Trim();
+            query = query.Where(p =>
+                EF.Functions.Like(p.Titulo, $"%{term}%")
+                || EF.Functions.Like(p.Ciudad, $"%{term}%")
+                || EF.Functions.Like(p.Direccion, $"%{term}%")
+                || EF.Functions.Like(p.Amenidades, $"%{term}%")
+                || EF.Functions.Like(p.Descripcion, $"%{term}%"));
+        }
+
+        if (filters.Bedrooms is > 0)
+        {
+            query = query.Where(p => p.Habitaciones >= filters.Bedrooms.Value);
+        }
+
+        if (filters.MinRent is > 0)
+        {
+            query = query.Where(p => p.PrecioMensual >= filters.MinRent.Value);
+        }
+
+        if (filters.MaxRent is > 0)
+        {
+            query = query.Where(p => p.PrecioMensual <= filters.MaxRent.Value);
+        }
+
+        return query;
+    }
+
+    public static IQueryable<Propiedad> ApplySort(IQueryable<Propiedad> query, string? sort) =>
+        sort switch
+        {
+            "price-desc" => query.OrderByDescending(p => p.PrecioMensual).ThenBy(p => p.Id),
+            "beds-desc" => query.OrderByDescending(p => p.Habitaciones).ThenBy(p => p.PrecioMensual),
+            "newest" => query.OrderByDescending(p => p.FechaCreacion).ThenByDescending(p => p.Id),
+            _ => query.OrderBy(p => p.PrecioMensual).ThenBy(p => p.Id)
+        };
 
     public static IEnumerable<CatalogListing> ApplyFilters(
         IEnumerable<CatalogListing> listings,
@@ -164,6 +214,7 @@ public sealed class CatalogFilterInput
     public decimal? MinRent { get; set; }
     public decimal? MaxRent { get; set; }
     public string Sort { get; set; } = "price-asc";
+    public int Page { get; set; } = 1;
 }
 
 public sealed class CatalogStateOption

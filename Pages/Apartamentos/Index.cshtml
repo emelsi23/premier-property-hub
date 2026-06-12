@@ -14,7 +14,7 @@
             <h1 class="catalog-hero-title">Find a verified rental you can trust</h1>
             <p class="catalog-hero-lead">
                 Browse @Model.TotalAvailable curated homes across top markets. Every listing includes a secure visit booking,
-                official lease documentation, and transparent deposit handling.
+                official lease documentation, and transparent deposit handling across all 50 states.
             </p>
             <div class="catalog-hero-stats">
                 <div class="catalog-stat">
@@ -86,7 +86,13 @@
             <div class="catalog-filter-actions">
                 <button type="submit" class="btn btn-primary catalog-btn-search">Search listings</button>
                 <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Clear filters</a>
-                <span class="catalog-results-count">@Model.Listings.Count result@(Model.Listings.Count == 1 ? "" : "s")</span>
+                <span class="catalog-results-count">
+                    @Model.TotalFiltered.ToString("N0") result@(Model.TotalFiltered == 1 ? "" : "s")
+                    @if (Model.TotalPages > 1)
+                    {
+                        <span> · Page @Model.Filters.Page of @Model.TotalPages</span>
+                    }
+                </span>
             </div>
         </form>
     </section>
@@ -149,6 +155,30 @@
                 </article>
             }
         </section>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="catalog-pagination" aria-label="Listing pages">
+                @if (Model.Filters.Page > 1)
+                {
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page - 1)">Previous</a>
+                }
+                @{
+                    var startPage = Math.Max(1, Model.Filters.Page - 2);
+                    var endPage = Math.Min(Model.TotalPages, Model.Filters.Page + 2);
+                }
+                @for (var pageNumber = startPage; pageNumber <= endPage; pageNumber++)
+                {
+                    <a class="catalog-page-link @(pageNumber == Model.Filters.Page ? "active" : "")"
+                       href="@Model.BuildPageUrl(pageNumber)"
+                       @(pageNumber == Model.Filters.Page ? "aria-current=\"true\"" : null)>@pageNumber</a>
+                }
+                @if (Model.Filters.Page < Model.TotalPages)
+                {
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page + 1)">Next</a>
+                }
+            </nav>
+        }
     }
 
     <section class="catalog-trust" aria-label="Why renters trust us">

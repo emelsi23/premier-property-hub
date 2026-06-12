@@ -14,6 +14,9 @@ public class IndexModel(AppDbContext context, SiteSettingsService siteSettings) 
     public IList<CatalogListing> Listings { get; private set; } = [];
     public IList<CatalogStateOption> StateOptions { get; private set; } = [];
     public int TotalAvailable { get; private set; }
+    public int TotalFiltered { get; private set; }
+    public int TotalPages { get; private set; }
+    public int PageSize { get; } = PropertyCatalogHelper.DefaultPageSize;
     public decimal MinListingRent { get; private set; }
     public decimal MaxListingRent { get; private set; }
     public string WhatsAppUrl { get; private set; } = string.Empty;
@@ -21,25 +24,24 @@ public class IndexModel(AppDbContext context, SiteSettingsService siteSettings) 
 
     public async Task OnGetAsync()
     {
-        var propiedades = await context.Propiedades
-            .AsNoTracking()
-            .Include(p => p.Fotos)
-            .Where(p => p.Disponible)
-            .OrderByDescending(p => p.FechaCreacion)
-            .ToListAsync();
+        var availableQuery = context.Propiedades.AsNoTracking().Where(p => p.Disponible);
+        TotalAvailable = await availableQuery.CountAsync();
 
-        TotalAvailable = propiedades.Count;
-        var allListings = PropertyCatalogHelper.ToCatalogListings(propiedades).ToList();
-
-        if (allListings.Count > 0)
+        if (TotalAvailable > 0)
         {
-            MinListingRent = allListings.Min(p => p.PrecioMensual);
-            MaxListingRent = allListings.Max(p => p.PrecioMensual);
+            var rentBounds = await availableQuery
+                .GroupBy(_ => 1)
+                .Select(g => new { Min = g.Min(p => p.PrecioMensual), Max = g.Max(p => p.PrecioMensual) })
+                .FirstAsync();
+            MinListingRent = rentBounds.Min;
+            MaxListingRent = rentBounds.Max;
         }
 
-        StateOptions = allListings
-            .Where(p => !string.IsNullOrWhiteSpace(p.StateCode))
-            .GroupBy(p => p.StateCode!)
+        var ciudades = await availableQuery.Select(p => p.Ciudad).ToListAsync();
+        StateOptions = ciudades
+            .Select(PropertyCatalogHelper.ParseStateCode)
+            .Where(code => !string.IsNullOrWhiteSpace(code))
+            .GroupBy(code => code!)
             .Select(g => new CatalogStateOption
             {
                 Code = g.Key,
@@ -49,10 +51,57 @@ public class IndexModel(AppDbContext context, SiteSettingsService siteSettings) 
             .OrderBy(s => s.Name)
             .ToList();
 
-        Listings = PropertyCatalogHelper.ApplyFilters(allListings, Filters).ToList();
+        var filteredQuery = PropertyCatalogHelper.ApplyFiltersToQuery(availableQuery, Filters);
+        TotalFiltered = await filteredQuery.CountAsync();
+        TotalPages = Math.Max(1, (int)Math.Ceiling(TotalFiltered / (double)PageSize));
+        Filters.Page = Math.Clamp(Filters.Page, 1, TotalPages);
+
+        var pageProperties = await PropertyCatalogHelper.ApplySort(filteredQuery, Filters.Sort)
+            .Skip((Filters.Page - 1) * PageSize)
+            .Take(PageSize)
+            .Include(p => p.Fotos)
+            .ToListAsync();
+
+        Listings = pageProperties.Select(PropertyCatalogHelper.ToCatalogListing).ToList();
 
         WhatsAppDisplay = await siteSettings.GetAgentWhatsAppDisplayAsync();
         WhatsAppUrl = await siteSettings.GetAgentWhatsAppChatUrlAsync(
             "Hi, I'd like help finding a rental on Premier Property Hub.");
+    }
+
+    public string BuildPageUrl(int page)
+    {
+        var parts = new List<string> { $"Filters.Page={page}" };
+        if (!string.IsNullOrWhiteSpace(Filters.Query))
+        {
+            parts.Add($"Filters.Query={Uri.EscapeDataString(Filters.Query)}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(Filters.State))
+        {
+            parts.Add($"Filters.State={Uri.EscapeDataString(Filters.State)}");
+        }
+
+        if (Filters.Bedrooms is > 0)
+        {
+            parts.Add($"Filters.Bedrooms={Filters.Bedrooms}");
+        }
+
+        if (Filters.MinRent is > 0)
+        {
+            parts.Add($"Filters.MinRent={Filters.MinRent}");
+        }
+
+        if (Filters.MaxRent is > 0)
+        {
+            parts.Add($"Filters.MaxRent={Filters.MaxRent}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(Filters.Sort) && Filters.Sort != "price-asc")
+        {
+            parts.Add($"Filters.Sort={Uri.EscapeDataString(Filters.Sort)}");
+        }
+
+        return $"/Apartamentos/Index?{string.Join("&", parts)}";
     }
 }
