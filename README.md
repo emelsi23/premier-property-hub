@@ -6,7 +6,7 @@ Web app for real estate teams to share **WhatsApp links** with clients. Each lin
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - (Optional) Docker for container deployment
-- (Production) PostgreSQL — Railway, Render, Azure, etc.
+- (Production) PostgreSQL — Neon, Supabase, Railway, etc.
 
 ## Run locally
 
@@ -50,7 +50,51 @@ docker build -t premier-property-hub .
 docker run -p 8080:8080 -e DATABASE_URL="postgresql://..." premier-property-hub
 ```
 
-## Deploy on Railway (recommended to get started)
+## Deploy on Firebase + Cloud Run (recommended)
+
+Firebase **Hosting** gives you a fast public URL on Google's CDN. Your .NET app runs in **Cloud Run** (Docker). PostgreSQL stays external (e.g. [Neon](https://neon.tech) free tier — database does not sleep).
+
+> **Important:** Firebase Hosting alone cannot run ASP.NET. The setup below uses Hosting → Cloud Run. Cloud Run free tier can have a **cold start** (~5–15 s) after idle time, similar to Render. The CDN edge is always on; the server wakes on first request. True 24/7 with zero cold start requires a paid min-instances setting on Cloud Run.
+
+### One-time setup
+
+1. Create a [Firebase project](https://console.firebase.google.com) (enable **Blaze** billing — pay-as-you-go, usually $0 within free quotas).
+2. Enable APIs: Cloud Run, Artifact Registry, Firebase Hosting.
+3. Create a free PostgreSQL database at [Neon](https://neon.tech) and copy the connection string.
+4. Copy `.firebaserc.example` → `.firebaserc` and replace `TU-PROYECTO-FIREBASE` with your project id.
+5. Create a [Google Cloud service account](https://console.cloud.google.com/iam-admin/serviceaccounts) with roles:
+   - Cloud Run Admin
+   - Artifact Registry Writer
+   - Service Account User
+   - Firebase Hosting Admin  
+   Download the JSON key.
+
+### GitHub Actions (auto deploy on push to `master`)
+
+Add these repository secrets:
+
+| Secret | Value |
+|--------|--------|
+| `GCP_PROJECT_ID` | Firebase / GCP project id |
+| `GCP_SA_KEY` | Service account JSON (full file) |
+| `DATABASE_URL` | `postgresql://...` from Neon |
+
+Push to `master` — workflow builds Docker, deploys Cloud Run, then Firebase Hosting.
+
+### Manual deploy (Windows)
+
+```powershell
+cd ApartamentosRenta
+$env:GCP_PROJECT_ID = "tu-proyecto-firebase"
+$env:DATABASE_URL = "postgresql://user:pass@host/db?sslmode=require"
+.\scripts\deploy-firebase.ps1
+```
+
+Your site URL will appear in Firebase Console → Hosting (e.g. `https://tu-proyecto.web.app`).
+
+Property page example: `https://tu-proyecto.web.app/property/7025-agate-trail-inver-grove-heights-mn`
+
+## Deploy on Railway
 
 1. Push this repo to GitHub.
 2. In [railway.app](https://railway.app), create a project → **Deploy from GitHub**.
@@ -72,13 +116,6 @@ docker run -p 8080:8080 -e DATABASE_URL="postgresql://..." premier-property-hub
 dotnet publish -c Release
 # Upload the publish folder with Azure CLI, VS, or GitHub Actions
 ```
-
-## Deploy on Render
-
-1. New **Web Service** from GitHub.
-2. **Root Directory:** `ApartamentosRenta`
-3. **Runtime:** Docker (uses the included Dockerfile) or Native .NET.
-4. Add PostgreSQL and link `DATABASE_URL`.
 
 ## Project structure
 
