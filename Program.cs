@@ -83,6 +83,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();
             await DbSeeder.SeedAsync(db);
+            await PropertyCatalogSeedHelper.PruneExtraCatalogPropertiesAsync(db);
             await PropertyCatalogSeedHelper.EnsureCatalogPropertiesAsync(db);
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);
