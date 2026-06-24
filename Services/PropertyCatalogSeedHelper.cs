@@ -6,20 +6,6 @@ namespace ApartamentosRenta.Services;
 
 public static class PropertyCatalogSeedHelper
 {
-    private const string PrimaryCatalogSlug = "7025-agate-trail-inver-grove-heights-mn";
-
-    public static async Task PruneExtraCatalogPropertiesAsync(AppDbContext context)
-    {
-        var removed = await context.Propiedades
-            .Where(p => p.Slug != PrimaryCatalogSlug)
-            .ExecuteDeleteAsync();
-
-        if (removed > 0)
-        {
-            Console.WriteLine($"Removed {removed} extra properties; keeping {PrimaryCatalogSlug}.");
-        }
-    }
-
     public static async Task EnsureCatalogPropertiesAsync(AppDbContext context)
     {
         foreach (var definition in Catalog)
@@ -67,7 +53,7 @@ public static class PropertyCatalogSeedHelper
     private static readonly CatalogProperty[] Catalog =
     [
         new(
-            Slug: PrimaryCatalogSlug,
+            Slug: "7025-agate-trail-inver-grove-heights-mn",
             Titulo: "Ives of Inver Grove — Luxury 2 Bed Apartment",
             Direccion: "7025 Agate Trail",
             Ciudad: "Inver Grove Heights, MN",

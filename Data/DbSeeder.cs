@@ -14,9 +14,6 @@ public static class DbSeeder
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(context);
             return;
         }
-        {
-            return;
-        }
 
         try
         {
