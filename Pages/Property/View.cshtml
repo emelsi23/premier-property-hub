@@ -10,6 +10,7 @@
     var minVisitDate = DateTime.Today.ToString("yyyy-MM-dd");
     var maxBirth = DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd");
     var depositAmount = VisitDepositSettings.GetAmount(Model.Propiedad);
+    var photoFallback = PropertyCatalogHelper.FallbackPhotoUrl;
 }
 
 <div class="listing-page">
@@ -38,7 +39,8 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 }
-                <img id="mainPhoto" src="@fotos[0].Url" alt="@Model.Propiedad.Titulo" class="gallery-main" />
+                <img id="mainPhoto" src="@fotos[0].Url" alt="@Model.Propiedad.Titulo" class="gallery-main"
+                     onerror="this.onerror=null;this.src='@photoFallback';" />
             </div>
 
             @if (fotos.Count > 1)
@@ -47,7 +49,8 @@
                     @for (var i = 0; i < fotos.Count; i++)
                     {
                         <button type="button" class="gallery-thumb @(i == 0 ? "active" : "")" data-index="@i" data-photo="@fotos[i].Url" aria-label="Photo @(i + 1)">
-                            <img src="@fotos[i].Url" alt="" loading="lazy" />
+                            <img src="@fotos[i].Url" alt="" loading="lazy"
+                                 onerror="this.onerror=null;this.src='@photoFallback';" />
                         </button>
                     }
                 </div>

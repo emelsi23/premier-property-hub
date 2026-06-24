@@ -56,23 +56,65 @@ public static class PropertyCatalogSeedHelper
             Console.WriteLine($"Catalog seed complete: {seeded} properties added.");
         }
 
-        await EnsureAllPropertiesHavePhotosAsync(context, catalogBySlug);
+        await SyncCatalogPhotosAsync(context, catalogBySlug);
+        await EnsureMissingPhotosAsync(context, catalogBySlug);
     }
 
-    private static async Task<int> SaveBatchAsync(AppDbContext context, IReadOnlyList<CatalogProperty> batch)
+    private static void ReplacePhotos(Propiedad property, IReadOnlyList<string> targetPhotos)
     {
-        var propiedades = batch.Select(BuildProperty).ToList();
-        context.Propiedades.AddRange(propiedades);
-        await context.SaveChangesAsync();
-
-        context.LeaseContracts.AddRange(propiedades.Select(p => LeaseContractDefaults.CreateForProperty(p.Id)));
-        context.StampSealContracts.AddRange(propiedades.Select(p => StampSealContractDefaults.CreateForProperty(p.Id)));
-        await context.SaveChangesAsync();
-
-        return propiedades.Count;
+        property.Fotos.Clear();
+        for (var i = 0; i < targetPhotos.Count; i++)
+        {
+            property.Fotos.Add(new FotoPropiedad { Url = targetPhotos[i], Orden = i });
+        }
     }
 
-    private static async Task EnsureAllPropertiesHavePhotosAsync(
+    private static async Task SyncCatalogPhotosAsync(
+        AppDbContext context,
+        IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
+    {
+        var updated = 0;
+        var slugs = catalogBySlug.Keys.ToList();
+
+        foreach (var slugBatch in slugs.Chunk(PhotoRefreshBatchSize))
+        {
+            var properties = await context.Propiedades
+                .Include(p => p.Fotos)
+                .Where(p => slugBatch.Contains(p.Slug))
+                .ToListAsync();
+
+            foreach (var property in properties)
+            {
+                if (!catalogBySlug.TryGetValue(property.Slug, out var definition))
+                {
+                    continue;
+                }
+
+                var targetPhotos = ResolvePhotos(definition);
+                var current = property.Fotos.OrderBy(f => f.Orden).Select(f => f.Url).ToArray();
+                if (current.SequenceEqual(targetPhotos, StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                context.FotosPropiedad.RemoveRange(property.Fotos);
+                ReplacePhotos(property, targetPhotos);
+                updated++;
+            }
+
+            if (properties.Count > 0)
+            {
+                await context.SaveChangesAsync();
+            }
+        }
+
+        if (updated > 0)
+        {
+            Console.WriteLine($"Catalog photos refreshed for {updated} properties.");
+        }
+    }
+
+    private static async Task EnsureMissingPhotosAsync(
         AppDbContext context,
         IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
     {
@@ -99,23 +141,8 @@ public static class PropertyCatalogSeedHelper
                     ? ResolvePhotos(definition)
                     : CatalogPhotoLibrary.GetPhotosForSlug(property.Slug);
 
-                if (targetPhotos.Length == 0)
-                {
-                    targetPhotos = CatalogPhotoLibrary.GetPhotosForSlug(property.Slug);
-                }
-
                 context.FotosPropiedad.RemoveRange(property.Fotos);
-                property.Fotos.Clear();
-
-                for (var i = 0; i < targetPhotos.Length; i++)
-                {
-                    property.Fotos.Add(new FotoPropiedad
-                    {
-                        Url = targetPhotos[i],
-                        Orden = i
-                    });
-                }
-
+                ReplacePhotos(property, targetPhotos);
                 updated++;
             }
 
@@ -124,8 +151,21 @@ public static class PropertyCatalogSeedHelper
 
         if (updated > 0)
         {
-            Console.WriteLine($"Catalog photos ensured for {updated} properties.");
+            Console.WriteLine($"Missing photos filled for {updated} properties.");
         }
+    }
+
+    private static async Task<int> SaveBatchAsync(AppDbContext context, IReadOnlyList<CatalogProperty> batch)
+    {
+        var propiedades = batch.Select(BuildProperty).ToList();
+        context.Propiedades.AddRange(propiedades);
+        await context.SaveChangesAsync();
+
+        context.LeaseContracts.AddRange(propiedades.Select(p => LeaseContractDefaults.CreateForProperty(p.Id)));
+        context.StampSealContracts.AddRange(propiedades.Select(p => StampSealContractDefaults.CreateForProperty(p.Id)));
+        await context.SaveChangesAsync();
+
+        return propiedades.Count;
     }
 
     private static Propiedad BuildProperty(CatalogProperty definition)

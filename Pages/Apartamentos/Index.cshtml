@@ -114,7 +114,8 @@
                     <a href="@item.ScheduleUrl" class="catalog-card-media">
                         @if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
                         {
-                            <img src="@item.PhotoUrl" alt="@item.Titulo" loading="lazy" />
+                            <img src="@item.PhotoUrl" alt="@item.Titulo" loading="lazy"
+                                 onerror="this.onerror=null;this.src='@PropertyCatalogHelper.FallbackPhotoUrl';" />
                         }
                         else
                         {
