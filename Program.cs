@@ -59,7 +59,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => Results.Redirect("/Admin/Login"));
+app.MapGet("/", () => Results.Redirect("/rentals"));
+app.MapGet("/rentals", () => Results.Redirect("/Apartamentos/Index"));
+app.MapGet("/listings", () => Results.Redirect("/Apartamentos/Index"));
 app.MapGet("/contract", () => Results.Redirect("/Admin/Index"));
 app.MapGet("/casa/{slug}", (string slug) => Results.Redirect($"/property/{slug}", permanent: true));
 app.MapGet("/casa/{slug}/gracias", (string slug) => Results.Redirect($"/property/{slug}/thank-you", permanent: true));
@@ -73,7 +75,7 @@ app.Run();
 
 static async Task InitializeDatabaseAsync(IServiceProvider services)
 {
-    const int maxAttempts = 12;
+    const int maxAttempts = 30;
 
     for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {

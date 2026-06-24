@@ -1,104 +1,171 @@
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services.Catalog;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Services;
 
 public static class PropertyCatalogSeedHelper
 {
+    private const int BatchSize = 50;
+    private const int PhotoRefreshBatchSize = 50;
+    private const string FeaturedSlug = "7025-agate-trail-inver-grove-heights-mn";
+
     public static async Task EnsureCatalogPropertiesAsync(AppDbContext context)
     {
-        foreach (var definition in Catalog)
+        var catalogBySlug = CatalogIndex.BySlug;
+
+        var existingSlugs = await context.Propiedades
+            .AsNoTracking()
+            .Select(p => p.Slug)
+            .ToListAsync();
+
+        var existingSet = new HashSet<string>(existingSlugs, StringComparer.OrdinalIgnoreCase);
+        var pending = CatalogIndex.All.Count(d => !existingSet.Contains(d.Slug));
+
+        if (pending > 0)
         {
-            if (await context.Propiedades.AnyAsync(p => p.Slug == definition.Slug))
+            Console.WriteLine($"Seeding {pending} catalog properties…");
+            var seeded = 0;
+            var batch = new List<CatalogProperty>(BatchSize);
+
+            foreach (var definition in CatalogIndex.All)
             {
-                continue;
+                if (existingSet.Contains(definition.Slug))
+                {
+                    continue;
+                }
+
+                batch.Add(definition);
+                if (batch.Count < BatchSize)
+                {
+                    continue;
+                }
+
+                seeded += await SaveBatchAsync(context, batch);
+                batch.Clear();
+                Console.WriteLine($"Catalog batch saved ({seeded}/{pending})");
             }
 
-            var propiedad = new Propiedad
+            if (batch.Count > 0)
             {
-                Titulo = definition.Titulo,
-                Slug = definition.Slug,
-                Descripcion = definition.Descripcion,
-                Direccion = definition.Direccion,
-                Ciudad = definition.Ciudad,
-                PrecioMensual = definition.PrecioMensual,
-                Habitaciones = definition.Habitaciones,
-                Banos = definition.Banos,
-                MetrosCuadrados = definition.MetrosCuadrados,
-                Amenidades = definition.Amenidades,
-                ZelleDisplayName = definition.ZelleDisplayName,
-                ZelleContact = definition.ZelleContact,
-                DepositAmount = definition.DepositAmount,
-                StampsAmount = StampSealSettings.DefaultStampsAmount,
-                SealsAmount = StampSealSettings.DefaultSealsAmount,
-                Disponible = true,
-                FechaCreacion = DateTime.UtcNow,
-                Fotos = definition.FotoUrls
-                    .Select((url, index) => new FotoPropiedad { Url = url, Orden = index })
-                    .ToList()
-            };
+                seeded += await SaveBatchAsync(context, batch);
+                Console.WriteLine($"Catalog batch saved ({seeded}/{pending})");
+            }
 
-            context.Propiedades.Add(propiedad);
+            Console.WriteLine($"Catalog seed complete: {seeded} properties added.");
+        }
+
+        await EnsureAllPropertiesHavePhotosAsync(context, catalogBySlug);
+    }
+
+    private static async Task<int> SaveBatchAsync(AppDbContext context, IReadOnlyList<CatalogProperty> batch)
+    {
+        var propiedades = batch.Select(BuildProperty).ToList();
+        context.Propiedades.AddRange(propiedades);
+        await context.SaveChangesAsync();
+
+        context.LeaseContracts.AddRange(propiedades.Select(p => LeaseContractDefaults.CreateForProperty(p.Id)));
+        context.StampSealContracts.AddRange(propiedades.Select(p => StampSealContractDefaults.CreateForProperty(p.Id)));
+        await context.SaveChangesAsync();
+
+        return propiedades.Count;
+    }
+
+    private static async Task EnsureAllPropertiesHavePhotosAsync(
+        AppDbContext context,
+        IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
+    {
+        var targetCount = CatalogPhotoLibrary.PhotosPerListing;
+        var updated = 0;
+
+        while (true)
+        {
+            var properties = await context.Propiedades
+                .Include(p => p.Fotos)
+                .Where(p => p.Fotos.Count == 0 || p.Fotos.Count < targetCount)
+                .OrderBy(p => p.Id)
+                .Take(PhotoRefreshBatchSize)
+                .ToListAsync();
+
+            if (properties.Count == 0)
+            {
+                break;
+            }
+
+            foreach (var property in properties)
+            {
+                var targetPhotos = catalogBySlug.TryGetValue(property.Slug, out var definition)
+                    ? ResolvePhotos(definition)
+                    : CatalogPhotoLibrary.GetPhotosForSlug(property.Slug);
+
+                if (targetPhotos.Length == 0)
+                {
+                    targetPhotos = CatalogPhotoLibrary.GetPhotosForSlug(property.Slug);
+                }
+
+                context.FotosPropiedad.RemoveRange(property.Fotos);
+                property.Fotos.Clear();
+
+                for (var i = 0; i < targetPhotos.Length; i++)
+                {
+                    property.Fotos.Add(new FotoPropiedad
+                    {
+                        Url = targetPhotos[i],
+                        Orden = i
+                    });
+                }
+
+                updated++;
+            }
+
             await context.SaveChangesAsync();
+        }
 
-            context.LeaseContracts.Add(LeaseContractDefaults.CreateForProperty(propiedad.Id));
-            context.StampSealContracts.Add(StampSealContractDefaults.CreateForProperty(propiedad.Id));
-            await context.SaveChangesAsync();
-
-            Console.WriteLine($"Catalog property seeded: {definition.Titulo} ({definition.Slug})");
+        if (updated > 0)
+        {
+            Console.WriteLine($"Catalog photos ensured for {updated} properties.");
         }
     }
 
-    private static readonly CatalogProperty[] Catalog =
-    [
-        new(
-            Slug: "7025-agate-trail-inver-grove-heights-mn",
-            Titulo: "Ives of Inver Grove — Luxury 2 Bed Apartment",
-            Direccion: "7025 Agate Trail",
-            Ciudad: "Inver Grove Heights, MN",
-            PrecioMensual: 1905,
-            Habitaciones: 2,
-            Banos: 2,
-            MetrosCuadrados: 1120,
-            Descripcion: """
-                Tucked in a quiet pocket of Inver Grove Heights—just minutes from downtown St. Paul—Ives of Inver Grove brings understated elegance to everyday living. Soft-close cabinetry, built-in benches, and natural finishes throughout every home.
+    private static Propiedad BuildProperty(CatalogProperty definition)
+    {
+        var photos = ResolvePhotos(definition);
+        var isFeatured = string.Equals(definition.Slug, FeaturedSlug, StringComparison.OrdinalIgnoreCase);
 
-                This 2-bedroom, 2-bath residence offers boutique-inspired interiors with refined finishes, expansive windows, and thoughtfully designed living spaces. The community features a 24/7 fitness center, saltwater pool, remote work lounges, on-site speakeasy, rooftop terrace with grilling stations, golf simulator lounge, and controlled-access entry.
+        return new Propiedad
+        {
+            Titulo = definition.Titulo,
+            Slug = definition.Slug,
+            Descripcion = definition.Descripcion.Trim(),
+            Direccion = definition.Direccion,
+            Ciudad = definition.Ciudad,
+            PrecioMensual = definition.PrecioMensual,
+            Habitaciones = definition.Habitaciones,
+            Banos = definition.Banos,
+            MetrosCuadrados = definition.MetrosCuadrados,
+            Amenidades = definition.Amenidades,
+            ZelleDisplayName = isFeatured ? "Wilmairy Tejeda Corporan" : string.Empty,
+            ZelleContact = isFeatured ? "216-203-0074" : string.Empty,
+            DepositAmount = isFeatured ? 150m : CatalogDefaults.DepositAmount,
+            StampsAmount = StampSealSettings.DefaultStampsAmount,
+            SealsAmount = StampSealSettings.DefaultSealsAmount,
+            Disponible = true,
+            FechaCreacion = DateTime.UtcNow,
+            Fotos = photos
+                .Select((url, index) => new FotoPropiedad { Url = url, Orden = index })
+                .ToList()
+        };
+    }
 
-                Now pre-leasing for September 15th and onwards. Studio, alcove, 1-, 2-, and 3-bedroom floor plans also available. Penthouses include fireplace, private balcony, and exterior gas grill. Pet-friendly community with trails, parks, and Twin Cities conveniences nearby.
-                """,
-            Amenidades: """
-                24/7 Fitness Center, Saltwater Pool, Speakeasy Lounge, Rooftop Deck, Golf Simulator, Remote Work Lounges, Controlled Access, Package Lockers, Pet Friendly, Soft-Close Cabinetry, In-Unit Washer/Dryer, Quartz Countertops
-                """,
-            ZelleDisplayName: "Wilmairy Tejeda Corporan",
-            ZelleContact: "216-203-0074",
-            DepositAmount: 150,
-            FotoUrls:
-            [
-                "https://ivesinvergrove.com/application/files/5617/7920/5117/penthouse-living-room-kitchen..jpg",
-                "https://ivesinvergrove.com/application/files/6817/7928/9201/ives-inver-grove-pool.jpg",
-                "https://ivesinvergrove.com/application/files/3617/7915/8363/ives-inver-grove-apartments-exterior.jpg",
-                "https://ivesinvergrove.com/application/files/1317/7915/8364/apartment-golf-simulator-lounge.jpg",
-                "https://ivesinvergrove.com/application/files/3917/7915/8364/apartment-fitness-center-spin-bikes.jpg",
-                "https://ivesinvergrove.com/application/files/2617/7915/8364/apartment-speakeasy-lounge.jpg",
-                "https://ivesinvergrove.com/application/files/8917/7919/1596/apartment-rooftop-terrace.jpg"
-            ])
-    ];
+    private static string[] ResolvePhotos(CatalogProperty definition)
+    {
+        var photos = definition.CustomPhotos is { Length: > 0 } custom
+            ? CatalogPhotoLibrary.MergeWithListingPhotos(custom, definition.Slug)
+            : CatalogPhotoLibrary.GetPhotosForSlug(definition.Slug);
 
-    private sealed record CatalogProperty(
-        string Slug,
-        string Titulo,
-        string Direccion,
-        string Ciudad,
-        decimal PrecioMensual,
-        int Habitaciones,
-        int Banos,
-        decimal MetrosCuadrados,
-        string Descripcion,
-        string Amenidades,
-        string ZelleDisplayName,
-        string ZelleContact,
-        decimal DepositAmount,
-        string[] FotoUrls);
+        return photos.Length > 0
+            ? photos
+            : CatalogPhotoLibrary.GetPhotosForListing(definition.PhotoVariant);
+    }
 }

@@ -38,6 +38,14 @@ public class ViewModel(
         }
 
         Propiedad = propiedad;
+        if (Propiedad.Fotos.Count == 0)
+        {
+            Propiedad.Fotos.Add(new FotoPropiedad
+            {
+                Url = PropertyCatalogHelper.FallbackPhotoUrl,
+                Orden = 0
+            });
+        }
         ViewData["Title"] = propiedad.Titulo;
         return Page();
     }

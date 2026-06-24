@@ -1,6 +1,9 @@
 ﻿@{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
-    var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase);
+    var path = ViewContext.HttpContext.Request.Path.Value ?? "";
+    var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/rentals", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/listings", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +16,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @if (isCatalog)
+    {
+        <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+    }
     <link rel="stylesheet" href="~/ApartamentosRenta.styles.css" asp-append-version="true" />
 </head>
 <body>
