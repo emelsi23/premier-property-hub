@@ -6,7 +6,7 @@ internal static class FeaturedCatalog
     [
         new(
             "7025-agate-trail-inver-grove-heights-mn",
-            "Ives of Inver Grove — Luxury 2 Bed Apartment",
+            "Ives of Inver Grove — 2 bd · 2 ba · 7025 Agate Trail",
             "7025 Agate Trail",
             "Inver Grove Heights, MN",
             1905,

@@ -56,8 +56,73 @@ public static class PropertyCatalogSeedHelper
             Console.WriteLine($"Catalog seed complete: {seeded} properties added.");
         }
 
+        await PruneObsoleteBulkListingsAsync(context, catalogBySlug);
+        await SyncCatalogDetailsAsync(context, catalogBySlug);
         await SyncCatalogPhotosAsync(context, catalogBySlug);
         await EnsureMissingPhotosAsync(context, catalogBySlug);
+    }
+
+    private static async Task PruneObsoleteBulkListingsAsync(
+        AppDbContext context,
+        IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
+    {
+        var validSlugs = new HashSet<string>(catalogBySlug.Keys, StringComparer.OrdinalIgnoreCase);
+        var removed = await context.Propiedades
+            .Where(p => p.Slug.StartsWith("rental-us-") && !validSlugs.Contains(p.Slug))
+            .ExecuteDeleteAsync();
+
+        if (removed > 0)
+        {
+            Console.WriteLine($"Removed {removed} outdated bulk catalog listings.");
+        }
+    }
+
+    private static async Task SyncCatalogDetailsAsync(
+        AppDbContext context,
+        IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
+    {
+        var updated = 0;
+
+        foreach (var slugBatch in catalogBySlug.Keys.Chunk(PhotoRefreshBatchSize))
+        {
+            var properties = await context.Propiedades
+                .Where(p => slugBatch.Contains(p.Slug))
+                .ToListAsync();
+
+            foreach (var property in properties)
+            {
+                if (!catalogBySlug.TryGetValue(property.Slug, out var definition))
+                {
+                    continue;
+                }
+
+                var changed = false;
+                if (property.Titulo != definition.Titulo) { property.Titulo = definition.Titulo; changed = true; }
+                if (property.Direccion != definition.Direccion) { property.Direccion = definition.Direccion; changed = true; }
+                if (property.Ciudad != definition.Ciudad) { property.Ciudad = definition.Ciudad; changed = true; }
+                if (property.Descripcion != definition.Descripcion.Trim()) { property.Descripcion = definition.Descripcion.Trim(); changed = true; }
+                if (property.Amenidades != definition.Amenidades) { property.Amenidades = definition.Amenidades; changed = true; }
+                if (property.PrecioMensual != definition.PrecioMensual) { property.PrecioMensual = definition.PrecioMensual; changed = true; }
+                if (property.Habitaciones != definition.Habitaciones) { property.Habitaciones = definition.Habitaciones; changed = true; }
+                if (property.Banos != definition.Banos) { property.Banos = definition.Banos; changed = true; }
+                if (property.MetrosCuadrados != definition.MetrosCuadrados) { property.MetrosCuadrados = definition.MetrosCuadrados; changed = true; }
+
+                if (changed)
+                {
+                    updated++;
+                }
+            }
+
+            if (properties.Count > 0)
+            {
+                await context.SaveChangesAsync();
+            }
+        }
+
+        if (updated > 0)
+        {
+            Console.WriteLine($"Catalog details synced for {updated} properties.");
+        }
     }
 
     private static void ReplacePhotos(Propiedad property, IReadOnlyList<string> targetPhotos)
@@ -200,12 +265,16 @@ public static class PropertyCatalogSeedHelper
 
     private static string[] ResolvePhotos(CatalogProperty definition)
     {
-        var photos = definition.CustomPhotos is { Length: > 0 } custom
-            ? CatalogPhotoLibrary.MergeWithListingPhotos(custom, definition.Slug)
-            : CatalogPhotoLibrary.GetPhotosForSlug(definition.Slug);
+        if (definition.CustomPhotos is { Length: > 0 } custom)
+        {
+            return custom.Length >= CatalogPhotoLibrary.PhotosPerListing
+                ? custom.Take(CatalogPhotoLibrary.PhotosPerListing).ToArray()
+                : CatalogPhotoLibrary.MergeWithListingPhotos(
+                    custom,
+                    definition.Slug,
+                    Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(definition.Slug)));
+        }
 
-        return photos.Length > 0
-            ? photos
-            : CatalogPhotoLibrary.GetPhotosForListing(definition.PhotoVariant);
+        return CatalogPhotoLibrary.GetPhotosForSlug(definition.Slug);
     }
 }

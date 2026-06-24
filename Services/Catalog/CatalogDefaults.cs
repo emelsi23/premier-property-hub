@@ -19,7 +19,7 @@ internal static class CatalogDefaults
     public const decimal DepositAmount = 150m;
 
     public static string[] GetPhotos(int variant) =>
-        CatalogPhotoLibrary.GetPhotosForListing(variant, CatalogPhotoLibrary.PhotosPerListing);
+        CatalogPhotoLibrary.AssignExclusivePhotos(variant + 10_000, $"featured-{variant}");
 
     public static string BuildDescription(string name, string area, string detail) =>
         $"""

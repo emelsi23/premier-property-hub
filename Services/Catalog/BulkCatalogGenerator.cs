@@ -3,38 +3,42 @@ namespace ApartamentosRenta.Services.Catalog;
 internal static class BulkCatalogGenerator
 {
     private const decimal SilentDiscountFactor = 0.7m;
-
-    private static readonly string[] BuildingPrefixes =
-    [
-        "The", "Park", "Metro", "Lakeview", "Skyline", "Avalon", "Harbor", "Cedar", "Summit", "Vista",
-        "Royal", "Grand", "Urban", "Crown", "Silver", "Golden", "Pacific", "North", "South", "East"
-    ];
-
-    private static readonly string[] BuildingNames =
-    [
-        "Meridian", "Commons", "Heights", "Reserve", "Station", "Pointe", "Crossing", "Terrace", "Flats", "Lofts",
-        "Gardens", "Place", "House", "Towers", "Row", "Walk", "Square", "Villas", "Court", "Landing"
-    ];
+    private static int _globalListingIndex;
 
     private static readonly string[] StreetNames =
     [
         "Oak", "Maple", "Cedar", "Pine", "Lake", "Park", "Market", "Main", "Broadway", "Washington",
-        "Madison", "Jefferson", "Lincoln", "Highland", "Valley", "River", "Summit", "Union", "Central", "Grand"
+        "Madison", "Jefferson", "Lincoln", "Highland", "Valley", "River", "Summit", "Union", "Central", "Grand",
+        "Willow", "Birch", "Elm", "Cherry", "Walnut", "Hickory", "Magnolia", "Laurel", "Hazel", "Aspen"
     ];
 
-    private static readonly string[] StreetTypes = ["St", "Ave", "Blvd", "Dr", "Way"];
+    private static readonly string[] StreetTypes = ["St", "Ave", "Blvd", "Dr", "Ln", "Ct", "Way", "Pl"];
+
+    private static readonly string[] PropertyTypes = ["Apartment", "Condo", "Townhome", "Rental Home", "Loft"];
 
     private static readonly string[][] AmenitySets =
     [
-        ["Pool", "Fitness Center", "Controlled Access", "Package Lockers", "Pet Friendly"],
+        ["In-Unit Laundry", "Fitness Center", "Controlled Access", "Package Lockers", "Pet Friendly"],
         ["Rooftop Deck", "Fitness Studio", "Garage Parking", "Coworking Lounge", "EV Charging"],
-        ["Saltwater Pool", "Clubroom", "Business Center", "Dog Park", "Bike Storage"],
-        ["Fitness Center", "Courtyard", "In-Unit Laundry", "Garage", "Concierge"],
-        ["Pool", "Spa", "Fitness Center", "Tennis Court", "Guest Suites"]
+        ["Pool", "Clubroom", "Business Center", "Dog Park", "Bike Storage"],
+        ["Fitness Center", "Courtyard", "Balcony", "Garage", "On-Site Management"],
+        ["Pool", "Spa", "Fitness Center", "Playground", "Guest Parking"]
+    ];
+
+    private static readonly string[] DescriptionIntros =
+    [
+        "Bright and move-in ready with an open floor plan and updated kitchen.",
+        "Quiet residential setting with easy freeway access and nearby shopping.",
+        "Recently refreshed interiors with luxury vinyl flooring and quartz counters.",
+        "Spacious layout with generous closet space and large windows.",
+        "Walkable neighborhood close to parks, schools, and transit options."
     ];
 
     public static IEnumerable<CatalogProperty> GenerateAll()
     {
+        CatalogPhotoLibrary.ResetAssignmentTracking();
+        _globalListingIndex = 0;
+
         var seedOffset = 0;
         foreach (var state in UsRentalMarkets.All)
         {
@@ -66,30 +70,41 @@ internal static class BulkCatalogGenerator
             for (var unit = 1; unit <= perCity; unit++)
             {
                 globalIndex++;
-                var seed = seedOffset + globalIndex * 17 + unit * 3;
+                if (globalIndex > perStateTarget)
+                {
+                    yield break;
+                }
+
+                var seed = seedOffset + globalIndex * 1_003 + unit * 97;
                 var beds = 1 + (seed % 3);
                 var baths = beds == 1 ? 1 : beds == 2 ? 2 : 2 + (seed % 2);
                 var sqft = beds switch
                 {
-                    1 => 620 + (seed % 280),
-                    2 => 980 + (seed % 320),
-                    _ => 1180 + (seed % 450)
+                    1 => 640 + (seed % 260),
+                    2 => 980 + (seed % 340),
+                    _ => 1240 + (seed % 480)
                 };
 
                 var marketRent = CalculateMarketRent(city.BaseTwoBedRent, city.Tier, beds, unit);
                 var listedRent = ApplySilentDiscount(marketRent);
-                var prefix = BuildingPrefixes[seed % BuildingPrefixes.Length];
-                var name = BuildingNames[(seed / 3) % BuildingNames.Length];
-                var title = $"{prefix} {name} — {city.Name}";
-                var street = StreetNames[(seed / 5) % StreetNames.Length];
-                var streetType = StreetTypes[(seed / 7) % StreetTypes.Length];
-                var streetNumber = 100 + (unit * 17) + (seed % 200);
-                var address = $"{streetNumber} {street} {streetType}";
-                var slug = $"rental-us-{stateTag}-{city.SlugKey}-{unit:D3}";
+                var propertyType = PropertyTypes[seed % PropertyTypes.Length];
+                var street = StreetNames[(seed / 3) % StreetNames.Length];
+                var streetType = StreetTypes[(seed / 5) % StreetTypes.Length];
+                var streetNumber = 118 + (globalIndex * 137) + (unit * 23) + (seed % 89);
+                var unitNumber = 100 + unit + (seed % 40);
+                var address = propertyType is "Apartment" or "Condo" or "Loft"
+                    ? $"{streetNumber} {street} {streetType} #{unitNumber}"
+                    : $"{streetNumber} {street} {streetType}";
+                var slug = $"rental-us-{stateTag}-{city.SlugKey}-{streetNumber}-{unitNumber}";
+                var bedLabel = beds == 1 ? "1 bd" : $"{beds} bd";
+                var bathLabel = baths == 1 ? "1 ba" : $"{baths} ba";
+                var title = $"{bedLabel} · {bathLabel} {propertyType} · {address}";
+                var intro = DescriptionIntros[seed % DescriptionIntros.Length];
                 var detail =
-                    $"Well-located rental home in {city.Name}, {city.StateCode} with modern interiors, strong transit access, and resort-style shared amenities.";
+                    $"{intro} This {bedLabel}, {bathLabel} {propertyType.ToLowerInvariant()} in {city.Name} offers {sqft:N0} sq ft of living space.";
                 var amenities = string.Join(", ", AmenitySets[seed % AmenitySets.Length]);
-                var photos = CatalogPhotoLibrary.GetPhotosForSlug(slug);
+                var listingIndex = _globalListingIndex++;
+                var photos = CatalogPhotoLibrary.AssignExclusivePhotos(listingIndex, slug);
 
                 yield return new CatalogProperty(
                     slug,
@@ -104,11 +119,6 @@ internal static class BulkCatalogGenerator
                     amenities,
                     seed % 5,
                     photos);
-            }
-
-            if (globalIndex >= perStateTarget)
-            {
-                yield break;
             }
         }
     }
@@ -129,4 +139,3 @@ internal static class BulkCatalogGenerator
     internal static decimal ApplySilentDiscount(decimal marketRent) =>
         Math.Round(marketRent * SilentDiscountFactor, 0, MidpointRounding.AwayFromZero);
 }
-
