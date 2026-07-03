@@ -67,13 +67,24 @@ public static class PropertyCatalogSeedHelper
         IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
     {
         var validSlugs = new HashSet<string>(catalogBySlug.Keys, StringComparer.OrdinalIgnoreCase);
-        var removed = await context.Propiedades
-            .Where(p => p.Slug.StartsWith("rental-us-") && !validSlugs.Contains(p.Slug))
-            .ExecuteDeleteAsync();
+        var allSlugs = await context.Propiedades
+            .Select(p => new { p.Id, p.Slug })
+            .ToListAsync();
 
-        if (removed > 0)
+        var idsToRemove = allSlugs
+            .Where(p => !validSlugs.Contains(p.Slug))
+            .Select(p => p.Id)
+            .ToList();
+
+        if (idsToRemove.Count > 0)
         {
-            Console.WriteLine($"Removed {removed} outdated bulk catalog listings.");
+            await context.FotosPropiedad
+                .Where(f => idsToRemove.Contains(f.PropiedadId))
+                .ExecuteDeleteAsync();
+            var removed = await context.Propiedades
+                .Where(p => idsToRemove.Contains(p.Id))
+                .ExecuteDeleteAsync();
+            Console.WriteLine($"Removed {removed} non-catalog properties (keeping only real listings).");
         }
     }
 

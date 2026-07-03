@@ -11,8 +11,7 @@ internal static class CatalogIndex
         _bySlug ??= All.ToDictionary(p => p.Slug, StringComparer.OrdinalIgnoreCase);
 
     private static CatalogProperty[] BuildAll() =>
-        FeaturedCatalog.Properties
-            .Concat(BulkCatalogGenerator.GenerateAll())
+        RealListingsCatalog.Properties
             .GroupBy(p => p.Slug, StringComparer.OrdinalIgnoreCase)
             .Select(g => g.First())
             .ToArray();
