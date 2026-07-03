@@ -194,14 +194,13 @@ public static class PropertyCatalogSeedHelper
         AppDbContext context,
         IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
     {
-        var targetCount = CatalogPhotoLibrary.PhotosPerListing;
         var updated = 0;
 
         while (true)
         {
             var properties = await context.Propiedades
                 .Include(p => p.Fotos)
-                .Where(p => p.Fotos.Count == 0 || p.Fotos.Count < targetCount)
+                .Where(p => p.Fotos.Count == 0)
                 .OrderBy(p => p.Id)
                 .Take(PhotoRefreshBatchSize)
                 .ToListAsync();
@@ -278,12 +277,7 @@ public static class PropertyCatalogSeedHelper
     {
         if (definition.CustomPhotos is { Length: > 0 } custom)
         {
-            return custom.Length >= CatalogPhotoLibrary.PhotosPerListing
-                ? custom.Take(CatalogPhotoLibrary.PhotosPerListing).ToArray()
-                : CatalogPhotoLibrary.MergeWithListingPhotos(
-                    custom,
-                    definition.Slug,
-                    Math.Abs(StringComparer.OrdinalIgnoreCase.GetHashCode(definition.Slug)));
+            return custom;
         }
 
         return CatalogPhotoLibrary.GetPhotosForSlug(definition.Slug);
