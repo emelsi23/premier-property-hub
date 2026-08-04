@@ -32,7 +32,19 @@ public static class DatabaseExtensions
         var databaseUrl = configuration["DATABASE_URL"] ?? Environment.GetEnvironmentVariable("DATABASE_URL");
         if (!string.IsNullOrWhiteSpace(databaseUrl))
         {
-            return ParseDatabaseUrl(databaseUrl);
+            return NormalizePostgresConnectionString(databaseUrl);
+        }
+
+        var pgHost = configuration["PGHOST"] ?? Environment.GetEnvironmentVariable("PGHOST");
+        if (!string.IsNullOrWhiteSpace(pgHost))
+        {
+            var pgPort = configuration["PGPORT"] ?? Environment.GetEnvironmentVariable("PGPORT") ?? "5432";
+            var pgUser = configuration["PGUSER"] ?? Environment.GetEnvironmentVariable("PGUSER") ?? "";
+            var pgPassword = configuration["PGPASSWORD"] ?? Environment.GetEnvironmentVariable("PGPASSWORD") ?? "";
+            var pgDatabase = configuration["PGDATABASE"] ?? Environment.GetEnvironmentVariable("PGDATABASE") ?? "";
+
+            return AppendPostgresOptions(
+                $"Host={pgHost};Port={pgPort};Database={pgDatabase};Username={pgUser};Password={pgPassword};SSL Mode=Require;Trust Server Certificate=true");
         }
 
         return configuration.GetConnectionString("DefaultConnection")
@@ -46,7 +58,7 @@ public static class DatabaseExtensions
         || (connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase)
             && connectionString.Contains("Username=", StringComparison.OrdinalIgnoreCase));
 
-    private static string ParseDatabaseUrl(string databaseUrl)
+    private static string NormalizePostgresConnectionString(string databaseUrl)
     {
         if (databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase)
             || databaseUrl.StartsWith("Server=", StringComparison.OrdinalIgnoreCase))
@@ -54,19 +66,25 @@ public static class DatabaseExtensions
             return AppendPostgresOptions(databaseUrl);
         }
 
-        var uri = new Uri(databaseUrl);
-        var userInfo = uri.UserInfo.Split(':', 2);
-        var username = Uri.UnescapeDataString(userInfo[0]);
-        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
-        var database = uri.AbsolutePath.TrimStart('/');
-        var port = uri.Port > 0 ? uri.Port : 5432;
+        // Npgsql parses postgres:// URIs correctly, including encoded passwords.
+        // Manual Uri parsing breaks Render URLs when passwords contain @, /, etc.
+        if (databaseUrl.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+            || databaseUrl.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        {
+            return databaseUrl;
+        }
 
-        return AppendPostgresOptions(
-            $"Host={uri.Host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Prefer;Trust Server Certificate=true");
+        return AppendPostgresOptions(databaseUrl);
     }
 
     private static string AppendPostgresOptions(string connectionString)
     {
+        if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+            || connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        {
+            return connectionString;
+        }
+
         if (connectionString.Contains("Gss Encryption Mode=", StringComparison.OrdinalIgnoreCase))
         {
             return connectionString;
