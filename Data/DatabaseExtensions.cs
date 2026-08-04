@@ -29,12 +29,6 @@ public static class DatabaseExtensions
 
     public static string ResolveConnectionString(IConfiguration configuration)
     {
-        var databaseUrl = configuration["DATABASE_URL"] ?? Environment.GetEnvironmentVariable("DATABASE_URL");
-        if (!string.IsNullOrWhiteSpace(databaseUrl))
-        {
-            return NormalizePostgresConnectionString(databaseUrl);
-        }
-
         var pgHost = configuration["PGHOST"] ?? Environment.GetEnvironmentVariable("PGHOST");
         if (!string.IsNullOrWhiteSpace(pgHost))
         {
@@ -45,6 +39,12 @@ public static class DatabaseExtensions
 
             return AppendPostgresOptions(
                 $"Host={pgHost};Port={pgPort};Database={pgDatabase};Username={pgUser};Password={pgPassword};SSL Mode=Require;Trust Server Certificate=true");
+        }
+
+        var databaseUrl = configuration["DATABASE_URL"] ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+        if (!string.IsNullOrWhiteSpace(databaseUrl))
+        {
+            return NormalizePostgresConnectionString(databaseUrl.Trim());
         }
 
         return configuration.GetConnectionString("DefaultConnection")
@@ -66,25 +66,61 @@ public static class DatabaseExtensions
             return AppendPostgresOptions(databaseUrl);
         }
 
-        // Npgsql parses postgres:// URIs correctly, including encoded passwords.
-        // Manual Uri parsing breaks Render URLs when passwords contain @, /, etc.
         if (databaseUrl.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
             || databaseUrl.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
         {
-            return databaseUrl;
+            return AppendPostgresOptions(ParsePostgresUri(databaseUrl));
         }
 
         return AppendPostgresOptions(databaseUrl);
     }
 
-    private static string AppendPostgresOptions(string connectionString)
+    private static string ParsePostgresUri(string databaseUrl)
     {
-        if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
-            || connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+        var schemeEnd = databaseUrl.IndexOf("://", StringComparison.Ordinal);
+        if (schemeEnd < 0)
         {
-            return connectionString;
+            throw new InvalidOperationException("DATABASE_URL is not a valid PostgreSQL URI.");
         }
 
+        var remainder = databaseUrl[(schemeEnd + 3)..];
+        var atIndex = remainder.LastIndexOf('@');
+        if (atIndex < 0)
+        {
+            throw new InvalidOperationException("DATABASE_URL is missing credentials.");
+        }
+
+        var userInfo = remainder[..atIndex];
+        var hostPart = remainder[(atIndex + 1)..];
+
+        var colonIndex = userInfo.IndexOf(':');
+        var username = Uri.UnescapeDataString(colonIndex >= 0 ? userInfo[..colonIndex] : userInfo);
+        var password = Uri.UnescapeDataString(colonIndex >= 0 ? userInfo[(colonIndex + 1)..] : string.Empty);
+
+        var slashIndex = hostPart.IndexOf('/');
+        var hostPort = slashIndex >= 0 ? hostPart[..slashIndex] : hostPart;
+        var database = slashIndex >= 0 ? hostPart[(slashIndex + 1)..] : string.Empty;
+
+        var questionIndex = database.IndexOf('?');
+        if (questionIndex >= 0)
+        {
+            database = database[..questionIndex];
+        }
+
+        var port = 5432;
+        var host = hostPort;
+        var portSeparator = hostPort.LastIndexOf(':');
+        if (portSeparator > 0 && int.TryParse(hostPort[(portSeparator + 1)..], out var parsedPort))
+        {
+            host = hostPort[..portSeparator];
+            port = parsedPort;
+        }
+
+        return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    }
+
+    private static string AppendPostgresOptions(string connectionString)
+    {
         if (connectionString.Contains("Gss Encryption Mode=", StringComparison.OrdinalIgnoreCase))
         {
             return connectionString;
