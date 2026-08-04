@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 
 namespace ApartamentosRenta.Data;
 
@@ -8,6 +9,7 @@ public static class DatabaseExtensions
     public static IServiceCollection AddAppDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = ResolveConnectionString(configuration);
+        Console.WriteLine($"Database target: {DescribeConnection(connectionString)}");
 
         services.AddDbContext<AppDbContext>(options =>
         {
@@ -29,22 +31,22 @@ public static class DatabaseExtensions
 
     public static string ResolveConnectionString(IConfiguration configuration)
     {
-        var pgHost = configuration["PGHOST"] ?? Environment.GetEnvironmentVariable("PGHOST");
-        if (!string.IsNullOrWhiteSpace(pgHost))
-        {
-            var pgPort = configuration["PGPORT"] ?? Environment.GetEnvironmentVariable("PGPORT") ?? "5432";
-            var pgUser = configuration["PGUSER"] ?? Environment.GetEnvironmentVariable("PGUSER") ?? "";
-            var pgPassword = configuration["PGPASSWORD"] ?? Environment.GetEnvironmentVariable("PGPASSWORD") ?? "";
-            var pgDatabase = configuration["PGDATABASE"] ?? Environment.GetEnvironmentVariable("PGDATABASE") ?? "";
-
-            return AppendPostgresOptions(
-                $"Host={pgHost};Port={pgPort};Database={pgDatabase};Username={pgUser};Password={pgPassword};SSL Mode=Require;Trust Server Certificate=true");
-        }
-
-        var databaseUrl = configuration["DATABASE_URL"] ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+        var databaseUrl = SanitizeEnvValue(
+            configuration["DATABASE_URL"] ?? Environment.GetEnvironmentVariable("DATABASE_URL"));
         if (!string.IsNullOrWhiteSpace(databaseUrl))
         {
-            return NormalizePostgresConnectionString(databaseUrl.Trim());
+            return NormalizePostgresConnectionString(databaseUrl);
+        }
+
+        var pgHost = SanitizeEnvValue(configuration["PGHOST"] ?? Environment.GetEnvironmentVariable("PGHOST"));
+        if (!string.IsNullOrWhiteSpace(pgHost))
+        {
+            var pgPort = SanitizeEnvValue(configuration["PGPORT"] ?? Environment.GetEnvironmentVariable("PGPORT")) ?? "5432";
+            var pgUser = SanitizeEnvValue(configuration["PGUSER"] ?? Environment.GetEnvironmentVariable("PGUSER")) ?? "";
+            var pgPassword = SanitizeEnvValue(configuration["PGPASSWORD"] ?? Environment.GetEnvironmentVariable("PGPASSWORD")) ?? "";
+            var pgDatabase = SanitizeEnvValue(configuration["PGDATABASE"] ?? Environment.GetEnvironmentVariable("PGDATABASE")) ?? "";
+
+            return BuildPostgresConnectionString(pgHost, int.Parse(pgPort), pgDatabase, pgUser, pgPassword);
         }
 
         return configuration.GetConnectionString("DefaultConnection")
@@ -63,16 +65,17 @@ public static class DatabaseExtensions
         if (databaseUrl.StartsWith("Host=", StringComparison.OrdinalIgnoreCase)
             || databaseUrl.StartsWith("Server=", StringComparison.OrdinalIgnoreCase))
         {
-            return AppendPostgresOptions(databaseUrl);
+            return databaseUrl;
         }
 
         if (databaseUrl.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
             || databaseUrl.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
         {
-            return AppendPostgresOptions(ParsePostgresUri(databaseUrl));
+            return ParsePostgresUri(databaseUrl);
         }
 
-        return AppendPostgresOptions(databaseUrl);
+        throw new InvalidOperationException(
+            "DATABASE_URL must be a postgres:// URI or Host= connection string.");
     }
 
     private static string ParsePostgresUri(string databaseUrl)
@@ -116,16 +119,59 @@ public static class DatabaseExtensions
             port = parsedPort;
         }
 
-        return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        return BuildPostgresConnectionString(host, port, database, username, password);
     }
 
-    private static string AppendPostgresOptions(string connectionString)
+    private static string BuildPostgresConnectionString(
+        string host, int port, string database, string username, string password)
     {
-        if (connectionString.Contains("Gss Encryption Mode=", StringComparison.OrdinalIgnoreCase))
+        var builder = new NpgsqlConnectionStringBuilder
         {
-            return connectionString;
+            Host = host,
+            Port = port,
+            Database = database,
+            Username = username,
+            Password = password,
+            SslMode = SslMode.Require,
+            GssEncryptionMode = GssEncryptionMode.Disable
+        };
+
+        return builder.ConnectionString;
+    }
+
+    private static string SanitizeEnvValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
         }
 
-        return connectionString.TrimEnd(';') + ";Gss Encryption Mode=Disable";
+        value = value.Trim().Trim('"', '\'');
+
+        if (value.StartsWith("${", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                "DATABASE_URL looks like an unresolved template. Link the database from Render Environment settings.");
+        }
+
+        return value;
+    }
+
+    private static string DescribeConnection(string connectionString)
+    {
+        if (connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+        {
+            return "SQLite (local)";
+        }
+
+        try
+        {
+            var builder = new NpgsqlConnectionStringBuilder(connectionString);
+            return $"PostgreSQL host={builder.Host}; database={builder.Database}";
+        }
+        catch
+        {
+            return "PostgreSQL (invalid connection string format)";
+        }
     }
 }
