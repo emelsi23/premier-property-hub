@@ -1,0 +1,8 @@
+@model string
+<div class="brand-lockup @(string.IsNullOrEmpty(Model) ? "" : $"brand-lockup--{Model}")">
+    <span class="brand-lockup-name">Premier Property Hub</span>
+    <span class="brand-lockup-by">
+        <span class="brand-lockup-by-text">by</span>
+        <img src="~/images/remax-logo.svg" alt="RE/MAX" class="brand-lockup-remax" asp-append-version="true" />
+    </span>
+</div>

@@ -19,8 +19,8 @@
 <body class="admin-login-page">
     <div class="admin-login-card">
         <div class="text-center mb-4">
-            <img src="~/images/remax-logo.svg" alt="RE/MAX" class="admin-login-logo mb-3" asp-append-version="true" />
-            <p class="text-muted small mb-0">Acceso administrador</p>
+            <partial name="_BrandLockup" model="@("admin")" />
+            <p class="text-muted small mb-0 mt-3">Acceso administrador</p>
         </div>
 
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))

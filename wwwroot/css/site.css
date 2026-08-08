@@ -9,6 +9,159 @@
   --wa-green-hover: #1ebe57;
 }
 
+/* Premier Property Hub brand lockup */
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.brand-lockup-link {
+  text-decoration: none;
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.brand-lockup-link:hover {
+  opacity: 0.92;
+}
+
+.brand-lockup-name {
+  font-weight: 800;
+  color: var(--brand-dark);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+.brand-lockup-by {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.brand-lockup-by-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.brand-lockup-remax {
+  height: 20px;
+  width: auto;
+  max-width: 88px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.brand-lockup--nav .brand-lockup-name {
+  font-size: clamp(1.0625rem, 3.2vw, 1.3125rem);
+}
+
+.brand-lockup--nav .brand-lockup-remax {
+  height: 22px;
+  max-width: 92px;
+}
+
+.brand-lockup--hero .brand-lockup-name {
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  white-space: normal;
+}
+
+.brand-lockup--hero .brand-lockup-remax {
+  height: clamp(24px, 4vw, 32px);
+  max-width: 112px;
+}
+
+.brand-lockup--hero .brand-lockup-by-text {
+  font-size: 0.875rem;
+}
+
+.brand-lockup--hero {
+  margin-bottom: 0.25rem;
+}
+
+.brand-lockup--listing .brand-lockup-name {
+  font-size: clamp(1.125rem, 3.5vw, 1.4375rem);
+}
+
+.brand-lockup--listing .brand-lockup-remax {
+  height: 24px;
+  max-width: 96px;
+}
+
+.brand-lockup--footer .brand-lockup-name {
+  font-size: 1.0625rem;
+}
+
+.brand-lockup--footer .brand-lockup-remax {
+  height: 20px;
+  max-width: 84px;
+}
+
+.brand-lockup--contract {
+  align-items: center;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.brand-lockup--contract .brand-lockup-name {
+  font-size: clamp(1.25rem, 4vw, 1.625rem);
+  white-space: normal;
+}
+
+.brand-lockup--contract .brand-lockup-by {
+  justify-content: center;
+}
+
+.brand-lockup--contract .brand-lockup-remax {
+  height: 26px;
+  max-width: 104px;
+}
+
+.brand-lockup--admin {
+  align-items: center;
+  text-align: center;
+}
+
+.brand-lockup--admin .brand-lockup-name {
+  font-size: clamp(1.3125rem, 4vw, 1.5rem);
+  white-space: normal;
+}
+
+.brand-lockup--admin .brand-lockup-by {
+  justify-content: center;
+}
+
+.brand-lockup--admin .brand-lockup-remax {
+  height: 28px;
+  max-width: 108px;
+}
+
+@media (max-width: 420px) {
+  .brand-lockup--nav .brand-lockup-name {
+    font-size: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .brand-lockup--listing .brand-lockup-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
 /* Site header (catalog / main layout) */
 .site-header {
   background: #fff;
@@ -244,14 +397,6 @@
 }
 
 @media (max-width: 420px) {
-  .site-brand-text-compact {
-    display: none;
-  }
-
-  .site-brand-logo {
-    max-width: 132px;
-  }
-
   .site-wa-chip-text {
     display: none;
   }
@@ -275,8 +420,8 @@
   }
 
   .site-brand {
-    flex: 0 1 auto;
-    max-width: 280px;
+    flex: 1 1 auto;
+    max-width: min(100%, 360px);
   }
 
   .site-brand-name,
@@ -1633,26 +1778,9 @@ body {
     padding: 0.75rem 1rem;
   }
 
-  .listing-logo {
-    height: 28px;
-    max-width: 108px;
-    flex-shrink: 0;
-  }
-
-  .listing-brand {
-    font-size: 0.875rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-  }
-
-  .listing-brand-sub {
-    font-size: 0.6875rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
+  .listing-header-brand {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 }
 
