@@ -9,6 +9,7 @@ public static class AgentSeedHelper
     public static async Task EnsureSampleAgentAsync(AppDbContext context)
     {
         await EnsureAgentAsync(context, BuildMariaAngelica());
+        await EnsureAgentAsync(context, BuildRobertoJGuzman());
         await EnsureAgentAsync(context, BuildSofiaRamirez());
     }
 
@@ -77,6 +78,35 @@ public static class AgentSeedHelper
         TiempoRespuestaHoras = 1m,
         PorcentajeRespuesta = 99,
         CodigoVerificacion = "PPH-M8A3",
+        Verificado = true,
+        Activo = true,
+        FechaVerificacion = DateTime.UtcNow,
+        FechaCreacion = DateTime.UtcNow,
+        FechaActualizacion = DateTime.UtcNow
+    };
+
+    private static Agente BuildRobertoJGuzman() => new()
+    {
+        NombreCompleto = "Roberto J. Guzman",
+        Slug = "roberto-j-guzman",
+        FotoUrl = "/images/agents/roberto-j-guzman.png",
+        RolTitulo = "Agente inmobiliario licenciado · California DRE",
+        Calificacion = 4.8m,
+        TotalResenas = 156,
+        NumeroLicencia = "02154783",
+        EstadoLicencia = "California",
+        AnosExperiencia = 10,
+        Biografia =
+            "Agente licenciado por el California Department of Real Estate (DRE) con más de diez años en el mercado de alquileres residenciales. Atiendo clientes en Los Angeles, Orange County, San Diego y el Bay Area con un proceso transparente: perfil verificable, visitas coordinadas, contratos claros y respuesta rápida en español e inglés. Puede confirmar mi licencia y código de verificación en este perfil oficial antes de cualquier trámite.",
+        WhatsAppNumber = WhatsAppLinkHelper.DefaultNumber,
+        Email = "roberto.guzman@premierpropertyhub.com",
+        Telefono = "(213) 847-2941",
+        AreasServicio = "Los Angeles, Orange County, San Diego, San Francisco, Sacramento, California",
+        Idiomas = "Español, Inglés",
+        PropiedadesActivas = 36,
+        TiempoRespuestaHoras = 1.2m,
+        PorcentajeRespuesta = 97,
+        CodigoVerificacion = "PPH-RJG7",
         Verificado = true,
         Activo = true,
         FechaVerificacion = DateTime.UtcNow,
