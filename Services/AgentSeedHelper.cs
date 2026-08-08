@@ -100,7 +100,7 @@ public static class AgentSeedHelper
             "Agente licenciado por el California Department of Real Estate (DRE) con más de diez años en el mercado de alquileres residenciales. Atiendo clientes en Los Angeles, Orange County, San Diego y el Bay Area con un proceso transparente: perfil verificable, visitas coordinadas, contratos claros y respuesta rápida en español e inglés. Puede confirmar mi licencia y código de verificación en este perfil oficial antes de cualquier trámite.",
         WhatsAppNumber = WhatsAppLinkHelper.DefaultNumber,
         Email = "roberto.guzman@premierpropertyhub.com",
-        Telefono = "(213) 847-2941",
+        Telefono = "+1 (945) 384-6408",
         AreasServicio = "Los Angeles, Orange County, San Diego, San Francisco, Sacramento, California",
         Idiomas = "Español, Inglés",
         PropiedadesActivas = 36,

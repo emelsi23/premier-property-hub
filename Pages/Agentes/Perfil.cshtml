@@ -1,10 +1,13 @@
 @page "/agente/{slug}"
+@using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Agentes.PerfilModel
 @{
     ViewData["Title"] = Model.PerfilAgente.NombreCompleto;
     var agente = Model.PerfilAgente;
     var stars = (int)Math.Round(agente.Calificacion);
     var photoFallback = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=640&q=80";
+    var telDigits = WhatsAppLinkHelper.NormalizeNumber(
+        string.IsNullOrWhiteSpace(agente.Telefono) ? agente.WhatsAppNumber : agente.Telefono);
 }
 
 <link rel="stylesheet" href="~/css/agent.css" asp-append-version="true" />
@@ -156,7 +159,7 @@
             <ul class="agent-contact-list">
                 @if (!string.IsNullOrWhiteSpace(agente.Telefono))
                 {
-                    <li><span>Teléfono</span><strong>@agente.Telefono</strong></li>
+                    <li><span>Teléfono</span><strong><a href="tel:+@telDigits" class="text-decoration-none">@agente.Telefono</a></strong></li>
                 }
                 @if (!string.IsNullOrWhiteSpace(agente.Email))
                 {
