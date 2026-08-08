@@ -6,80 +6,80 @@ namespace ApartamentosRenta.Pages.Admin;
 
 public class PropertyInput
 {
-    [Required, StringLength(120), Display(Name = "Title")]
+    [Required, StringLength(120), Display(Name = "Título")]
     public string Titulo { get; set; } = string.Empty;
 
-    [Required, StringLength(2000), Display(Name = "Description")]
+    [Required, StringLength(2000), Display(Name = "Descripción")]
     public string Descripcion { get; set; } = string.Empty;
 
-    [Required, StringLength(200), Display(Name = "Address")]
+    [Required, StringLength(200), Display(Name = "Dirección")]
     public string Direccion { get; set; } = string.Empty;
 
-    [Required, StringLength(80), Display(Name = "City")]
+    [Required, StringLength(80), Display(Name = "Ciudad")]
     public string Ciudad { get; set; } = string.Empty;
 
-    [Range(1, 999999), Display(Name = "Monthly rent")]
+    [Range(1, 999999), Display(Name = "Alquiler mensual")]
     public decimal PrecioMensual { get; set; }
 
-    [Range(0, 20), Display(Name = "Bedrooms")]
+    [Range(0, 20), Display(Name = "Habitaciones")]
     public int Habitaciones { get; set; } = 1;
 
-    [Range(1, 10), Display(Name = "Bathrooms")]
+    [Range(1, 10), Display(Name = "Baños")]
     public int Banos { get; set; } = 1;
 
-    [Range(10, 10000), Display(Name = "Square feet")]
+    [Range(10, 10000), Display(Name = "Metros cuadrados")]
     public decimal MetrosCuadrados { get; set; }
 
-    [Display(Name = "Available")]
+    [Display(Name = "Disponible")]
     public bool Disponible { get; set; } = true;
 
-    [StringLength(500), Display(Name = "Amenities")]
+    [StringLength(500), Display(Name = "Amenidades")]
     public string Amenidades { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Add at least one photo URL")]
-    [Display(Name = "Photos (one URL per line)")]
+    [Required(ErrorMessage = "Agrega al menos una URL de foto.")]
+    [Display(Name = "Fotos (una URL por línea)")]
     public string FotosUrls { get; set; } = string.Empty;
 
-    [StringLength(120), Display(Name = "Zelle display name")]
+    [StringLength(120), Display(Name = "Nombre para mostrar en Zelle")]
     public string ZelleDisplayName { get; set; } = string.Empty;
 
-    [StringLength(120), Display(Name = "Zelle email or phone")]
+    [StringLength(120), Display(Name = "Email o teléfono Zelle")]
     public string ZelleContact { get; set; } = string.Empty;
 
-    [StringLength(30), Display(Name = "WhatsApp number (for clients)")]
+    [StringLength(30), Display(Name = "Número de WhatsApp (clientes)")]
     public string WhatsAppNumber { get; set; } = string.Empty;
 
-    [Range(1, 999999), Display(Name = "Zelle visit deposit (USD)")]
+    [Range(1, 999999), Display(Name = "Depósito de visita Zelle (USD)")]
     public decimal DepositAmount { get; set; } = VisitDepositSettings.DefaultAmount;
 
-    [Range(1, 999999), Display(Name = "Stamps fee (USD)")]
+    [Range(1, 999999), Display(Name = "Tarifa estampillas (USD)")]
     public decimal StampsAmount { get; set; } = StampSealSettings.DefaultStampsAmount;
 
-    [Range(1, 999999), Display(Name = "Seals fee (USD)")]
+    [Range(1, 999999), Display(Name = "Tarifa sellos (USD)")]
     public decimal SealsAmount { get; set; } = StampSealSettings.DefaultSealsAmount;
 
-    [StringLength(200), Display(Name = "Contract title")]
-    public string ContractTitle { get; set; } = "Residential Lease Agreement";
+    [StringLength(200), Display(Name = "Título del contrato")]
+    public string ContractTitle { get; set; } = "Contrato de arrendamiento residencial";
 
-    [StringLength(200), Display(Name = "Contract subtitle")]
-    public string ContractSubtitle { get; set; } = "Apartment rental · United States";
+    [StringLength(200), Display(Name = "Subtítulo del contrato")]
+    public string ContractSubtitle { get; set; } = "Alquiler de apartamento · Estados Unidos";
 
-    [Display(Name = "Contract notice (HTML)")]
+    [Display(Name = "Aviso del contrato (HTML)")]
     public string ContractNoticeHtml { get; set; } = LeaseContractDefaults.NoticeHtml;
 
-    [Display(Name = "Contract body (HTML)")]
+    [Display(Name = "Contenido del contrato (HTML)")]
     public string ContractBodyHtml { get; set; } = LeaseContractDefaults.BodyHtml;
 
-    [StringLength(200), Display(Name = "Stamps & seals title")]
-    public string StampSealTitle { get; set; } = "Stamps & Seals Purchase Agreement";
+    [StringLength(200), Display(Name = "Título estampillas y sellos")]
+    public string StampSealTitle { get; set; } = "Acuerdo de compra de estampillas y sellos";
 
-    [StringLength(200), Display(Name = "Stamps & seals subtitle")]
-    public string StampSealSubtitle { get; set; } = "Official documentation · United States";
+    [StringLength(200), Display(Name = "Subtítulo estampillas y sellos")]
+    public string StampSealSubtitle { get; set; } = "Documentación oficial · Estados Unidos";
 
-    [Display(Name = "Stamps & seals notice (HTML)")]
+    [Display(Name = "Aviso estampillas y sellos (HTML)")]
     public string StampSealNoticeHtml { get; set; } = StampSealContractDefaults.NoticeHtml;
 
-    [Display(Name = "Stamps & seals body (HTML)")]
+    [Display(Name = "Contenido estampillas y sellos (HTML)")]
     public string StampSealBodyHtml { get; set; } = StampSealContractDefaults.BodyHtml;
 
     public IEnumerable<string> ParseFotoUrls() =>
@@ -106,12 +106,12 @@ public class PropertyInput
         StampsAmount = entity.StampsAmount > 0 ? entity.StampsAmount : StampSealSettings.DefaultStampsAmount,
         SealsAmount = entity.SealsAmount > 0 ? entity.SealsAmount : StampSealSettings.DefaultSealsAmount,
         FotosUrls = string.Join(Environment.NewLine, entity.Fotos.OrderBy(f => f.Orden).Select(f => f.Url)),
-        ContractTitle = entity.LeaseContract?.Title ?? "Residential Lease Agreement",
-        ContractSubtitle = entity.LeaseContract?.Subtitle ?? "Apartment rental · United States",
+        ContractTitle = entity.LeaseContract?.Title ?? "Contrato de arrendamiento residencial",
+        ContractSubtitle = entity.LeaseContract?.Subtitle ?? "Alquiler de apartamento · Estados Unidos",
         ContractNoticeHtml = entity.LeaseContract?.NoticeHtml ?? LeaseContractDefaults.NoticeHtml,
         ContractBodyHtml = entity.LeaseContract?.BodyHtml ?? LeaseContractDefaults.BodyHtml,
-        StampSealTitle = entity.StampSealContract?.Title ?? "Stamps & Seals Purchase Agreement",
-        StampSealSubtitle = entity.StampSealContract?.Subtitle ?? "Official documentation · United States",
+        StampSealTitle = entity.StampSealContract?.Title ?? "Acuerdo de compra de estampillas y sellos",
+        StampSealSubtitle = entity.StampSealContract?.Subtitle ?? "Documentación oficial · Estados Unidos",
         StampSealNoticeHtml = entity.StampSealContract?.NoticeHtml ?? StampSealContractDefaults.NoticeHtml,
         StampSealBodyHtml = entity.StampSealContract?.BodyHtml ?? StampSealContractDefaults.BodyHtml
     };

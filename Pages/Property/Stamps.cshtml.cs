@@ -43,28 +43,28 @@ public class StampsModel(AppDbContext context) : PageModel
         var propiedad = await LoadPropiedadAsync(slug);
         if (propiedad is null)
         {
-            return NotFound(new { success = false, message = "Property not found." });
+            return NotFound(new { success = false, message = "No se encontró la propiedad." });
         }
 
         if (string.IsNullOrWhiteSpace(request.ClientName))
         {
-            return BadRequest(new { success = false, message = "Full name is required." });
+            return BadRequest(new { success = false, message = "El nombre completo es obligatorio." });
         }
 
         if (string.IsNullOrWhiteSpace(request.ClientEmail) || !new EmailAddressAttribute().IsValid(request.ClientEmail))
         {
-            return BadRequest(new { success = false, message = "Enter a valid email address." });
+            return BadRequest(new { success = false, message = "Ingresa un correo electrónico válido." });
         }
 
         var action = request.Action?.Trim().ToLowerInvariant();
         if (action is not ("sign" or "changes"))
         {
-            return BadRequest(new { success = false, message = "Choose to sign or submit changes." });
+            return BadRequest(new { success = false, message = "Elige firmar o enviar cambios." });
         }
 
         if (!StampSealSettings.TryParseOption(request.PurchaseOption, out var purchaseOption))
         {
-            return BadRequest(new { success = false, message = "Select stamps, seals, or both." });
+            return BadRequest(new { success = false, message = "Selecciona estampillas, sellos o ambos." });
         }
 
         var selectedAmount = StampSealSettings.GetAmount(propiedad, purchaseOption);
@@ -84,7 +84,7 @@ public class StampsModel(AppDbContext context) : PageModel
             var match = DataUrlPattern.Match(request.SignatureDataUrl);
             if (!match.Success)
             {
-                return BadRequest(new { success = false, message = "Invalid signature image." });
+                return BadRequest(new { success = false, message = "Imagen de firma inválida." });
             }
 
             signatureContentType = match.Groups[1].Value;
@@ -94,17 +94,17 @@ public class StampsModel(AppDbContext context) : PageModel
             }
             catch
             {
-                return BadRequest(new { success = false, message = "Invalid signature image." });
+                return BadRequest(new { success = false, message = "Imagen de firma inválida." });
             }
 
             if (signatureBytes.Length > 512 * 1024)
             {
-                return BadRequest(new { success = false, message = "Signature image is too large." });
+                return BadRequest(new { success = false, message = "La imagen de la firma es demasiado grande." });
             }
         }
         else if (string.IsNullOrWhiteSpace(proposedChanges))
         {
-            return BadRequest(new { success = false, message = "Describe the changes you are requesting." });
+            return BadRequest(new { success = false, message = "Describe los cambios que solicitas." });
         }
 
         var submission = new StampSealSubmission
@@ -130,8 +130,8 @@ public class StampsModel(AppDbContext context) : PageModel
         {
             success = true,
             message = action == "sign"
-                ? "Your signature has been submitted."
-                : "Your proposed changes have been submitted."
+                ? "Tu firma fue enviada."
+                : "Tus cambios propuestos fueron enviados."
         });
     }
 

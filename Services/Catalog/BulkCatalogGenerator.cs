@@ -14,24 +14,24 @@ internal static class BulkCatalogGenerator
 
     private static readonly string[] StreetTypes = ["St", "Ave", "Blvd", "Dr", "Ln", "Ct", "Way", "Pl"];
 
-    private static readonly string[] PropertyTypes = ["Apartment", "Condo", "Townhome", "Rental Home", "Loft"];
+    private static readonly string[] PropertyTypes = ["Apartamento", "Condominio", "Townhouse", "Casa en alquiler", "Loft"];
 
     private static readonly string[][] AmenitySets =
     [
-        ["In-Unit Laundry", "Fitness Center", "Controlled Access", "Package Lockers", "Pet Friendly"],
-        ["Rooftop Deck", "Fitness Studio", "Garage Parking", "Coworking Lounge", "EV Charging"],
-        ["Pool", "Clubroom", "Business Center", "Dog Park", "Bike Storage"],
-        ["Fitness Center", "Courtyard", "Balcony", "Garage", "On-Site Management"],
-        ["Pool", "Spa", "Fitness Center", "Playground", "Guest Parking"]
+        ["Lavandería en unidad", "Gimnasio", "Acceso controlado", "Casilleros para paquetes", "Se admiten mascotas"],
+        ["Terraza en la azotea", "Estudio de fitness", "Estacionamiento en garaje", "Sala coworking", "Carga para vehículos eléctricos"],
+        ["Piscina", "Sala club", "Centro de negocios", "Parque para perros", "Almacenamiento para bicicletas"],
+        ["Gimnasio", "Patio interior", "Balcón", "Garaje", "Administración en el sitio"],
+        ["Piscina", "Spa", "Gimnasio", "Área de juegos", "Estacionamiento para visitas"]
     ];
 
     private static readonly string[] DescriptionIntros =
     [
-        "Bright and move-in ready with an open floor plan and updated kitchen.",
-        "Quiet residential setting with easy freeway access and nearby shopping.",
-        "Recently refreshed interiors with luxury vinyl flooring and quartz counters.",
-        "Spacious layout with generous closet space and large windows.",
-        "Walkable neighborhood close to parks, schools, and transit options."
+        "Luminoso y listo para mudarse, con plano abierto y cocina actualizada.",
+        "Ambiente residencial tranquilo con fácil acceso a autopistas y comercios cercanos.",
+        "Interiores recién renovados con pisos vinílicos de lujo y encimeras de cuarzo.",
+        "Distribución amplia con closets generosos y ventanas grandes.",
+        "Barrio caminable cerca de parques, escuelas y opciones de transporte."
     ];
 
     public static IEnumerable<CatalogProperty> GenerateAll()
@@ -92,16 +92,16 @@ internal static class BulkCatalogGenerator
                 var streetType = StreetTypes[(seed / 5) % StreetTypes.Length];
                 var streetNumber = 118 + (globalIndex * 137) + (unit * 23) + (seed % 89);
                 var unitNumber = 100 + unit + (seed % 40);
-                var address = propertyType is "Apartment" or "Condo" or "Loft"
+                var address = propertyType is "Apartamento" or "Condominio" or "Loft"
                     ? $"{streetNumber} {street} {streetType} #{unitNumber}"
                     : $"{streetNumber} {street} {streetType}";
                 var slug = $"rental-us-{stateTag}-{city.SlugKey}-{streetNumber}-{unitNumber}";
-                var bedLabel = beds == 1 ? "1 bd" : $"{beds} bd";
-                var bathLabel = baths == 1 ? "1 ba" : $"{baths} ba";
+                var bedLabel = beds == 1 ? "1 hab" : $"{beds} hab";
+                var bathLabel = baths == 1 ? "1 baño" : $"{baths} baños";
                 var title = $"{bedLabel} · {bathLabel} {propertyType} · {address}";
                 var intro = DescriptionIntros[seed % DescriptionIntros.Length];
                 var detail =
-                    $"{intro} This {bedLabel}, {bathLabel} {propertyType.ToLowerInvariant()} in {city.Name} offers {sqft:N0} sq ft of living space.";
+                    $"{intro} Este {bedLabel}, {bathLabel} {propertyType.ToLowerInvariant()} en {city.Name} ofrece {sqft:N0} pies² de espacio habitable.";
                 var amenities = string.Join(", ", AmenitySets[seed % AmenitySets.Length]);
                 var listingIndex = _globalListingIndex++;
                 var photos = CatalogPhotoLibrary.AssignExclusivePhotos(listingIndex, slug);

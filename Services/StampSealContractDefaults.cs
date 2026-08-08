@@ -5,57 +5,57 @@ namespace ApartamentosRenta.Services;
 public static class StampSealContractDefaults
 {
     public const string NoticeHtml = """
-        <strong>Important:</strong> This agreement covers the purchase of official <strong>stamps</strong> and/or <strong>seals</strong>
-        required for rental documentation related to <strong>{{PropertyTitle}}</strong> at {{Address}}, {{City}}.
-        You may select stamps only ({{StampsAmount}}), seals only ({{SealsAmount}}), or both ({{TotalAmount}}).
+        <strong>Importante:</strong> Este acuerdo cubre la compra de <strong>estampillas</strong> y/o <strong>sellos</strong> oficiales
+        requeridos para la documentación del alquiler de <strong>{{PropertyTitle}}</strong> en {{Address}}, {{City}}.
+        Puedes seleccionar solo estampillas ({{StampsAmount}}), solo sellos ({{SealsAmount}}) o ambos ({{TotalAmount}}).
         """;
 
     public const string BodyHtml = """
         <section class="contract-section">
-            <h2>1. Purpose</h2>
+            <h2>1. Objeto</h2>
             <p>
-                The client (“Purchaser”) agrees to buy <span class="contract-dynamic-items-long">official stamps and seals</span> through
-                <strong>{{LandlordName}}</strong> for the rental file of
-                <strong>{{PropertyTitle}}</strong>, located at <strong>{{Address}}, {{City}}</strong>.
+                El cliente (“Comprador”) acuerda comprar <span class="contract-dynamic-items-long">estampillas y sellos oficiales</span> a través de
+                <strong>{{LandlordName}}</strong> para el expediente de alquiler de
+                <strong>{{PropertyTitle}}</strong>, ubicado en <strong>{{Address}}, {{City}}</strong>.
             </p>
         </section>
         <section class="contract-section">
-            <h2>2. Items &amp; Fees</h2>
+            <h2>2. Artículos y tarifas</h2>
             <ul>
-                <li data-purchase-line="stamps">Official stamps package: <strong>{{StampsAmount}}</strong></li>
-                <li data-purchase-line="seals">Official seals package: <strong>{{SealsAmount}}</strong></li>
-                <li><strong>Total due:</strong> <strong class="contract-dynamic-total">{{TotalAmount}}</strong></li>
+                <li data-purchase-line="stamps">Paquete de estampillas oficiales: <strong>{{StampsAmount}}</strong></li>
+                <li data-purchase-line="seals">Paquete de sellos oficiales: <strong>{{SealsAmount}}</strong></li>
+                <li><strong>Total a pagar:</strong> <strong class="contract-dynamic-total">{{TotalAmount}}</strong></li>
             </ul>
-            <p>Fees cover preparation, procurement, and recording of required <span class="contract-dynamic-doc">stamp and seal</span> documentation under applicable U.S. state and local rules.</p>
+            <p>Las tarifas cubren preparación, gestión y registro de la documentación de <span class="contract-dynamic-doc">estampilla y sello</span> requerida conforme a las normas estatales y locales de EE. UU.</p>
         </section>
         <section class="contract-section">
-            <h2>3. Payment</h2>
+            <h2>3. Pago</h2>
             <ul>
-                <li>Payment method: Zelle to <strong>{{ZelleContact}}</strong> or other method approved in writing.</li>
-                <li>Payment is due upon signing this agreement unless otherwise agreed.</li>
-                <li>Monthly rent reference for this unit: {{MonthlyRent}} (stamps/seals fees are separate from rent).</li>
-            </ul>
-        </section>
-        <section class="contract-section">
-            <h2>4. Delivery &amp; Use</h2>
-            <ul>
-                <li><span class="contract-dynamic-items-cap">Stamps and seals</span> <span class="contract-dynamic-verb">are</span> issued for use solely on documents related to this rental transaction.</li>
-                <li>Purchaser shall not transfer, resell, or misuse official <span class="contract-dynamic-misuse">stamps or seals</span>.</li>
-                <li>Processing time: typically 1–3 business days after payment confirmation.</li>
+                <li>Método de pago: Zelle a <strong>{{ZelleContact}}</strong> u otro método aprobado por escrito.</li>
+                <li>El pago vence al firmar este acuerdo, salvo otro acuerdo.</li>
+                <li>Referencia de alquiler mensual de esta unidad: {{MonthlyRent}} (las tarifas de estampillas/sellos son aparte del alquiler).</li>
             </ul>
         </section>
         <section class="contract-section">
-            <h2>5. Refunds &amp; Cancellations</h2>
+            <h2>4. Entrega y uso</h2>
+            <ul>
+                <li><span class="contract-dynamic-items-cap">Estampillas y sellos</span> <span class="contract-dynamic-verb">son</span> emitidos solo para documentos relacionados con este alquiler.</li>
+                <li>El Comprador no transferirá, revenderá ni hará mal uso de <span class="contract-dynamic-misuse">estampillas o sellos</span> oficiales.</li>
+                <li>Plazo de procesamiento: normalmente 1–3 días hábiles tras confirmar el pago.</li>
+            </ul>
+        </section>
+        <section class="contract-section">
+            <h2>5. Reembolsos y cancelaciones</h2>
             <p>
-                Once <span class="contract-dynamic-refund">stamps or seals</span> are ordered or applied to a file, fees are non-refundable except where required by law.
-                If the rental application is cancelled before processing begins, a partial refund may be issued at Landlord’s discretion.
+                Una vez ordenadas o aplicadas las <span class="contract-dynamic-refund">estampillas o sellos</span> al expediente, las tarifas no son reembolsables excepto cuando la ley lo exija.
+                Si la solicitud de alquiler se cancela antes de iniciar el proceso, puede aplicarse un reembolso parcial a discreción del Arrendador.
             </p>
         </section>
         <section class="contract-section">
-            <h2>6. Acknowledgment</h2>
+            <h2>6. Reconocimiento</h2>
             <p>
-                Purchaser confirms that <span class="contract-dynamic-items">stamps and seals</span> are required for compliance with local recording and lease formalities,
-                and agrees to the total amount of <strong class="contract-dynamic-total">{{TotalAmount}}</strong>.
+                El Comprador confirma que las <span class="contract-dynamic-items">estampillas y sellos</span> son necesarios para cumplir con los requisitos locales de registro y formalización del arrendamiento,
+                y acepta el monto total de <strong class="contract-dynamic-total">{{TotalAmount}}</strong>.
             </p>
         </section>
         """;
@@ -63,8 +63,8 @@ public static class StampSealContractDefaults
     public static StampSealContract CreateForProperty(int propiedadId) => new()
     {
         PropiedadId = propiedadId,
-        Title = "Stamps & Seals Purchase Agreement",
-        Subtitle = "Official documentation · United States",
+        Title = "Acuerdo de compra de estampillas y sellos",
+        Subtitle = "Documentación oficial · Estados Unidos",
         NoticeHtml = NoticeHtml,
         BodyHtml = BodyHtml,
         UpdatedAt = DateTime.UtcNow

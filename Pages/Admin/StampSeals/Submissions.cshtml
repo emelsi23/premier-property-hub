@@ -3,20 +3,20 @@
 @using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Admin.StampSeals.SubmissionsModel
 @{
-    ViewData["Title"] = "Stamps & seals submissions";
+    ViewData["Title"] = "Firmas estampillas y sellos";
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
-        <h1 class="h3 mb-1">Stamps &amp; seals submissions</h1>
-        <p class="text-muted mb-0">Signatures for stamp and seal purchase agreements.</p>
+        <h1 class="h3 mb-1">Firmas de estampillas y sellos</h1>
+        <p class="text-muted mb-0">Firmas para acuerdos de compra de estampillas y sellos.</p>
     </div>
-    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Propiedades</a>
 </div>
 
 @if (!Model.Submissions.Any())
 {
-    <div class="alert alert-info">No submissions yet.</div>
+    <div class="alert alert-info">Aún no hay envíos.</div>
 }
 else
 {
@@ -24,13 +24,13 @@ else
         <table class="table table-hover mb-0 align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Property</th>
-                    <th>Client</th>
-                    <th>Purchase</th>
-                    <th>Type</th>
-                    <th>Signature</th>
-                    <th>Notes</th>
-                    <th>Submitted</th>
+                    <th>Propiedad</th>
+                    <th>Cliente</th>
+                    <th>Compra</th>
+                    <th>Tipo</th>
+                    <th>Firma</th>
+                    <th>Notas</th>
+                    <th>Enviado</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,7 +39,7 @@ else
                     <tr>
                         <td>
                             <strong>@item.Propiedad.Titulo</strong><br />
-                            <a href="/property/@item.Propiedad.Slug/stamps" target="_blank" class="small">View agreement</a>
+                            <a href="/property/@item.Propiedad.Slug/stamps" target="_blank" class="small">Ver acuerdo</a>
                         </td>
                         <td>
                             <strong>@item.ClientName</strong><br />
@@ -52,18 +52,18 @@ else
                         <td>
                             @if (item.SubmissionType == ContractSubmissionType.Signature)
                             {
-                                <span class="badge bg-success">Signature</span>
+                                <span class="badge bg-success">Firma</span>
                             }
                             else
                             {
-                                <span class="badge bg-info text-dark">Change request</span>
+                                <span class="badge bg-info text-dark">Solicitud de cambios</span>
                             }
                         </td>
                         <td>
                             @if (item.SignatureImageData is { Length: > 0 })
                             {
                                 <a asp-page-handler="Signature" asp-route-id="@item.Id" target="_blank">
-                                    <img src="@Url.Page(null, "Signature", new { id = item.Id })" alt="Signature" class="payment-proof-thumb" />
+                                    <img src="@Url.Page(null, "Signature", new { id = item.Id })" alt="Firma" class="payment-proof-thumb" />
                                 </a>
                             }
                             else
@@ -72,7 +72,7 @@ else
                             }
                         </td>
                         <td class="small" style="max-width: 240px; white-space: pre-wrap;">@(item.ProposedChanges ?? "—")</td>
-                        <td class="small text-muted">@item.SubmittedAt.ToString("MM/dd/yyyy HH:mm") UTC</td>
+                        <td class="small text-muted">@item.SubmittedAt.ToString("dd/MM/yyyy HH:mm") UTC</td>
                     </tr>
                 }
             </tbody>

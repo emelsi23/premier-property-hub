@@ -38,7 +38,7 @@ public class EditModel(AppDbContext context) : PageModel
     {
         if (!Input.ParseFotoUrls().Any())
         {
-            ModelState.AddModelError("Input.FotosUrls", "Add at least one photo URL.");
+            ModelState.AddModelError("Input.FotosUrls", "Agrega al menos una URL de foto.");
         }
 
         if (!ModelState.IsValid)

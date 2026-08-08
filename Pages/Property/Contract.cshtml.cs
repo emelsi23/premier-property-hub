@@ -43,23 +43,23 @@ public class ContractModel(AppDbContext context) : PageModel
         var propiedad = await LoadPropiedadAsync(slug);
         if (propiedad is null)
         {
-            return NotFound(new { success = false, message = "Property not found." });
+            return NotFound(new { success = false, message = "No se encontró la propiedad." });
         }
 
         if (string.IsNullOrWhiteSpace(request.TenantName))
         {
-            return BadRequest(new { success = false, message = "Full name is required." });
+            return BadRequest(new { success = false, message = "El nombre completo es obligatorio." });
         }
 
         if (string.IsNullOrWhiteSpace(request.TenantEmail) || !new EmailAddressAttribute().IsValid(request.TenantEmail))
         {
-            return BadRequest(new { success = false, message = "Enter a valid email address." });
+            return BadRequest(new { success = false, message = "Ingresa un correo electrónico válido." });
         }
 
         var action = request.Action?.Trim().ToLowerInvariant();
         if (action is not ("sign" or "changes"))
         {
-            return BadRequest(new { success = false, message = "Choose to sign or submit changes." });
+            return BadRequest(new { success = false, message = "Elige firmar o enviar cambios." });
         }
 
         byte[]? signatureBytes = null;
@@ -78,7 +78,7 @@ public class ContractModel(AppDbContext context) : PageModel
             var match = DataUrlPattern.Match(request.SignatureDataUrl);
             if (!match.Success)
             {
-                return BadRequest(new { success = false, message = "Invalid signature image." });
+                return BadRequest(new { success = false, message = "Imagen de firma inválida." });
             }
 
             signatureContentType = match.Groups[1].Value;
@@ -88,17 +88,17 @@ public class ContractModel(AppDbContext context) : PageModel
             }
             catch
             {
-                return BadRequest(new { success = false, message = "Invalid signature image." });
+                return BadRequest(new { success = false, message = "Imagen de firma inválida." });
             }
 
             if (signatureBytes.Length > 512 * 1024)
             {
-                return BadRequest(new { success = false, message = "Signature image is too large." });
+                return BadRequest(new { success = false, message = "La imagen de la firma es demasiado grande." });
             }
         }
         else if (string.IsNullOrWhiteSpace(proposedChanges))
         {
-            return BadRequest(new { success = false, message = "Describe the changes you are requesting." });
+            return BadRequest(new { success = false, message = "Describe los cambios que solicitas." });
         }
 
         var submission = new ContractSubmission
@@ -124,8 +124,8 @@ public class ContractModel(AppDbContext context) : PageModel
             success = true,
             submissionType = submission.SubmissionType.ToString(),
             message = submission.SubmissionType == ContractSubmissionType.Signature
-                ? "Your signature has been submitted."
-                : "Your proposed changes have been submitted."
+                ? "Tu firma fue enviada."
+                : "Tus cambios propuestos fueron enviados."
         });
     }
 

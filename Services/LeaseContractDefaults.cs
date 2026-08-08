@@ -5,88 +5,88 @@ namespace ApartamentosRenta.Services;
 public static class LeaseContractDefaults
 {
     public const string NoticeHtml = """
-        <strong>Important:</strong> This agreement applies to <strong>{{PropertyTitle}}</strong> at {{Address}}, {{City}}.
-        Amounts shown are based on the monthly rent of {{MonthlyRent}}. State and local laws may vary.
-        This document does not constitute legal advice.
+        <strong>Importante:</strong> Este acuerdo aplica a <strong>{{PropertyTitle}}</strong> en {{Address}}, {{City}}.
+        Los montos mostrados se basan en el alquiler mensual de {{MonthlyRent}}. Las leyes estatales y locales pueden variar.
+        Este documento no constituye asesoría legal.
         """;
 
     public const string BodyHtml = """
         <section class="contract-section">
-            <h2>1. Parties &amp; Premises</h2>
+            <h2>1. Partes y propiedad</h2>
             <p>
-                This Residential Lease Agreement (“Agreement”) is entered into between
-                <strong>{{LandlordName}}</strong> (“Landlord”) and the undersigned tenant (“Tenant”).
+                Este Contrato de Arrendamiento Residencial (“Contrato”) se celebra entre
+                <strong>{{LandlordName}}</strong> (“Arrendador”) y el arrendatario firmante (“Arrendatario”).
             </p>
             <p>
-                Landlord leases to Tenant the residential unit known as
-                <strong>{{PropertyTitle}}</strong>, located at
-                <strong>{{Address}}, {{City}}</strong> (“Premises”),
-                with {{Bedrooms}} bedroom(s) and {{Bathrooms}} bathroom(s),
-                approximately {{SquareFeet}} sq m, for use solely as a private residence.
-            </p>
-        </section>
-        <section class="contract-section">
-            <h2>2. Term</h2>
-            <p>
-                The lease term begins on <span class="contract-blank">__ / __ / ____</span>
-                and ends on <span class="contract-blank">__ / __ / ____</span>,
-                unless terminated earlier in accordance with this Agreement or applicable U.S. law.
+                El Arrendador entrega en arrendamiento al Arrendatario la unidad residencial conocida como
+                <strong>{{PropertyTitle}}</strong>, ubicada en
+                <strong>{{Address}}, {{City}}</strong> (“Propiedad”),
+                con {{Bedrooms}} habitación(es) y {{Bathrooms}} baño(s),
+                aproximadamente {{SquareFeet}} m², para uso exclusivo como residencia privada.
             </p>
         </section>
         <section class="contract-section">
-            <h2>3. Rent</h2>
+            <h2>2. Plazo</h2>
+            <p>
+                El plazo del arrendamiento comienza el <span class="contract-blank">__ / __ / ____</span>
+                y termina el <span class="contract-blank">__ / __ / ____</span>,
+                salvo terminación anticipada conforme a este Contrato o la ley aplicable en EE. UU.
+            </p>
+        </section>
+        <section class="contract-section">
+            <h2>3. Alquiler</h2>
             <ul>
-                <li>Monthly rent: <strong>{{MonthlyRent}}</strong>, due on the 1st day of each month.</li>
-                <li>Late fee: <strong>{{LateFee}}</strong> or the maximum permitted by applicable state law, whichever is less.</li>
-                <li>Payment method: Zelle to <strong>{{ZelleContact}}</strong>, certified check, or other method approved by Landlord in writing.</li>
+                <li>Alquiler mensual: <strong>{{MonthlyRent}}</strong>, pagadero el primer día de cada mes.</li>
+                <li>Cargo por mora: <strong>{{LateFee}}</strong> o el máximo permitido por la ley del estado, el menor de los dos.</li>
+                <li>Método de pago: Zelle a <strong>{{ZelleContact}}</strong>, cheque certificado u otro método aprobado por escrito por el Arrendador.</li>
             </ul>
         </section>
         <section class="contract-section">
-            <h2>4. Security Deposit</h2>
+            <h2>4. Depósito de seguridad</h2>
             <p>
-                Tenant shall pay a security deposit of <strong>{{SecurityDeposit}}</strong> (equal to one month’s rent)
-                before occupancy. The deposit is not rent and may not be used as the last month’s rent unless agreed in writing.
+                El Arrendatario pagará un depósito de seguridad de <strong>{{SecurityDeposit}}</strong> (equivalente a un mes de alquiler)
+                antes de la ocupación. El depósito no es alquiler y no puede usarse como último mes salvo acuerdo escrito.
             </p>
             <ul>
-                <li>Landlord may deduct for unpaid rent, damages beyond normal wear and tear, and other lawful charges.</li>
-                <li>Balance shall be returned with an itemized statement within the time required by applicable state law.</li>
+                <li>El Arrendador puede deducir alquileres impagos, daños más allá del uso normal y otros cargos permitidos por ley.</li>
+                <li>El saldo se devolverá con un desglose dentro del plazo exigido por la ley del estado aplicable.</li>
             </ul>
         </section>
         <section class="contract-section">
-            <h2>5. Visit &amp; Move-In Amounts</h2>
+            <h2>5. Montos de visita y mudanza</h2>
             <ul>
-                <li>Visit / holding deposit: <strong>{{VisitDeposit}}</strong></li>
-                <li>First month’s rent + security deposit: <strong>{{FirstMonthTotal}}</strong></li>
-                <li>Estimated total due at move-in (including visit deposit): <strong>{{MoveInTotal}}</strong></li>
+                <li>Depósito de visita / reserva: <strong>{{VisitDeposit}}</strong></li>
+                <li>Primer mes + depósito de seguridad: <strong>{{FirstMonthTotal}}</strong></li>
+                <li>Total estimado al mudarse (incluye depósito de visita): <strong>{{MoveInTotal}}</strong></li>
             </ul>
         </section>
         <section class="contract-section">
-            <h2>6. Cell Phones &amp; Wireless Devices</h2>
+            <h2>6. Teléfonos celulares y dispositivos</h2>
             <ul>
-                <li>Tenant may use personal cell phones and wireless devices in compliance with U.S. federal, state, and local law.</li>
-                <li>Landlord does not guarantee cellular signal or internet availability in the unit.</li>
-                <li>No external antennas or signal boosters without Landlord’s written consent and FCC compliance.</li>
+                <li>El Arrendatario puede usar teléfonos y dispositivos inalámbricos conforme a la ley federal, estatal y local de EE. UU.</li>
+                <li>El Arrendador no garantiza señal celular ni internet en la unidad.</li>
+                <li>No se permiten antenas externas o amplificadores sin consentimiento escrito del Arrendador y cumplimiento de la FCC.</li>
             </ul>
         </section>
         <section class="contract-section">
-            <h2>7. Utilities, Maintenance &amp; Entry</h2>
-            <p>Tenant pays utilities unless stated in an addendum. Landlord maintains habitability as required by law and may enter with reasonable notice.</p>
+            <h2>7. Servicios, mantenimiento y acceso</h2>
+            <p>El Arrendatario paga los servicios salvo addendum. El Arrendador mantiene la habitabilidad según la ley y puede ingresar con aviso razonable.</p>
         </section>
         <section class="contract-section">
-            <h2>8. Use, Pets &amp; Compliance</h2>
-            <p>Tenant shall comply with building rules and all applicable U.S. laws. Pets, smoking, and alterations require written approval.</p>
+            <h2>8. Uso, mascotas y cumplimiento</h2>
+            <p>El Arrendatario cumplirá las reglas del edificio y todas las leyes de EE. UU. Mascotas, tabaco y modificaciones requieren aprobación escrita.</p>
         </section>
         <section class="contract-section">
-            <h2>9. Governing Law</h2>
-            <p>This Agreement is governed by applicable U.S. state and local landlord-tenant law. Amendments must be in writing and signed by both parties.</p>
+            <h2>9. Ley aplicable</h2>
+            <p>Este Contrato se rige por la ley de arrendamientos del estado y local aplicable en EE. UU. Las modificaciones deben ser por escrito y firmadas por ambas partes.</p>
         </section>
         """;
 
     public static LeaseContract CreateForProperty(int propiedadId) => new()
     {
         PropiedadId = propiedadId,
-        Title = "Residential Lease Agreement",
-        Subtitle = "Apartment rental · United States",
+        Title = "Contrato de arrendamiento residencial",
+        Subtitle = "Alquiler de apartamento · Estados Unidos",
         NoticeHtml = NoticeHtml,
         BodyHtml = BodyHtml,
         UpdatedAt = DateTime.UtcNow

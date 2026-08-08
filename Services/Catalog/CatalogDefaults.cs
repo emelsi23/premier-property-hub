@@ -23,8 +23,8 @@ internal static class CatalogDefaults
 
     public static string BuildDescription(string name, string area, string detail) =>
         $"""
-        {name} delivers upscale rental living in {area}, one of the most in-demand markets in the region. {detail}
+        {name} ofrece alquiler de alto nivel en {area}, uno de los mercados más demandados de la región. {detail}
 
-        Residences feature contemporary finishes, open layouts, and premium appliances. Community amenities typically include fitness center, pool, coworking lounge, controlled access, and on-site management. Pet-friendly options may be available. Schedule your private tour today.
+        Las residencias cuentan con acabados contemporáneos, planos abiertos y electrodomésticos premium. Las amenidades del complejo suelen incluir gimnasio, piscina, sala coworking, acceso controlado y administración en el sitio. Pueden estar disponibles opciones que admiten mascotas. Agenda tu visita privada hoy.
         """;
 }

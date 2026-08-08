@@ -1,20 +1,20 @@
 @page
 @model ApartamentosRenta.Pages.Admin.Contract.SubmissionsModel
 @{
-    ViewData["Title"] = "Contract submissions";
+    ViewData["Title"] = "Firmas de contrato";
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
-        <h1 class="h3 mb-1">Contract submissions</h1>
-        <p class="text-muted mb-0">Signatures and change requests per property. Edit contract text in each property’s Edit page.</p>
+        <h1 class="h3 mb-1">Firmas de contrato</h1>
+        <p class="text-muted mb-0">Firmas y solicitudes de cambios por propiedad. Edita el texto del contrato en Editar propiedad.</p>
     </div>
-    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Propiedades</a>
 </div>
 
 @if (!Model.Submissions.Any())
 {
-    <div class="alert alert-info">No submissions yet.</div>
+    <div class="alert alert-info">Aún no hay envíos.</div>
 }
 else
 {
@@ -22,12 +22,12 @@ else
         <table class="table table-hover mb-0 align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Property</th>
-                    <th>Client</th>
-                    <th>Type</th>
-                    <th>Signature</th>
-                    <th>Proposed changes</th>
-                    <th>Submitted</th>
+                    <th>Propiedad</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Firma</th>
+                    <th>Cambios propuestos</th>
+                    <th>Enviado</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,7 @@ else
                     <tr>
                         <td>
                             <strong>@item.Propiedad.Titulo</strong><br />
-                            <a href="/property/@item.Propiedad.Slug/contract" target="_blank" class="small">View contract</a>
+                            <a href="/property/@item.Propiedad.Slug/contract" target="_blank" class="small">Ver contrato</a>
                         </td>
                         <td>
                             <strong>@item.TenantName</strong><br />
@@ -49,11 +49,11 @@ else
                         <td>
                             @if (item.SubmissionType == ApartamentosRenta.Models.ContractSubmissionType.Signature)
                             {
-                                <span class="badge bg-success">Signature</span>
+                                <span class="badge bg-success">Firma</span>
                             }
                             else
                             {
-                                <span class="badge bg-info text-dark">Change request</span>
+                                <span class="badge bg-info text-dark">Solicitud de cambios</span>
                             }
                         </td>
                         <td>
@@ -61,7 +61,7 @@ else
                             {
                                 <a asp-page-handler="Signature" asp-route-id="@item.Id" target="_blank">
                                     <img src="@Url.Page(null, "Signature", new { id = item.Id })"
-                                         alt="Signature"
+                                         alt="Firma"
                                          class="payment-proof-thumb" />
                                 </a>
                             }
@@ -71,7 +71,7 @@ else
                             }
                         </td>
                         <td class="small" style="max-width: 280px; white-space: pre-wrap;">@(item.ProposedChanges ?? "—")</td>
-                        <td class="small text-muted">@item.SubmittedAt.ToString("MM/dd/yyyy HH:mm") UTC</td>
+                        <td class="small text-muted">@item.SubmittedAt.ToString("dd/MM/yyyy HH:mm") UTC</td>
                     </tr>
                 }
             </tbody>

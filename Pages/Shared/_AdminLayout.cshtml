@@ -6,7 +6,7 @@
     var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,12 +20,12 @@
         <div class="container-xl">
             <a class="navbar-brand fw-bold" asp-page="/Admin/Index">Premier Property Hub</a>
             <div class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-                <a class="nav-link @(isProperties ? "active fw-semibold" : "")" asp-page="/Admin/Index">Properties</a>
-                <a class="nav-link @(isAppointments ? "active fw-semibold" : "")" asp-page="/Admin/Appointments/Index">Appointments</a>
-                <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Lease signs</a>
-                <a class="nav-link @(isStampSeals ? "active fw-semibold" : "")" asp-page="/Admin/StampSeals/Submissions">Stamp signs</a>
+                <a class="nav-link @(isProperties ? "active fw-semibold" : "")" asp-page="/Admin/Index">Propiedades</a>
+                <a class="nav-link @(isAppointments ? "active fw-semibold" : "")" asp-page="/Admin/Appointments/Index">Citas</a>
+                <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Firmas de contrato</a>
+                <a class="nav-link @(isStampSeals ? "active fw-semibold" : "")" asp-page="/Admin/StampSeals/Submissions">Firmas estampillas</a>
                 <form method="post" asp-page="/Admin/Logout" class="d-inline ms-lg-2">
-                    <button type="submit" class="btn btn-sm btn-outline-secondary">Sign out</button>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Cerrar sesión</button>
                 </form>
             </div>
         </div>

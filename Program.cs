@@ -89,6 +89,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             await PropertyCatalogSeedHelper.EnsureCatalogPropertiesAsync(db);
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);
+            await ContractSpanishLocalizationHelper.ApplySpanishDefaultsIfLegacyEnglishAsync(db);
             Console.WriteLine("Database initialized successfully.");
             return;
         }

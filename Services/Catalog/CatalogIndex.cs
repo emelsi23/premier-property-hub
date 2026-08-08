@@ -13,6 +13,6 @@ internal static class CatalogIndex
     private static CatalogProperty[] BuildAll() =>
         RealListingsCatalog.Properties
             .GroupBy(p => p.Slug, StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.First())
+            .Select(g => CatalogSpanishTranslator.Localize(g.First()))
             .ToArray();
 }

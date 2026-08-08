@@ -3,28 +3,28 @@
 @using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Admin.Appointments.IndexModel
 @{
-    ViewData["Title"] = "Appointments";
-    static string YesNo(bool value) => value ? "Yes" : "No";
+    ViewData["Title"] = "Citas";
+    static string SiNo(bool value) => value ? "Sí" : "No";
     static string MetodoLabel(MetodoPagoCita? metodo) => metodo switch
     {
         MetodoPagoCita.Zelle => "Zelle",
         MetodoPagoCita.ApplePay => "Apple Pay",
-        MetodoPagoCita.Efectivo => "Cash",
+        MetodoPagoCita.Efectivo => "Efectivo",
         _ => "—"
     };
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 mb-1">Visit appointments</h1>
-        <p class="text-muted mb-0">Review applications, payment proofs, and confirm visits.</p>
+        <h1 class="h3 mb-1">Citas de visita</h1>
+        <p class="text-muted mb-0">Revisa solicitudes, comprobantes de pago y confirma visitas.</p>
     </div>
-    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Properties</a>
+    <a asp-page="/Admin/Index" class="btn btn-outline-secondary">← Propiedades</a>
 </div>
 
 @if (!Model.Appointments.Any())
 {
-    <div class="alert alert-info">No appointments yet. Share a property link via WhatsApp to get started.</div>
+    <div class="alert alert-info">Aún no hay citas. Comparte un enlace de propiedad por WhatsApp para empezar.</div>
 }
 else
 {
@@ -32,11 +32,11 @@ else
         <table class="table table-hover mb-0 align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Client</th>
-                    <th>Property</th>
-                    <th>Visit</th>
-                    <th>Payment</th>
-                    <th>Status</th>
+                    <th>Cliente</th>
+                    <th>Propiedad</th>
+                    <th>Visita</th>
+                    <th>Pago</th>
+                    <th>Estado</th>
                     <th></th>
                 </tr>
             </thead>
@@ -49,17 +49,17 @@ else
                             <strong>@appointment.NombreCompleto</strong><br />
                             <a href="mailto:@appointment.Email" class="small">@appointment.Email</a><br />
                             <a href="https://wa.me/@(new string(appointment.Telefono.Where(char.IsDigit).ToArray()))" target="_blank" class="small">@appointment.Telefono</a><br />
-                            <span class="small text-muted">SSN: @(string.IsNullOrWhiteSpace(appointment.SsnItin) ? "—" : appointment.SsnItin) · DOB: @appointment.FechaNacimiento.ToString("MM/dd/yyyy")</span>
+                            <span class="small text-muted">SSN: @(string.IsNullOrWhiteSpace(appointment.SsnItin) ? "—" : appointment.SsnItin) · Nac.: @appointment.FechaNacimiento.ToString("dd/MM/yyyy")</span>
                         </td>
                         <td>
                             @appointment.Propiedad.Titulo<br />
                             <span class="small text-muted">@appointment.Propiedad.Direccion</span>
                         </td>
                         <td>
-                            @appointment.FechaHora.ToString("MM/dd/yyyy HH:mm")
+                            @appointment.FechaHora.ToString("dd/MM/yyyy HH:mm")
                             @if (!string.IsNullOrWhiteSpace(appointment.CodigoPostal))
                             {
-                                <div class="small text-muted">Zip: @appointment.CodigoPostal</div>
+                                <div class="small text-muted">ZIP: @appointment.CodigoPostal</div>
                             }
                         </td>
                         <td>
@@ -67,17 +67,17 @@ else
                             {
                                 <a asp-page-handler="PaymentProof" asp-route-id="@appointment.Id" target="_blank" class="d-inline-block">
                                     <img src="@Url.Page(null, "PaymentProof", new { id = appointment.Id })"
-                                         alt="Payment proof"
+                                         alt="Comprobante de pago"
                                          class="payment-proof-thumb" />
                                 </a>
                                 @if (appointment.PaymentProofUploadedAt.HasValue)
                                 {
-                                    <div class="small text-muted">@appointment.PaymentProofUploadedAt.Value.ToString("MM/dd/yyyy HH:mm") UTC</div>
+                                    <div class="small text-muted">@appointment.PaymentProofUploadedAt.Value.ToString("dd/MM/yyyy HH:mm") UTC</div>
                                 }
                             }
                             else
                             {
-                                <span class="small text-muted">Deposit: $@VisitDepositSettings.GetAmount(appointment.Propiedad).ToString("N0")</span>
+                                <span class="small text-muted">Depósito: $@VisitDepositSettings.GetAmount(appointment.Propiedad).ToString("N0")</span>
                             }
                             @if (appointment.MetodoPago.HasValue)
                             {
@@ -89,33 +89,33 @@ else
                             {
                                 case EstadoCita.Pendiente:
                                 case EstadoCita.EsperandoDeposito:
-                                    <span class="badge bg-warning text-dark">Awaiting deposit</span>
+                                    <span class="badge bg-warning text-dark">Esperando depósito</span>
                                     break;
                                 case EstadoCita.EsperandoConfirmacion:
-                                    <span class="badge bg-info text-dark">Awaiting confirmation</span>
+                                    <span class="badge bg-info text-dark">Esperando confirmación</span>
                                     break;
                                 case EstadoCita.Confirmada:
-                                    <span class="badge bg-success">Confirmed</span>
+                                    <span class="badge bg-success">Confirmada</span>
                                     break;
                                 case EstadoCita.Cancelada:
-                                    <span class="badge bg-secondary">Cancelled</span>
+                                    <span class="badge bg-secondary">Cancelada</span>
                                     break;
                             }
                         </td>
                         <td class="text-end">
                             <button type="button" class="btn btn-sm btn-outline-primary mb-1" data-bs-toggle="collapse" data-bs-target="#@detailsId">
-                                Details
+                                Detalles
                             </button>
                             @if (appointment.Estado == EstadoCita.EsperandoConfirmacion)
                             {
                                 <form method="post" asp-page-handler="Confirm" asp-route-id="@appointment.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success">Confirm visit</button>
+                                    <button type="submit" class="btn btn-sm btn-success">Confirmar visita</button>
                                 </form>
                             }
                             @if (appointment.Estado is not EstadoCita.Confirmada and not EstadoCita.Cancelada)
                             {
                                 <form method="post" asp-page-handler="Cancel" asp-route-id="@appointment.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
                                 </form>
                             }
                         </td>
@@ -125,18 +125,18 @@ else
                             <div class="collapse" id="@detailsId">
                                 <div class="appointment-details-panel">
                                     <div class="row g-3 small">
-                                        <div class="col-md-4"><strong>U.S. citizen</strong><br />@YesNo(appointment.EsCiudadanoAmericano)</div>
-                                        <div class="col-md-4"><strong>Occupants</strong><br />@appointment.PersonasEnUnidad</div>
-                                        <div class="col-md-4"><strong>Lease length</strong><br />@(appointment.DuracionContratoDeseada ?? "—")</div>
-                                        <div class="col-md-4"><strong>Earliest move-in</strong><br />@(appointment.FechaMudanzaTemprana?.ToString("MM/dd/yyyy") ?? "—")</div>
-                                        <div class="col-md-4"><strong>Smokes</strong><br />@YesNo(appointment.Fuma)</div>
-                                        <div class="col-md-4"><strong>Pets</strong><br />@YesNo(appointment.TieneMascotas)</div>
-                                        <div class="col-md-4"><strong>Employed</strong><br />@YesNo(appointment.EmpleadoActualmente)</div>
-                                        <div class="col-md-4"><strong>Employer</strong><br />@(appointment.NombreCompania ?? "—")</div>
-                                        <div class="col-md-4"><strong>Income</strong><br />@(appointment.Salario.HasValue ? $"${appointment.Salario:N0}" : "—")</div>
-                                        <div class="col-md-4"><strong>Available funds</strong><br />@(appointment.DisponibleParaAsegurar.HasValue ? $"${appointment.DisponibleParaAsegurar:N0}" : "—")</div>
-                                        <div class="col-md-4"><strong>Accepts reservation deposit</strong><br />@YesNo(appointment.AceptaDepositoReserva)</div>
-                                        <div class="col-md-4"><strong>Will pay certified visit</strong><br />@YesNo(appointment.PagaraCitaCertificada)</div>
+                                        <div class="col-md-4"><strong>Ciudadano EE. UU.</strong><br />@SiNo(appointment.EsCiudadanoAmericano)</div>
+                                        <div class="col-md-4"><strong>Personas en unidad</strong><br />@appointment.PersonasEnUnidad</div>
+                                        <div class="col-md-4"><strong>Duración del contrato</strong><br />@(appointment.DuracionContratoDeseada ?? "—")</div>
+                                        <div class="col-md-4"><strong>Mudanza temprana</strong><br />@(appointment.FechaMudanzaTemprana?.ToString("dd/MM/yyyy") ?? "—")</div>
+                                        <div class="col-md-4"><strong>Fuma</strong><br />@SiNo(appointment.Fuma)</div>
+                                        <div class="col-md-4"><strong>Mascotas</strong><br />@SiNo(appointment.TieneMascotas)</div>
+                                        <div class="col-md-4"><strong>Empleado</strong><br />@SiNo(appointment.EmpleadoActualmente)</div>
+                                        <div class="col-md-4"><strong>Empleador</strong><br />@(appointment.NombreCompania ?? "—")</div>
+                                        <div class="col-md-4"><strong>Salario</strong><br />@(appointment.Salario.HasValue ? $"${appointment.Salario:N0}" : "—")</div>
+                                        <div class="col-md-4"><strong>Fondos disponibles</strong><br />@(appointment.DisponibleParaAsegurar.HasValue ? $"${appointment.DisponibleParaAsegurar:N0}" : "—")</div>
+                                        <div class="col-md-4"><strong>Acepta depósito reserva</strong><br />@SiNo(appointment.AceptaDepositoReserva)</div>
+                                        <div class="col-md-4"><strong>Pagará visita certificada</strong><br />@SiNo(appointment.PagaraCitaCertificada)</div>
                                     </div>
                                 </div>
                             </div>

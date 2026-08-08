@@ -1,19 +1,19 @@
 @page "{id:int}"
 @model ApartamentosRenta.Pages.Admin.EditModel
 @{
-    ViewData["Title"] = "Edit property";
+    ViewData["Title"] = "Editar propiedad";
 }
 
-<h1 class="h3 mb-4">Edit property</h1>
+<h1 class="h3 mb-4">Editar propiedad</h1>
 
 @if (!string.IsNullOrEmpty(Model.LinkPreview))
 {
     <div class="alert alert-light border mb-4">
-        <strong>Property page:</strong>
+        <strong>Página de la propiedad:</strong>
         <a href="@Model.LinkPreview" target="_blank" class="font-monospace small">@Model.LinkPreview</a><br />
-        <strong class="mt-2 d-inline-block">Contract link:</strong>
+        <strong class="mt-2 d-inline-block">Enlace del contrato:</strong>
         <a href="@Model.ContractLinkPreview" target="_blank" class="font-monospace small">@Model.ContractLinkPreview</a><br />
-        <strong class="mt-2 d-inline-block">Stamps &amp; seals link:</strong>
+        <strong class="mt-2 d-inline-block">Enlace estampillas y sellos:</strong>
         <a href="@Model.StampsLinkPreview" target="_blank" class="font-monospace small">@Model.StampsLinkPreview</a>
     </div>
 }
@@ -22,8 +22,8 @@
     <div class="card-body">
         <partial name="_PropertyForm" model="Model.Input" />
         <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a asp-page="Index" class="btn btn-link">Cancel</a>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a asp-page="Index" class="btn btn-link">Cancelar</a>
         </div>
     </div>
 </form>

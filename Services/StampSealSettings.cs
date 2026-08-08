@@ -26,10 +26,10 @@ public static class StampSealSettings
 
     public static string GetLabel(StampSealPurchaseOption option) => option switch
     {
-        StampSealPurchaseOption.Stamps => "Stamps only",
-        StampSealPurchaseOption.Seals => "Seals only",
-        StampSealPurchaseOption.Both => "Stamps & seals",
-        _ => "Stamps & seals"
+        StampSealPurchaseOption.Stamps => "Solo estampillas",
+        StampSealPurchaseOption.Seals => "Solo sellos",
+        StampSealPurchaseOption.Both => "Estampillas y sellos",
+        _ => "Estampillas y sellos"
     };
 
     public static bool TryParseOption(string? value, out StampSealPurchaseOption option)
