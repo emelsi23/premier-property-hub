@@ -3,8 +3,19 @@ using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+QuestPDF.Settings.License = LicenseType.Community;
+
+if (args.Contains("--generate-pdfs", StringComparer.OrdinalIgnoreCase))
+{
+    var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+    RemaxBrandedPdfDocuments.WriteToWebRoot(webRoot);
+    var docs = Path.Combine(webRoot, "documentos");
+    Console.WriteLine($"PDFs generados en {docs}");
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,9 +94,29 @@ app.MapGet("/api/agentes/{slug}", async (string slug, AppDbContext db, HttpConte
     return Results.Json(AgenteApiResponse.From(agente, baseUrl));
 });
 
+app.MapGet("/documentos/Protocolo-Reserva-PREMAX.pdf", () =>
+    Results.File(
+        RemaxBrandedPdfDocuments.GenerateProtocoloReserva(),
+        "application/pdf",
+        "Protocolo-Reserva-PREMAX.pdf"));
+
+app.MapGet("/documentos/Pago-Efectivo-Barcode-PREMAX.pdf", () =>
+    Results.File(
+        RemaxBrandedPdfDocuments.GeneratePagoEfectivoBarcode(),
+        "application/pdf",
+        "Pago-Efectivo-Barcode-PREMAX.pdf"));
+
+app.MapGet("/documentos/protocolo-reserva", () =>
+    Results.Redirect("/documentos/Protocolo-Reserva-PREMAX.pdf"));
+
+app.MapGet("/documentos/pago-efectivo", () =>
+    Results.Redirect("/documentos/Pago-Efectivo-Barcode-PREMAX.pdf"));
+
 app.MapRazorPages();
 
 await InitializeDatabaseAsync(app.Services);
+
+RemaxBrandedPdfDocuments.WriteToWebRoot(app.Environment.WebRootPath);
 
 app.Run();
 
