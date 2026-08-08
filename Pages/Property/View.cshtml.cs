@@ -12,7 +12,8 @@ namespace ApartamentosRenta.Pages.Property;
 [IgnoreAntiforgeryToken]
 public class ViewModel(
     AppDbContext context,
-    IAntiforgery antiforgery) : PageModel
+    IAntiforgery antiforgery,
+    AppointmentEmailService appointmentEmailService) : PageModel
 {
     private static readonly HashSet<string> AllowedImageTypes =
     [
@@ -83,7 +84,7 @@ public class ViewModel(
         }
 
         var publicToken = Guid.NewGuid();
-        context.Citas.Add(new Cita
+        var cita = new Cita
         {
             PropiedadId = propiedad.Id,
             PublicToken = publicToken,
@@ -115,10 +116,11 @@ public class ViewModel(
             TieneMascotas = Appointment.TieneMascotas!.Value,
             AceptaDepositoReserva = Appointment.AceptaDepositoReserva!.Value,
             PagaraCitaCertificada = Appointment.PagaraCitaCertificada!.Value,
-            MetodoPago = Appointment.MetodoPago,
+            MetodoPago = MetodoPagoCita.Zelle,
             FechaSolicitud = DateTime.UtcNow,
             Estado = EstadoCita.EsperandoDeposito
-        });
+        };
+        context.Citas.Add(cita);
 
         try
         {
@@ -141,6 +143,8 @@ public class ViewModel(
 
             throw;
         }
+
+        _ = SendConfirmationEmailSafeAsync(cita, propiedad);
 
         var antiforgeryTokens = isAjax ? antiforgery.GetAndStoreTokens(HttpContext) : null;
 
@@ -270,6 +274,19 @@ public class ViewModel(
             ".gif" => "image/gif",
             _ => "image/jpeg"
         };
+    }
+
+    private async Task SendConfirmationEmailSafeAsync(Cita appointment, Propiedad property)
+    {
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            await appointmentEmailService.TrySendApplicationReceivedAsync(appointment, property, cts.Token);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Confirmation email failed: {ex.Message}");
+        }
     }
 
     private static object BuildZellePayload(Propiedad propiedad, string propertyUrl) => new

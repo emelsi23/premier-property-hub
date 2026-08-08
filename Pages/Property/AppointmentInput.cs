@@ -126,13 +126,6 @@ public class AppointmentInput : IValidatableObject
             }
         }
 
-        if (PagaraCitaCertificada == true && MetodoPago is null)
-        {
-            yield return new ValidationResult(
-                "Select a payment method.",
-                [nameof(MetodoPago)]);
-        }
-
         if (PagaraCitaCertificada == false)
         {
             yield return new ValidationResult(

@@ -290,11 +290,11 @@
                             <span asp-validation-for="Appointment.PagaraCitaCertificada" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field d-none" id="paymentMethodField">
-                            <label asp-for="Appointment.MetodoPago" class="form-label"></label>
-                            <select asp-for="Appointment.MetodoPago" class="form-select" asp-items="Html.GetEnumSelectList<MetodoPagoCita>()">
-                                <option value="">Select a payment method</option>
-                            </select>
-                            <span asp-validation-for="Appointment.MetodoPago" class="field-error"></span>
+                            <span class="form-label d-block">Payment method</span>
+                            <div class="payment-zelle-only">
+                                <span class="payment-zelle-badge">Zelle</span>
+                                <p class="small text-muted mb-0 mt-2">Your visit deposit is paid via Zelle after quick approval.</p>
+                            </div>
                         </div>
                     </div>
                 </fieldset>
@@ -610,10 +610,6 @@
 
             if (!form.querySelector('[name="Appointment.AceptaTerminos"]')?.checked) {
                 errors.push('You must accept the terms and policies.');
-            }
-
-            if (willPayVisitSelected() && !form.querySelector('[name="Appointment.MetodoPago"]')?.value) {
-                errors.push('Select a payment method.');
             }
 
             if (errors.length) {

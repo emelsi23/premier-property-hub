@@ -401,6 +401,25 @@ body {
   font-weight: 600;
 }
 
+.payment-zelle-only {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+.payment-zelle-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: 1px solid #bfdbfe;
+}
+
 .form-card-header {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
