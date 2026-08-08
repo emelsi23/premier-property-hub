@@ -5,103 +5,103 @@ namespace ApartamentosRenta.Pages.Property;
 
 public class AppointmentInput : IValidatableObject
 {
-    [Required(ErrorMessage = "First name is required"), StringLength(80)]
-    [Display(Name = "First name")]
+    [Required(ErrorMessage = "El nombre es obligatorio."), StringLength(80)]
+    [Display(Name = "Nombre")]
     public string NombreCliente { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Last name is required"), StringLength(80)]
-    [Display(Name = "Last name")]
+    [Required(ErrorMessage = "El apellido es obligatorio."), StringLength(80)]
+    [Display(Name = "Apellido")]
     public string ApellidoCliente { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Date of birth is required")]
-    [Display(Name = "Date of birth")]
+    [Required(ErrorMessage = "La fecha de nacimiento es obligatoria.")]
+    [Display(Name = "Fecha de nacimiento")]
     [DataType(DataType.Date)]
     public DateTime FechaNacimiento { get; set; } = DateTime.Today.AddYears(-25);
 
-    [Required(ErrorMessage = "Email is required"), StringLength(256)]
-    [EmailAddress(ErrorMessage = "Enter a valid email address")]
-    [Display(Name = "Email address")]
+    [Required(ErrorMessage = "El correo electrónico es obligatorio."), StringLength(256)]
+    [EmailAddress(ErrorMessage = "Ingresa un correo electrónico válido.")]
+    [Display(Name = "Correo electrónico")]
     public string Email { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Phone number is required"), StringLength(14)]
-    [RegularExpression(@"^\(\d{3}\) \d{3}-\d{4}$", ErrorMessage = "Enter a valid number, e.g. (809) 690-9988")]
-    [Display(Name = "Phone / WhatsApp")]
+    [Required(ErrorMessage = "El teléfono es obligatorio."), StringLength(14)]
+    [RegularExpression(@"^\(\d{3}\) \d{3}-\d{4}$", ErrorMessage = "Ingresa un número válido, ej. (809) 690-9988")]
+    [Display(Name = "Teléfono / WhatsApp")]
     public string Telefono { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Visit date is required")]
-    [Display(Name = "Visit date")]
+    [Required(ErrorMessage = "La fecha de visita es obligatoria.")]
+    [Display(Name = "Fecha de visita")]
     [DataType(DataType.Date)]
     public DateTime FechaCita { get; set; } = DateTime.Today.AddDays(1);
 
-    [Required(ErrorMessage = "Visit time is required")]
-    [Display(Name = "Visit time")]
+    [Required(ErrorMessage = "La hora de visita es obligatoria.")]
+    [Display(Name = "Hora de visita")]
     [DataType(DataType.Time)]
     public TimeSpan HoraCita { get; set; } = new(10, 0, 0);
 
     [StringLength(10)]
-    [Display(Name = "Zip code")]
+    [Display(Name = "Código postal")]
     public string? CodigoPostal { get; set; }
 
-    [Required(ErrorMessage = "Please indicate if you are a U.S. citizen")]
-    [Display(Name = "Are you a U.S. citizen?")]
+    [Required(ErrorMessage = "Indica si eres ciudadano de EE. UU.")]
+    [Display(Name = "¿Eres ciudadano de EE. UU.?")]
     public bool? EsCiudadanoAmericano { get; set; }
 
-    [Required(ErrorMessage = "Number of occupants is required")]
-    [Range(1, 20, ErrorMessage = "Enter between 1 and 20 people")]
-    [Display(Name = "How many people will live in the unit?")]
+    [Required(ErrorMessage = "Indica cuántas personas vivirán en la unidad.")]
+    [Range(1, 20, ErrorMessage = "Ingresa entre 1 y 20 personas.")]
+    [Display(Name = "¿Cuántas personas vivirán en la unidad?")]
     public int? PersonasEnUnidad { get; set; } = 1;
 
-    [Required(ErrorMessage = "Desired lease length is required"), StringLength(80)]
-    [Display(Name = "How long do you want the lease?")]
+    [Required(ErrorMessage = "Indica la duración del contrato deseada."), StringLength(80)]
+    [Display(Name = "¿Cuánto tiempo quieres el contrato?")]
     public string DuracionContratoDeseada { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Earliest move-in date is required")]
-    [Display(Name = "Earliest move-in date")]
+    [Required(ErrorMessage = "La fecha de mudanza es obligatoria.")]
+    [Display(Name = "Fecha de mudanza más temprana")]
     [DataType(DataType.Date)]
     public DateTime? FechaMudanzaTemprana { get; set; } = DateTime.Today.AddDays(7);
 
-    [Required(ErrorMessage = "Please indicate if anyone smokes")]
-    [Display(Name = "Do you or anyone living in the unit smoke?")]
+    [Required(ErrorMessage = "Indica si alguien fuma en la unidad.")]
+    [Display(Name = "¿Tú o alguien en la unidad fuma?")]
     public bool? Fuma { get; set; }
 
-    [Required(ErrorMessage = "Please indicate your employment status")]
-    [Display(Name = "Are you currently employed?")]
+    [Required(ErrorMessage = "Indica si estás empleado actualmente.")]
+    [Display(Name = "¿Estás empleado actualmente?")]
     public bool? EmpleadoActualmente { get; set; }
 
     [StringLength(120)]
-    [Display(Name = "Employer / company name")]
+    [Display(Name = "Nombre del empleador / empresa")]
     public string? NombreCompania { get; set; }
 
-    [Display(Name = "Monthly or weekly income (USD)")]
+    [Display(Name = "Ingreso mensual o semanal (USD)")]
     public decimal? Salario { get; set; }
 
-    [Required(ErrorMessage = "Available funds amount is required")]
-    [Range(0, 9999999, ErrorMessage = "Enter a valid amount")]
-    [Display(Name = "How much do you have available now to secure the property? (USD)")]
+    [Required(ErrorMessage = "Indica cuánto tienes disponible para asegurar la propiedad.")]
+    [Range(0, 9999999, ErrorMessage = "Ingresa un monto válido.")]
+    [Display(Name = "¿Cuánto tienes disponible ahora para asegurar la propiedad? (USD)")]
     public decimal? DisponibleParaAsegurar { get; set; }
 
-    [Required(ErrorMessage = "Please indicate if you have pets")]
-    [Display(Name = "Do you have pets?")]
+    [Required(ErrorMessage = "Indica si tienes mascotas.")]
+    [Display(Name = "¿Tienes mascotas?")]
     public bool? TieneMascotas { get; set; }
 
-    [Required(ErrorMessage = "Please confirm if you accept the reservation deposit")]
-    [Display(Name = "Do you accept paying a reservation deposit if approved?")]
+    [Required(ErrorMessage = "Confirma si aceptas el depósito de reserva.")]
+    [Display(Name = "¿Aceptas pagar un depósito de reserva si eres aprobado?")]
     public bool? AceptaDepositoReserva { get; set; }
 
-    [Required(ErrorMessage = "Please indicate if you will pay for the certified visit")]
-    [Display(Name = "Will you pay the certified visit fee?")]
+    [Required(ErrorMessage = "Indica si pagarás la visita certificada.")]
+    [Display(Name = "¿Pagarás la tarifa de visita certificada?")]
     public bool? PagaraCitaCertificada { get; set; }
 
-    [Display(Name = "Payment method")]
+    [Display(Name = "Método de pago")]
     public MetodoPagoCita? MetodoPago { get; set; }
 
     [StringLength(11)]
-    [RegularExpression(@"^(\d{3}-\d{2}-\d{4})?$", ErrorMessage = "Enter a valid SSN, e.g. 121-22-1123")]
-    [Display(Name = "SSN / ITIN (optional)")]
+    [RegularExpression(@"^(\d{3}-\d{2}-\d{4})?$", ErrorMessage = "Ingresa un SSN válido, ej. 121-22-1123")]
+    [Display(Name = "SSN / ITIN (opcional)")]
     public string? SsnItin { get; set; }
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the terms and policies")]
-    [Display(Name = "I agree to the terms and policies")]
+    [Range(typeof(bool), "true", "true", ErrorMessage = "Debes aceptar los términos y políticas.")]
+    [Display(Name = "Acepto los términos y políticas")]
     public bool AceptaTerminos { get; set; }
 
     public DateTime FechaHora =>
@@ -114,14 +114,14 @@ public class AppointmentInput : IValidatableObject
             if (string.IsNullOrWhiteSpace(NombreCompania))
             {
                 yield return new ValidationResult(
-                    "Employer name is required when employed.",
+                    "El nombre del empleador es obligatorio si estás empleado.",
                     [nameof(NombreCompania)]);
             }
 
             if (Salario is null or <= 0)
             {
                 yield return new ValidationResult(
-                    "Enter your income when employed.",
+                    "Ingresa tu ingreso si estás empleado.",
                     [nameof(Salario)]);
             }
         }
@@ -129,7 +129,7 @@ public class AppointmentInput : IValidatableObject
         if (PagaraCitaCertificada == false)
         {
             yield return new ValidationResult(
-                "The certified visit requires the visit deposit to schedule a tour.",
+                "La visita certificada requiere el depósito de visita para agendar el tour.",
                 [nameof(PagaraCitaCertificada)]);
         }
     }

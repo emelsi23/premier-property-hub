@@ -72,7 +72,7 @@ public class ContractModel(AppDbContext context) : PageModel
         {
             if (string.IsNullOrWhiteSpace(request.SignatureDataUrl))
             {
-                return BadRequest(new { success = false, message = "Please draw your signature." });
+                return BadRequest(new { success = false, message = "Dibuja tu firma." });
             }
 
             var match = DataUrlPattern.Match(request.SignatureDataUrl);

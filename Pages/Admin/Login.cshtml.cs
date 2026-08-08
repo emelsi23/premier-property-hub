@@ -35,7 +35,7 @@ public class LoginModel(IOptions<AdminAuthSettings> authSettings) : PageModel
         if (!string.Equals(Input.Username, settings.Username, StringComparison.Ordinal)
             || !string.Equals(Input.Password, settings.Password, StringComparison.Ordinal))
         {
-            ErrorMessage = "Invalid username or password.";
+            ErrorMessage = "Usuario o contraseña incorrectos.";
             return Page();
         }
 

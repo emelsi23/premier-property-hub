@@ -2,7 +2,7 @@
 @using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Apartamentos.IndexModel
 @{
-    ViewData["Title"] = "Browse rentals";
+    ViewData["Title"] = "Buscar alquileres";
     var filters = Model.Filters;
 }
 
@@ -11,23 +11,23 @@
         <div class="catalog-hero-glow" aria-hidden="true"></div>
         <div class="catalog-hero-inner">
             <p class="catalog-eyebrow">RE/MAX · Premier Property Hub</p>
-            <h1 class="catalog-hero-title">Find a verified rental you can trust</h1>
+            <h1 class="catalog-hero-title">Encuentra un alquiler verificado con confianza</h1>
             <p class="catalog-hero-lead">
-                Browse @Model.TotalAvailable curated homes across top markets. Every listing includes a secure visit booking,
-                official lease documentation, and transparent deposit handling across all 50 states.
+                Explora @Model.TotalAvailable hogares seleccionados en los mejores mercados. Cada listado incluye reserva segura de visita,
+                documentación oficial del contrato y manejo transparente del depósito en los 50 estados.
             </p>
             <div class="catalog-hero-stats">
                 <div class="catalog-stat">
                     <strong>@Model.TotalAvailable</strong>
-                    <span>Available homes</span>
+                    <span>Hogares disponibles</span>
                 </div>
                 <div class="catalog-stat">
                     <strong>@Model.StateOptions.Count</strong>
-                    <span>States covered</span>
+                    <span>Estados cubiertos</span>
                 </div>
                 <div class="catalog-stat">
                     <strong>100%</strong>
-                    <span>Verified process</span>
+                    <span>Proceso verificado</span>
                 </div>
             </div>
         </div>
@@ -37,14 +37,14 @@
         <form method="get" class="catalog-filters card border-0 shadow-sm">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4">
-                    <label class="form-label catalog-filter-label" for="searchQuery">Search</label>
+                    <label class="form-label catalog-filter-label" for="searchQuery">Buscar</label>
                     <input type="search" id="searchQuery" name="Filters.Query" value="@filters.Query"
-                           class="form-control catalog-input" placeholder="City, address, amenities…" />
+                           class="form-control catalog-input" placeholder="Ciudad, dirección, amenidades…" />
                 </div>
                 <div class="col-md-6 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterState">State</label>
+                    <label class="form-label catalog-filter-label" for="filterState">Estado</label>
                     <select id="filterState" name="Filters.State" class="form-select catalog-input">
-                        <option value="">All states</option>
+                        <option value="">Todos los estados</option>
                         @foreach (var state in Model.StateOptions)
                         {
                             <option value="@state.Code" selected="@(filters.State == state.Code ? "selected" : null)">
@@ -54,9 +54,9 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-3 col-lg-1">
-                    <label class="form-label catalog-filter-label" for="filterBeds">Beds</label>
+                    <label class="form-label catalog-filter-label" for="filterBeds">Habit.</label>
                     <select id="filterBeds" name="Filters.Bedrooms" class="form-select catalog-input">
-                        <option value="">Any</option>
+                        <option value="">Cualquiera</option>
                         @for (var b = 1; b <= 4; b++)
                         {
                             <option value="@b" selected="@(filters.Bedrooms == b ? "selected" : null)">@b+</option>
@@ -64,33 +64,33 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterMinRent">Min rent</label>
+                    <label class="form-label catalog-filter-label" for="filterMinRent">Alquiler mín.</label>
                     <input type="number" id="filterMinRent" name="Filters.MinRent" value="@filters.MinRent"
                            class="form-control catalog-input" min="0" step="50" placeholder="@Model.MinListingRent.ToString("N0")" />
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterMaxRent">Max rent</label>
+                    <label class="form-label catalog-filter-label" for="filterMaxRent">Alquiler máx.</label>
                     <input type="number" id="filterMaxRent" name="Filters.MaxRent" value="@filters.MaxRent"
                            class="form-control catalog-input" min="0" step="50" placeholder="@Model.MaxListingRent.ToString("N0")" />
                 </div>
                 <div class="col-6 col-md-3 col-lg-1">
-                    <label class="form-label catalog-filter-label" for="filterSort">Sort</label>
+                    <label class="form-label catalog-filter-label" for="filterSort">Orden</label>
                     <select id="filterSort" name="Filters.Sort" class="form-select catalog-input">
-                        <option value="price-asc" selected="@(filters.Sort == "price-asc" ? "selected" : null)">Price ↑</option>
-                        <option value="price-desc" selected="@(filters.Sort == "price-desc" ? "selected" : null)">Price ↓</option>
-                        <option value="beds-desc" selected="@(filters.Sort == "beds-desc" ? "selected" : null)">Beds</option>
-                        <option value="newest" selected="@(filters.Sort == "newest" ? "selected" : null)">Newest</option>
+                        <option value="price-asc" selected="@(filters.Sort == "price-asc" ? "selected" : null)">Precio ↑</option>
+                        <option value="price-desc" selected="@(filters.Sort == "price-desc" ? "selected" : null)">Precio ↓</option>
+                        <option value="beds-desc" selected="@(filters.Sort == "beds-desc" ? "selected" : null)">Habitaciones</option>
+                        <option value="newest" selected="@(filters.Sort == "newest" ? "selected" : null)">Más recientes</option>
                     </select>
                 </div>
             </div>
             <div class="catalog-filter-actions">
-                <button type="submit" class="btn btn-primary catalog-btn-search">Search listings</button>
-                <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Clear filters</a>
+                <button type="submit" class="btn btn-primary catalog-btn-search">Buscar listados</button>
+                <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Limpiar filtros</a>
                 <span class="catalog-results-count">
-                    @Model.TotalFiltered.ToString("N0") result@(Model.TotalFiltered == 1 ? "" : "s")
+                    @Model.TotalFiltered.ToString("N0") resultado@(Model.TotalFiltered == 1 ? "" : "s")
                     @if (Model.TotalPages > 1)
                     {
-                        <span> · Page @Model.Filters.Page of @Model.TotalPages</span>
+                        <span> · Página @Model.Filters.Page de @Model.TotalPages</span>
                     }
                 </span>
             </div>
@@ -100,14 +100,14 @@
     @if (!Model.Listings.Any())
     {
         <div class="catalog-empty card border-0 shadow-sm">
-            <h2>No listings match your search</h2>
-            <p>Try a different state, price range, or search term.</p>
-            <a asp-page="/Apartamentos/Index" class="btn btn-primary">View all rentals</a>
+            <h2>No hay listados que coincidan con tu búsqueda</h2>
+            <p>Prueba otro estado, rango de precio o palabra de búsqueda.</p>
+            <a asp-page="/Apartamentos/Index" class="btn btn-primary">Ver todos los alquileres</a>
         </div>
     }
     else
     {
-        <section class="catalog-grid" aria-label="Rental listings">
+        <section class="catalog-grid" aria-label="Listados de alquiler">
             @foreach (var item in Model.Listings)
             {
                 <article class="catalog-card">
@@ -119,12 +119,12 @@
                         }
                         else
                         {
-                            <div class="catalog-card-placeholder">No photo</div>
+                            <div class="catalog-card-placeholder">Sin foto</div>
                         }
                         <span class="catalog-card-badge">@item.StateName</span>
                         <span class="catalog-card-verified">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                            Verified
+                            Verificado
                         </span>
                     </a>
                     <div class="catalog-card-body">
@@ -133,11 +133,11 @@
                             <a href="@item.ScheduleUrl">@item.Titulo</a>
                         </h2>
                         <p class="catalog-card-address">@item.Direccion</p>
-                        <p class="catalog-card-price">$@item.PrecioMensual.ToString("N0")<span>/mo</span></p>
+                        <p class="catalog-card-price">$@item.PrecioMensual.ToString("N0")<span>/mes</span></p>
                         <div class="catalog-card-stats">
-                            <span>@item.Habitaciones bd</span>
-                            <span>@item.Banos ba</span>
-                            <span>@item.MetrosCuadrados.ToString("N0") sq ft</span>
+                            <span>@item.Habitaciones hab.</span>
+                            <span>@item.Banos baños</span>
+                            <span>@item.MetrosCuadrados.ToString("N0") pies²</span>
                         </div>
                         @if (item.AmenityTags.Any())
                         {
@@ -149,8 +149,8 @@
                             </div>
                         }
                         <div class="catalog-card-footer">
-                            <span class="catalog-deposit-note">Visit deposit from $@item.DepositAmount.ToString("N0")</span>
-                            <a href="@item.ScheduleUrl" class="btn btn-primary catalog-card-cta">Schedule visit</a>
+                            <span class="catalog-deposit-note">Depósito de visita desde $@item.DepositAmount.ToString("N0")</span>
+                            <a href="@item.ScheduleUrl" class="btn btn-primary catalog-card-cta">Agendar visita</a>
                         </div>
                     </div>
                 </article>
@@ -159,10 +159,10 @@
 
         @if (Model.TotalPages > 1)
         {
-            <nav class="catalog-pagination" aria-label="Listing pages">
+            <nav class="catalog-pagination" aria-label="Páginas de listados">
                 @if (Model.Filters.Page > 1)
                 {
-                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page - 1)">Previous</a>
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page - 1)">Anterior</a>
                 }
                 @{
                     var startPage = Math.Max(1, Model.Filters.Page - 2);
@@ -176,48 +176,48 @@
                 }
                 @if (Model.Filters.Page < Model.TotalPages)
                 {
-                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page + 1)">Next</a>
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page + 1)">Siguiente</a>
                 }
             </nav>
         }
     }
 
-    <section class="catalog-trust" aria-label="Why renters trust us">
+    <section class="catalog-trust" aria-label="Por qué confían en nosotros">
         <div class="catalog-trust-header">
-            <p class="catalog-eyebrow">Trusted rental process</p>
-            <h2>Built for confidence at every step</h2>
-            <p>From your first search to signed documentation, Premier Property Hub keeps the process professional, secure, and transparent.</p>
+            <p class="catalog-eyebrow">Proceso de alquiler confiable</p>
+            <h2>Diseñado para dar confianza en cada paso</h2>
+            <p>Desde tu primera búsqueda hasta la documentación firmada, Premier Property Hub mantiene el proceso profesional, seguro y transparente.</p>
         </div>
         <div class="catalog-trust-grid">
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-blue" aria-hidden="true">🛡️</div>
-                <h3>Verified listings</h3>
-                <p>Every property is reviewed before publication. No spam, no fake ads — only real homes ready to tour.</p>
+                <h3>Listados verificados</h3>
+                <p>Cada propiedad se revisa antes de publicarse. Sin spam ni anuncios falsos — solo hogares reales listos para visitar.</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-green" aria-hidden="true">✓</div>
-                <h3>Secure visit booking</h3>
-                <p>Schedule a certified 30-minute visit with a refundable deposit and clear next steps.</p>
+                <h3>Reserva segura de visita</h3>
+                <p>Agenda una visita certificada de 30 minutos con depósito reembolsable y pasos claros.</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-gold" aria-hidden="true">📜</div>
-                <h3>Official lease contracts</h3>
-                <p>Digital lease agreements tailored to each property with e-signature support.</p>
+                <h3>Contratos oficiales</h3>
+                <p>Acuerdos de arrendamiento digitales adaptados a cada propiedad con firma electrónica.</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-purple" aria-hidden="true">🏷️</div>
-                <h3>Stamps &amp; seals</h3>
-                <p>Official documentation packages available when required — stamps, seals, or both.</p>
+                <h3>Sellos y estampillas</h3>
+                <p>Paquetes de documentación oficial cuando se requiera — sellos, estampillas o ambos.</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-teal" aria-hidden="true">🔒</div>
-                <h3>Encrypted payments</h3>
-                <p>Deposit handling via Zelle with payment proof upload and admin verification.</p>
+                <h3>Pagos seguros</h3>
+                <p>Manejo del depósito vía Zelle con carga de comprobante y verificación administrativa.</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-navy" aria-hidden="true">👤</div>
-                <h3>Licensed support</h3>
-                <p>Our team confirms appointments by phone or <a href="@Model.WhatsAppUrl" class="catalog-inline-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a> once your deposit is approved.</p>
+                <h3>Soporte con licencia</h3>
+                <p>Nuestro equipo confirma las citas por teléfono o <a href="@Model.WhatsAppUrl" class="catalog-inline-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a> una vez aprobado tu depósito.</p>
             </article>
         </div>
 
@@ -227,20 +227,20 @@
                 <small>Property Hub</small>
             </div>
             <div class="catalog-seal">
-                <span class="catalog-seal-ring">ZILLOW</span>
-                <small>Partner network</small>
+                <span class="catalog-seal-ring">RE/MAX</span>
+                <small>Red asociada</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">SSL</span>
-                <small>Secure browsing</small>
+                <small>Navegación segura</small>
             </div>
             <div class="catalog-seal">
-                <span class="catalog-seal-ring">OFFICIAL</span>
-                <small>Lease &amp; stamps</small>
+                <span class="catalog-seal-ring">OFICIAL</span>
+                <small>Contrato y sellos</small>
             </div>
             <div class="catalog-seal">
-                <span class="catalog-seal-ring">REFUND</span>
-                <small>Visit deposit</small>
+                <span class="catalog-seal-ring">REEMBOLSO</span>
+                <small>Depósito de visita</small>
             </div>
         </div>
     </section>

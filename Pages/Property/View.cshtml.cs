@@ -73,13 +73,13 @@ public class ViewModel(
 
         if (DateTimeUtc.FromForm(Appointment.FechaHora) <= DateTime.UtcNow)
         {
-            ModelState.AddModelError("Appointment.FechaCita", "Please choose a future date and time.");
+            ModelState.AddModelError("Appointment.FechaCita", "Elige una fecha y hora de visita en el futuro.");
             return isAjax ? AjaxValidationError() : Page();
         }
 
         if (DateTimeUtc.FromFormDate(Appointment.FechaNacimiento) >= DateTime.UtcNow.Date)
         {
-            ModelState.AddModelError("Appointment.FechaNacimiento", "Please enter a valid date of birth.");
+            ModelState.AddModelError("Appointment.FechaNacimiento", "Ingresa una fecha de nacimiento válida.");
             return isAjax ? AjaxValidationError() : Page();
         }
 
@@ -136,7 +136,7 @@ public class ViewModel(
                     success = false,
                     errors = new Dictionary<string, string>
                     {
-                        ["_"] = "Could not save your request. Please try again in a moment."
+                        ["_"] = "No se pudo guardar tu solicitud. Intenta de nuevo en un momento."
                     }
                 });
             }
@@ -171,17 +171,17 @@ public class ViewModel(
 
         if (paymentProof is null || paymentProof.Length == 0)
         {
-            return BadRequest(new { success = false, message = "Please select a payment screenshot." });
+            return BadRequest(new { success = false, message = "Selecciona una captura del pago." });
         }
 
         if (paymentProof.Length > MaxPaymentProofBytes)
         {
-            return BadRequest(new { success = false, message = "Image must be 5 MB or smaller." });
+            return BadRequest(new { success = false, message = "La imagen debe ser de 5 MB o menos." });
         }
 
         if (!IsAllowedPaymentProof(paymentProof))
         {
-            return BadRequest(new { success = false, message = "Upload a JPG, PNG, WEBP, or GIF image." });
+            return BadRequest(new { success = false, message = "Sube una imagen JPG, PNG, WEBP o GIF." });
         }
 
         var cita = await context.Citas
@@ -190,12 +190,12 @@ public class ViewModel(
 
         if (cita is null)
         {
-            return NotFound(new { success = false, message = "Appointment not found." });
+            return NotFound(new { success = false, message = "No se encontró la cita." });
         }
 
         if (cita.Estado is EstadoCita.Cancelada or EstadoCita.Confirmada)
         {
-            return BadRequest(new { success = false, message = "This appointment can no longer accept payments." });
+            return BadRequest(new { success = false, message = "Esta cita ya no puede recibir pagos." });
         }
 
         await using var stream = new MemoryStream();

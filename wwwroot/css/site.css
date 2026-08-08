@@ -1176,8 +1176,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, #f0f4ff 0%, #f8fafc 50%, #eef2ff 100%);
+  background: linear-gradient(160deg, #fff1f2 0%, #f8fafc 50%, #fef2f2 100%);
   padding: 1.5rem;
+}
+
+.admin-login-logo {
+  height: 40px;
+  width: auto;
+  max-width: 160px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .admin-login-card {
@@ -1186,8 +1195,57 @@ body {
   background: #fff;
   border-radius: 1rem;
   padding: 2rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 16px 40px rgba(227, 24, 55, 0.08);
+  border: 1px solid #fecaca;
+}
+
+.admin-login-card .btn-primary {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+.admin-login-card .btn-primary:hover {
+  background-color: var(--brand-primary-hover);
+  border-color: var(--brand-primary-hover);
+}
+
+/* Form validation */
+.form-field.is-invalid .form-label {
+  color: #dc2626;
+}
+
+.form-field.is-invalid .form-control,
+.form-field.is-invalid .form-select {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.form-field.is-invalid .yes-no-group {
+  outline: 2px solid #fecaca;
+  outline-offset: 2px;
+  border-radius: 0.625rem;
+}
+
+.field-inline-error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.8125rem;
+  margin-top: 0.35rem;
+  font-weight: 500;
+}
+
+.payment-refundable-note {
+  color: #334155;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 0.75rem 1rem;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+}
+
+.payment-refundable-note strong {
+  color: var(--brand-primary);
 }
 
 .success-confetti {

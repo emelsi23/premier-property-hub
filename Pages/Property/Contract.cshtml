@@ -10,7 +10,7 @@
         <p class="contract-brand">Premier Property Hub</p>
         <h1>@Model.RenderedTitle</h1>
         <p class="contract-subtitle">@Model.RenderedSubtitle</p>
-        <p class="contract-effective">@propiedad.Titulo · $@propiedad.PrecioMensual.ToString("N0")/mo</p>
+        <p class="contract-effective">@propiedad.Titulo · $@propiedad.PrecioMensual.ToString("N0")/mes</p>
     </header>
 
     <div class="contract-notice">
@@ -19,11 +19,11 @@
 
     <div class="contract-amounts card border-0 shadow-sm mb-3">
         <div class="card-body">
-            <h2 class="h6 text-muted mb-3">Amount summary (from monthly rent)</h2>
+            <h2 class="h6 text-muted mb-3">Resumen de montos (según alquiler mensual)</h2>
             <div class="row g-2 small">
-                <div class="col-6 col-md-4"><span class="text-muted">Monthly rent</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">Security deposit</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
-                <div class="col-6 col-md-4"><span class="text-muted">Visit deposit</span><br /><strong>$@VisitDepositSettings.GetAmount(propiedad).ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Alquiler mensual</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Depósito de seguridad</span><br /><strong>$@propiedad.PrecioMensual.ToString("N0")</strong></div>
+                <div class="col-6 col-md-4"><span class="text-muted">Depósito de visita</span><br /><strong>$@VisitDepositSettings.GetAmount(propiedad).ToString("N0")</strong></div>
             </div>
         </div>
     </div>
@@ -33,22 +33,22 @@
     </div>
 
     <section class="contract-section contract-sign-panel" id="signPanel">
-        <h2>Tenant signature</h2>
-        <p class="mb-3">Review the agreement above, then sign or submit proposed changes.</p>
+        <h2>Firma del arrendatario</h2>
+        <p class="mb-3">Revisa el acuerdo anterior y luego firma o envía cambios propuestos.</p>
 
         <form id="contractSignForm" novalidate>
             @Html.AntiForgeryToken()
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="tenantName" class="form-label">Full legal name</label>
+                    <label for="tenantName" class="form-label">Nombre legal completo</label>
                     <input type="text" id="tenantName" class="form-control" maxlength="120" required />
                 </div>
                 <div class="col-md-6">
-                    <label for="tenantEmail" class="form-label">Email</label>
+                    <label for="tenantEmail" class="form-label">Correo electrónico</label>
                     <input type="email" id="tenantEmail" class="form-control" maxlength="256" required />
                 </div>
                 <div class="col-md-6">
-                    <label for="tenantPhone" class="form-label">Phone (optional)</label>
+                    <label for="tenantPhone" class="form-label">Teléfono (opcional)</label>
                     <input type="tel" id="tenantPhone" class="form-control" maxlength="30" />
                 </div>
             </div>
@@ -56,46 +56,46 @@
             <div class="contract-action-tabs mt-4">
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="sign" checked />
-                    <span>Sign agreement</span>
+                    <span>Firmar acuerdo</span>
                 </label>
                 <label class="contract-action-tab">
                     <input type="radio" name="submitAction" value="changes" />
-                    <span>Request changes</span>
+                    <span>Solicitar cambios</span>
                 </label>
             </div>
 
             <div id="signFields" class="mt-3">
-                <label class="form-label">Draw your signature</label>
+                <label class="form-label">Dibuja tu firma</label>
                 <div class="signature-pad-wrap">
-                    <canvas id="signaturePad" width="600" height="180" aria-label="Signature pad"></canvas>
-                    <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Clear</button>
+                    <canvas id="signaturePad" width="600" height="180" aria-label="Panel de firma"></canvas>
+                    <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Limpiar</button>
                 </div>
                 <label class="terms-check mt-3">
                     <input type="checkbox" id="agreeCheckbox" />
-                    <span>I have read this agreement and agree to its terms.</span>
+                    <span>He leído este acuerdo y acepto sus términos.</span>
                 </label>
             </div>
 
             <div id="changesFields" class="mt-3 d-none">
-                <label for="proposedChanges" class="form-label">Proposed changes</label>
+                <label for="proposedChanges" class="form-label">Cambios propuestos</label>
                 <textarea id="proposedChanges" class="form-control" rows="5" maxlength="4000"
-                          placeholder="Describe the clauses you would like to modify…"></textarea>
+                          placeholder="Describe las cláusulas que quieres modificar…"></textarea>
             </div>
 
             <div id="optionalChangesWrap" class="mt-3">
-                <label for="optionalChanges" class="form-label">Additional notes (optional)</label>
+                <label for="optionalChanges" class="form-label">Notas adicionales (opcional)</label>
                 <textarea id="optionalChanges" class="form-control" rows="3" maxlength="4000"
-                          placeholder="Optional comments to include with your signature…"></textarea>
+                          placeholder="Comentarios opcionales para incluir con tu firma…"></textarea>
             </div>
 
             <p id="signFormError" class="text-danger small d-none mt-2"></p>
-            <button type="submit" class="btn btn-submit w-100 mt-3" id="submitContractBtn">Submit signature</button>
+            <button type="submit" class="btn btn-submit w-100 mt-3" id="submitContractBtn">Enviar firma</button>
         </form>
     </section>
 
     <footer class="contract-footer">
-        <p><a href="/property/@propiedad.Slug">← Back to property</a></p>
-        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Print contract</button>
+        <p><a href="/property/@propiedad.Slug">← Volver a la propiedad</a></p>
+        <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">Imprimir contrato</button>
     </footer>
 </article>
 
@@ -105,12 +105,12 @@
         <div class="modal-success-icon" aria-hidden="true">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
-        <p class="success-badge" id="successBadge">Submitted</p>
-        <h3 class="modal-title success-title" id="successModalTitle">Signature submitted</h3>
+        <p class="success-badge" id="successBadge">Enviado</p>
+        <h3 class="modal-title success-title" id="successModalTitle">Firma enviada</h3>
         <p class="modal-text success-contact mb-0" id="successModalText">
-            Your signature has been supplied. We will review it and contact you shortly.
+            Tu firma fue recibida. La revisaremos y te contactaremos pronto.
         </p>
-        <button type="button" class="btn btn-submit w-100 mt-3" id="closeSuccessModal">OK</button>
+        <button type="button" class="btn btn-submit w-100 mt-3" id="closeSuccessModal">Aceptar</button>
     </div>
 </div>
 
@@ -207,7 +207,7 @@
                 signFields.classList.toggle('d-none', !isSign);
                 changesFields.classList.toggle('d-none', isSign);
                 optionalChangesWrap.classList.toggle('d-none', !isSign);
-                submitBtn.textContent = isSign ? 'Submit signature' : 'Submit changes';
+                submitBtn.textContent = isSign ? 'Enviar firma' : 'Enviar cambios';
             });
         });
 
@@ -237,24 +237,24 @@
             const optionalChanges = document.getElementById('optionalChanges').value.trim();
 
             if (!tenantName || !tenantEmail) {
-                signFormError.textContent = 'Name and email are required.';
+                signFormError.textContent = 'Nombre y correo electrónico son obligatorios.';
                 signFormError.classList.remove('d-none');
                 return;
             }
 
             if (action === 'sign') {
                 if (!document.getElementById('agreeCheckbox').checked) {
-                    signFormError.textContent = 'Please confirm that you agree to the terms.';
+                    signFormError.textContent = 'Confirma que aceptas los términos.';
                     signFormError.classList.remove('d-none');
                     return;
                 }
                 if (!hasSignature) {
-                    signFormError.textContent = 'Please draw your signature.';
+                    signFormError.textContent = 'Dibuja tu firma.';
                     signFormError.classList.remove('d-none');
                     return;
                 }
             } else if (!proposedChanges) {
-                signFormError.textContent = 'Describe the changes you are requesting.';
+                signFormError.textContent = 'Describe los cambios que solicitas.';
                 signFormError.classList.remove('d-none');
                 return;
             }
@@ -287,7 +287,7 @@
                 const data = await response.json().catch(() => ({}));
 
                 if (!response.ok) {
-                    signFormError.textContent = data.message || 'Something went wrong. Please try again.';
+                    signFormError.textContent = data.message || 'Algo salió mal. Intenta de nuevo.';
                     signFormError.classList.remove('d-none');
                     submitBtn.disabled = false;
                     return;
@@ -295,17 +295,17 @@
 
                 if (action === 'sign') {
                     showSuccessModal(
-                        'Signature submitted',
-                        'Your signature has been supplied. We will review it and contact you shortly.',
-                        'Signature supplied'
+                        'Firma enviada',
+                        'Tu firma fue recibida. La revisaremos y te contactaremos pronto.',
+                        'Firma recibida'
                     );
                     clearSignature();
                     document.getElementById('agreeCheckbox').checked = false;
                 } else {
                     showSuccessModal(
-                        'Changes submitted',
-                        'Your proposed changes have been received. We will review them and contact you shortly.',
-                        'Changes received'
+                        'Cambios enviados',
+                        'Recibimos tus cambios propuestos. Los revisaremos y te contactaremos pronto.',
+                        'Cambios recibidos'
                     );
                     document.getElementById('proposedChanges').value = '';
                 }
@@ -313,7 +313,7 @@
                 signForm.reset();
                 submitBtn.disabled = false;
             } catch {
-                signFormError.textContent = 'Something went wrong. Please try again.';
+                signFormError.textContent = 'Algo salió mal. Intenta de nuevo.';
                 signFormError.classList.remove('d-none');
                 submitBtn.disabled = false;
             }

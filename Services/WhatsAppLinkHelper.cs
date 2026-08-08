@@ -27,8 +27,8 @@ public static class WhatsAppLinkHelper
     }
 
     public static string BuildAgentMessage(string propertyTitle, string propertyUrl) =>
-        $"Hi, I'm interested in {propertyTitle}. I need help with my visit deposit. Property: {propertyUrl}";
+        $"Hola, me interesa {propertyTitle}. Necesito ayuda con el depósito de visita. Propiedad: {propertyUrl}";
 
     public static string BuildShareMessage(string propertyTitle, string propertyUrl) =>
-        $"Hi, check out this rental on Premier Property Hub: {propertyTitle} — {propertyUrl}";
+        $"Hola, mira este alquiler en Premier Property Hub: {propertyTitle} — {propertyUrl}";
 }

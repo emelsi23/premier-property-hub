@@ -10,7 +10,7 @@ public class IndexModel(AppDbContext context) : PageModel
 {
     public string WhatsAppUrl { get; } = WhatsAppLinkHelper.BuildUrl(
         null,
-        "Hi, I'd like help finding a rental on Premier Property Hub.");
+        "Hola, me gustaría ayuda para encontrar un alquiler en Premier Property Hub.");
 
     [BindProperty(SupportsGet = true)]
     public CatalogFilterInput Filters { get; set; } = new();
