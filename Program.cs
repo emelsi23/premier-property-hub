@@ -1,6 +1,5 @@
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +67,22 @@ app.MapGet("/casa/{slug}", (string slug) => Results.Redirect($"/property/{slug}"
 app.MapGet("/casa/{slug}/gracias", (string slug) => Results.Redirect($"/property/{slug}/thank-you", permanent: true));
 app.MapGet("/Admin/Citas/{**path}", () => Results.Redirect("/Admin/Appointments", permanent: true));
 
+app.MapGet("/agent/{slug}", (string slug) => Results.Redirect($"/agente/{slug}", permanent: false));
+
+app.MapGet("/api/agentes/{slug}", async (string slug, AppDbContext db, HttpContext http) =>
+{
+    var agente = await db.Agentes.AsNoTracking()
+        .FirstOrDefaultAsync(a => a.Slug == slug && a.Activo);
+
+    if (agente is null)
+    {
+        return Results.NotFound(new { error = "Agente no encontrado." });
+    }
+
+    var baseUrl = $"{http.Request.Scheme}://{http.Request.Host}";
+    return Results.Json(AgenteApiResponse.From(agente, baseUrl));
+});
+
 app.MapRazorPages();
 
 await InitializeDatabaseAsync(app.Services);
@@ -90,6 +105,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             await LeaseContractSeedHelper.EnsureForAllPropertiesAsync(db);
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);
             await ContractSpanishLocalizationHelper.ApplySpanishDefaultsIfLegacyEnglishAsync(db);
+            await AgentSeedHelper.EnsureSampleAgentAsync(db);
             Console.WriteLine("Database initialized successfully.");
             return;
         }

@@ -1,0 +1,85 @@
+@page
+@model ApartamentosRenta.Pages.Admin.Agents.IndexModel
+@{
+    ViewData["Title"] = "Agentes";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Agentes verificados</h1>
+        <p class="text-muted mb-0">Crea perfiles públicos con enlace, foto, licencia y código de verificación.</p>
+    </div>
+    <a asp-page="Create" class="btn btn-primary">+ Nuevo agente</a>
+</div>
+
+@if (!Model.Agentes.Any())
+{
+    <div class="alert alert-info">Aún no hay agentes. Crea uno para obtener un enlace como <code>/agente/nombre-agente</code>.</div>
+}
+else
+{
+    <div class="vstack gap-3">
+        @foreach (var agente in Model.Agentes)
+        {
+            var link = Model.BuildProfileLink(agente.Slug);
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <img src="@agente.FotoUrl" alt="@agente.NombreCompleto" class="rounded admin-thumb" width="72" height="72" style="object-fit:cover;" />
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h2 class="h5 mb-0">@agente.NombreCompleto</h2>
+                                @if (agente.Verificado)
+                                {
+                                    <span class="badge bg-success">Verificado</span>
+                                }
+                                @if (!agente.Activo)
+                                {
+                                    <span class="badge bg-secondary">Oculto</span>
+                                }
+                            </div>
+                            <p class="text-muted small mb-1">@agente.RolTitulo</p>
+                            <p class="small mb-0">
+                                <strong>@agente.Calificacion.ToString("0.1")</strong> ★ · @agente.TotalResenas reseñas · Lic. <code>@agente.NumeroLicencia</code>
+                            </p>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small text-muted mb-1">Enlace del perfil</label>
+                            <div class="input-group input-group-sm mb-2">
+                                <input type="text" class="form-control font-monospace wa-link" value="@link" readonly />
+                                <button type="button" class="btn btn-outline-secondary btn-copy" data-link="@link">Copiar</button>
+                            </div>
+                            <p class="small text-muted mb-0">API: <code>@Model.BuildApiLink(agente.Slug)</code></p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="/agente/@agente.Slug" target="_blank" class="btn btn-sm btn-outline-primary">Ver perfil</a>
+                                <a asp-page="Edit" asp-route-id="@agente.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                                <a asp-page="Delete" asp-route-id="@agente.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.btn-copy').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const link = btn.dataset.link;
+                try {
+                    await navigator.clipboard.writeText(link);
+                    btn.textContent = 'Copiado';
+                    setTimeout(() => btn.textContent = 'Copiar', 1500);
+                } catch {
+                    btn.textContent = 'Error';
+                }
+            });
+        });
+    </script>
+}

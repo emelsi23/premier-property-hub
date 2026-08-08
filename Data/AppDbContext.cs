@@ -12,6 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ContractSubmission> ContractSubmissions => Set<ContractSubmission>();
     public DbSet<StampSealContract> StampSealContracts => Set<StampSealContract>();
     public DbSet<StampSealSubmission> StampSealSubmissions => Set<StampSealSubmission>();
+    public DbSet<Agente> Agentes => Set<Agente>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,6 +89,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(c => c.SubmittedAt);
             entity.HasIndex(c => c.SubmissionType);
             entity.HasIndex(c => c.PropiedadId);
+        });
+
+        modelBuilder.Entity<Agente>(entity =>
+        {
+            entity.Property(a => a.Calificacion).HasPrecision(3, 2);
+            entity.Property(a => a.TiempoRespuestaHoras).HasPrecision(5, 2);
+            entity.HasIndex(a => a.Slug).IsUnique();
+            entity.HasIndex(a => a.Activo);
+            entity.HasIndex(a => a.CodigoVerificacion);
         });
     }
 }

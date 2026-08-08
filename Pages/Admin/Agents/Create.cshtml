@@ -1,0 +1,21 @@
+@page
+@model ApartamentosRenta.Pages.Admin.Agents.CreateModel
+@{
+    ViewData["Title"] = "Nuevo agente";
+}
+
+<h1 class="h3 mb-4">Nuevo agente</h1>
+
+<form method="post" class="card border-0 shadow-sm">
+    <div class="card-body">
+        <partial name="_AgentForm" model="Model.Input" />
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Crear agente</button>
+            <a asp-page="Index" class="btn btn-link">Cancelar</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

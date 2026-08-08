@@ -4,6 +4,7 @@
     var isAppointments = currentPage.StartsWith("/Admin/Appointments", StringComparison.OrdinalIgnoreCase);
     var isContract = currentPage.StartsWith("/Admin/Contract", StringComparison.OrdinalIgnoreCase);
     var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
+    var isAgents = currentPage.StartsWith("/Admin/Agents", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -24,6 +25,7 @@
                 <a class="nav-link @(isAppointments ? "active fw-semibold" : "")" asp-page="/Admin/Appointments/Index">Citas</a>
                 <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Firmas de contrato</a>
                 <a class="nav-link @(isStampSeals ? "active fw-semibold" : "")" asp-page="/Admin/StampSeals/Submissions">Firmas estampillas</a>
+                <a class="nav-link @(isAgents ? "active fw-semibold" : "")" asp-page="/Admin/Agents/Index">Agentes</a>
                 <form method="post" asp-page="/Admin/Logout" class="d-inline ms-lg-2">
                     <button type="submit" class="btn btn-sm btn-outline-secondary">Cerrar sesión</button>
                 </form>

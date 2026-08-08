@@ -1,0 +1,16 @@
+@page "{id:int}"
+@model ApartamentosRenta.Pages.Admin.Agents.DeleteModel
+@{
+    ViewData["Title"] = "Eliminar agente";
+}
+
+<h1 class="h3 mb-4">Eliminar agente</h1>
+
+<div class="alert alert-warning">
+    ¿Eliminar el perfil de <strong>@Model.Agente.NombreCompleto</strong>? El enlace público dejará de funcionar.
+</div>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-page="Index" class="btn btn-link">Cancelar</a>
+</form>

@@ -1,0 +1,99 @@
+@model ApartamentosRenta.Pages.Admin.AgenteInput
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="NombreCompleto" class="form-label"></label>
+        <input asp-for="NombreCompleto" class="form-control" />
+        <span asp-validation-for="NombreCompleto" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Slug" class="form-label"></label>
+        <input asp-for="Slug" class="form-control" placeholder="sofia-ramirez" />
+        <div class="form-text">Opcional. Se genera desde el nombre si lo dejas vacío.</div>
+    </div>
+    <div class="col-12">
+        <label asp-for="FotoUrl" class="form-label"></label>
+        <input asp-for="FotoUrl" class="form-control" placeholder="https://..." />
+        <span asp-validation-for="FotoUrl" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="RolTitulo" class="form-label"></label>
+        <input asp-for="RolTitulo" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Calificacion" class="form-label"></label>
+        <input asp-for="Calificacion" class="form-control" type="number" step="0.1" min="0" max="5" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="TotalResenas" class="form-label"></label>
+        <input asp-for="TotalResenas" class="form-control" type="number" min="0" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="NumeroLicencia" class="form-label"></label>
+        <input asp-for="NumeroLicencia" class="form-control" placeholder="TX-RE-2847193" />
+        <span asp-validation-for="NumeroLicencia" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="EstadoLicencia" class="form-label"></label>
+        <input asp-for="EstadoLicencia" class="form-control" placeholder="Texas" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CodigoVerificacion" class="form-label"></label>
+        <input asp-for="CodigoVerificacion" class="form-control" placeholder="PPH-K7R4" />
+        <div class="form-text">Se genera automáticamente si está vacío.</div>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="AnosExperiencia" class="form-label"></label>
+        <input asp-for="AnosExperiencia" class="form-control" type="number" min="0" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PropiedadesActivas" class="form-label"></label>
+        <input asp-for="PropiedadesActivas" class="form-control" type="number" min="0" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TiempoRespuestaHoras" class="form-label"></label>
+        <input asp-for="TiempoRespuestaHoras" class="form-control" type="number" step="0.5" min="0" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PorcentajeRespuesta" class="form-label"></label>
+        <input asp-for="PorcentajeRespuesta" class="form-control" type="number" min="0" max="100" />
+    </div>
+    <div class="col-12">
+        <label asp-for="Biografia" class="form-label"></label>
+        <textarea asp-for="Biografia" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Biografia" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="WhatsAppNumber" class="form-label"></label>
+        <input asp-for="WhatsAppNumber" class="form-control" placeholder="9453846408" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Telefono" class="form-label"></label>
+        <input asp-for="Telefono" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="AreasServicio" class="form-label"></label>
+        <input asp-for="AreasServicio" class="form-control" placeholder="Houston, Dallas, Austin" />
+        <div class="form-text">Separadas por comas.</div>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Idiomas" class="form-label"></label>
+        <input asp-for="Idiomas" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <div class="form-check mt-2">
+            <input asp-for="Verificado" class="form-check-input" type="checkbox" />
+            <label asp-for="Verificado" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-check mt-2">
+            <input asp-for="Activo" class="form-check-input" type="checkbox" />
+            <label asp-for="Activo" class="form-check-label"></label>
+        </div>
+    </div>
+</div>

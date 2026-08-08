@@ -1,0 +1,172 @@
+@page "/agente/{slug}"
+@model ApartamentosRenta.Pages.Agentes.PerfilModel
+@{
+    ViewData["Title"] = Model.PerfilAgente.NombreCompleto;
+    var agente = Model.PerfilAgente;
+    var stars = (int)Math.Round(agente.Calificacion);
+    var photoFallback = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=640&q=80";
+}
+
+<link rel="stylesheet" href="~/css/agent.css" asp-append-version="true" />
+
+<div class="agent-page">
+    <section class="agent-hero card border-0 shadow-sm">
+        <div class="agent-hero-grid">
+            <div class="agent-photo-wrap">
+                <img src="@agente.FotoUrl" alt="@agente.NombreCompleto" class="agent-photo"
+                     onerror="this.onerror=null;this.src='@photoFallback';" />
+                @if (agente.Verificado)
+                {
+                    <span class="agent-photo-badge" aria-label="Agente verificado">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                        </svg>
+                    </span>
+                }
+            </div>
+
+            <div class="agent-hero-main">
+                @if (agente.Verificado)
+                {
+                    <div class="agent-verified-pill">
+                        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+                        </svg>
+                        Agente verificado
+                    </div>
+                }
+
+                <h1 class="agent-name">@agente.NombreCompleto</h1>
+                <p class="agent-role">@agente.RolTitulo</p>
+
+                <div class="agent-rating-row">
+                    <div class="agent-stars" aria-label="Calificación @agente.Calificacion de 5">
+                        @for (var i = 1; i <= 5; i++)
+                        {
+                            <span class="agent-star @(i <= stars ? "filled" : "")">★</span>
+                        }
+                    </div>
+                    <span class="agent-rating-value">@agente.Calificacion.ToString("0.1")</span>
+                    <span class="agent-rating-count">(@agente.TotalResenas reseñas)</span>
+                </div>
+
+                <div class="agent-stats-grid">
+                    <div class="agent-stat">
+                        <span class="agent-stat-value">@agente.AnosExperiencia+</span>
+                        <span class="agent-stat-label">Años de experiencia</span>
+                    </div>
+                    <div class="agent-stat">
+                        <span class="agent-stat-value">@agente.PropiedadesActivas</span>
+                        <span class="agent-stat-label">Propiedades activas</span>
+                    </div>
+                    <div class="agent-stat">
+                        <span class="agent-stat-value">@agente.PorcentajeRespuesta%</span>
+                        <span class="agent-stat-label">Tasa de respuesta</span>
+                    </div>
+                    <div class="agent-stat">
+                        <span class="agent-stat-value">@PerfilModel.FormatResponseTime(agente.TiempoRespuestaHoras)</span>
+                        <span class="agent-stat-label">Tiempo de respuesta</span>
+                    </div>
+                </div>
+
+                <div class="agent-cta-row">
+                    <a href="@Model.WhatsAppUrl" class="btn btn-primary agent-btn-wa" target="_blank" rel="noopener noreferrer">
+                        Contactar por WhatsApp
+                    </a>
+                    <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Ver alquileres</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="agent-layout">
+        <section class="agent-card card border-0 shadow-sm">
+            <div class="agent-card-header">
+                <h2>Verificación de identidad</h2>
+                @if (agente.Verificado)
+                {
+                    <span class="badge bg-success">Verificado</span>
+                }
+            </div>
+            <div class="agent-verify-panel">
+                <div class="agent-verify-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="agent-verify-title">Perfil autenticado por Premier Property Hub</p>
+                    <p class="agent-verify-text">
+                        Este agente está registrado en nuestra red. La licencia y el código de verificación pueden usarse para confirmar que el perfil es legítimo antes de compartir información personal o realizar pagos.
+                    </p>
+                    <dl class="agent-verify-details">
+                        <div>
+                            <dt>Número de licencia</dt>
+                            <dd><code>@agente.NumeroLicencia</code></dd>
+                        </div>
+                        <div>
+                            <dt>Estado de licencia</dt>
+                            <dd>@agente.EstadoLicencia</dd>
+                        </div>
+                        <div>
+                            <dt>Código de verificación</dt>
+                            <dd><code class="agent-verify-code">@agente.CodigoVerificacion</code></dd>
+                        </div>
+                        @if (agente.FechaVerificacion.HasValue)
+                        {
+                            <div>
+                                <dt>Verificado el</dt>
+                                <dd>@agente.FechaVerificacion.Value.ToString("dd/MM/yyyy")</dd>
+                            </div>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </section>
+
+        <section class="agent-card card border-0 shadow-sm">
+            <h2>Sobre el agente</h2>
+            <p class="agent-bio">@agente.Biografia</p>
+
+            @if (Model.AreasList.Count > 0)
+            {
+                <h3 class="agent-subheading">Áreas de servicio</h3>
+                <ul class="agent-chip-list">
+                    @foreach (var area in Model.AreasList)
+                    {
+                        <li>@area</li>
+                    }
+                </ul>
+            }
+
+            @if (Model.IdiomasList.Count > 0)
+            {
+                <h3 class="agent-subheading">Idiomas</h3>
+                <ul class="agent-chip-list agent-chip-list--muted">
+                    @foreach (var idioma in Model.IdiomasList)
+                    {
+                        <li>@idioma</li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <aside class="agent-card card border-0 shadow-sm">
+            <h2>Contacto directo</h2>
+            <ul class="agent-contact-list">
+                @if (!string.IsNullOrWhiteSpace(agente.Telefono))
+                {
+                    <li><span>Teléfono</span><strong>@agente.Telefono</strong></li>
+                }
+                @if (!string.IsNullOrWhiteSpace(agente.Email))
+                {
+                    <li><span>Email</span><strong>@agente.Email</strong></li>
+                }
+                <li><span>Perfil público</span><strong class="small"><a href="@Model.PerfilUrl">@Model.PerfilUrl</a></strong></li>
+            </ul>
+            <p class="agent-tip small text-muted mb-0">
+                Tip: pide al agente que confirme su código <strong>@agente.CodigoVerificacion</strong> antes de enviar documentos o pagos.
+            </p>
+        </aside>
+    </div>
+</div>
