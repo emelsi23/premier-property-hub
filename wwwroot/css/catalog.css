@@ -578,6 +578,33 @@ body:has(.catalog-page) .container-xl.py-4 {
   line-height: 1.6;
 }
 
+.catalog-trust-alert {
+  margin: 1.25rem auto 0;
+  max-width: 42rem;
+  padding: 1rem 1.15rem;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.catalog-trust-alert strong {
+  color: #991b1b;
+}
+
+.catalog-trust-alert-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
 .catalog-trust-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -609,6 +636,7 @@ body:has(.catalog-page) .container-xl.py-4 {
 .catalog-trust-icon-purple { background: #f5f3ff; }
 .catalog-trust-icon-teal { background: #f0fdfa; }
 .catalog-trust-icon-navy { background: #f1f5f9; }
+.catalog-trust-icon-red { background: #fef2f2; color: #047857; font-weight: 800; }
 
 .catalog-trust-card h3 {
   font-size: 1rem;
@@ -1096,6 +1124,33 @@ body:has(.catalog-page) .container-xl.py-4 {
   line-height: 1.6;
 }
 
+.catalog-trust-alert {
+  margin: 1.25rem auto 0;
+  max-width: 42rem;
+  padding: 1rem 1.15rem;
+  border-radius: 0.875rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.catalog-trust-alert strong {
+  color: #991b1b;
+}
+
+.catalog-trust-alert-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+
 .catalog-trust-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1127,6 +1182,7 @@ body:has(.catalog-page) .container-xl.py-4 {
 .catalog-trust-icon-purple { background: #f5f3ff; }
 .catalog-trust-icon-teal { background: #f0fdfa; }
 .catalog-trust-icon-navy { background: #f1f5f9; }
+.catalog-trust-icon-red { background: #fef2f2; color: #047857; font-weight: 800; }
 
 .catalog-trust-card h3 {
   font-size: 1rem;
