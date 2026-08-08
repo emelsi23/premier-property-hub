@@ -1,7 +1,10 @@
 :root {
-  --brand-primary: #006aff;
-  --brand-primary-hover: #0056cc;
+  --brand-primary: #e31837;
+  --brand-primary-hover: #c41230;
+  --brand-secondary: #0054a4;
   --brand-dark: #1a1a1b;
+  --brand-primary-soft: #fef2f2;
+  --brand-primary-muted: #b91c1c;
   --wa-green: #25d366;
   --wa-green-hover: #1ebe57;
 }
@@ -73,10 +76,18 @@
   text-overflow: ellipsis;
 }
 
+.site-brand-logo {
+  height: 34px;
+  width: auto;
+  max-width: 148px;
+  flex-shrink: 0;
+  display: block;
+}
+
 .site-brand-byline {
   font-size: 0.6875rem;
-  color: #71717a;
-  font-weight: 500;
+  color: var(--brand-primary);
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -228,7 +239,19 @@
   }
 }
 
+.site-brand-text-compact {
+  line-height: 1.1;
+}
+
 @media (max-width: 420px) {
+  .site-brand-text-compact {
+    display: none;
+  }
+
+  .site-brand-logo {
+    max-width: 132px;
+  }
+
   .site-wa-chip-text {
     display: none;
   }
@@ -344,9 +367,11 @@ body {
 }
 
 .listing-logo {
-  width: 40px;
-  height: 40px;
+  height: 32px;
+  width: auto;
+  max-width: 120px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .listing-brand {
@@ -360,7 +385,9 @@ body {
 .listing-brand-sub {
   display: block;
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--brand-primary);
+  font-weight: 600;
+}
   font-weight: 500;
 }
 
@@ -393,8 +420,8 @@ body {
 }
 
 .form-highlights span {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-muted);
   border-radius: 999px;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
@@ -413,11 +440,11 @@ body {
   align-items: center;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-muted);
   font-weight: 700;
   font-size: 0.875rem;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #fecaca;
 }
 
 .form-card-header {
@@ -645,8 +672,8 @@ body {
 }
 
 .property-tag {
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: var(--brand-primary-soft);
+  color: var(--brand-primary-muted);
   border-radius: 999px;
   padding: 0.3rem 0.85rem;
   font-size: 0.8125rem;
@@ -702,7 +729,7 @@ body {
 
 .yes-no-option:has(input:checked) {
   border-color: var(--brand-primary);
-  background: #eff6ff;
+  background: var(--brand-primary-soft);
   color: var(--brand-primary);
   font-weight: 600;
 }
@@ -929,7 +956,7 @@ body {
 .progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--brand-primary), #0056cc);
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-hover));
   border-radius: 999px;
   transition: width 0.1s linear;
 }
@@ -1060,7 +1087,7 @@ body {
 }
 
 .zelle-card {
-  background: linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%);
+  background: linear-gradient(135deg, #fff1f2 0%, var(--brand-primary-soft) 100%);
   border: 1px solid #bfdbfe;
   border-radius: 0.875rem;
   padding: 1rem 1.125rem;
@@ -1114,8 +1141,8 @@ body {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  color: #1d4ed8;
+  background: linear-gradient(135deg, #fecaca 0%, #fee2e2 100%);
+  color: var(--brand-primary-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1181,11 +1208,11 @@ body {
   animation: confettiFall 1.2s ease-out forwards;
 }
 
-.success-confetti span:nth-child(1) { left: 10%; background: #006aff; animation-delay: 0.1s; }
+.success-confetti span:nth-child(1) { left: 10%; background: var(--brand-primary); animation-delay: 0.1s; }
 .success-confetti span:nth-child(2) { left: 25%; background: #22c55e; animation-delay: 0.2s; }
 .success-confetti span:nth-child(3) { left: 40%; background: #f59e0b; animation-delay: 0.05s; }
 .success-confetti span:nth-child(4) { left: 55%; background: #ec4899; animation-delay: 0.25s; }
-.success-confetti span:nth-child(5) { left: 70%; background: #006aff; animation-delay: 0.15s; }
+.success-confetti span:nth-child(5) { left: 70%; background: var(--brand-primary); animation-delay: 0.15s; }
 .success-confetti span:nth-child(6) { left: 85%; background: #22c55e; animation-delay: 0.3s; }
 
 @keyframes confettiFall {
@@ -1373,7 +1400,7 @@ body {
 
 .contract-action-tab:has(input:checked) {
   border-color: var(--brand-primary);
-  background: #eff6ff;
+  background: var(--brand-primary-soft);
   color: var(--brand-primary);
 }
 
@@ -1551,8 +1578,8 @@ body {
   }
 
   .listing-logo {
-    width: 36px;
-    height: 36px;
+    height: 28px;
+    max-width: 108px;
     flex-shrink: 0;
   }
 

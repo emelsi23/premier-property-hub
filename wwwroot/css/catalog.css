@@ -15,7 +15,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   position: relative;
   padding: 3rem 0 2.5rem;
   overflow: hidden;
-  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 45%, #fff 100%);
+  background: linear-gradient(135deg, #fff1f2 0%, #f8fafc 45%, #fff 100%);
   border-bottom: 1px solid #e2e8f0;
   margin: 0 -0.75rem 1.5rem;
   padding-left: 0.75rem;
@@ -28,7 +28,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   right: -80px;
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(0, 106, 255, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(227, 24, 55, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -453,7 +453,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   margin-bottom: 0.85rem;
 }
 
-.catalog-trust-icon-blue { background: #eff6ff; }
+.catalog-trust-icon-blue { background: var(--brand-primary-soft); }
 .catalog-trust-icon-green { background: #ecfdf5; }
 .catalog-trust-icon-gold { background: #fffbeb; }
 .catalog-trust-icon-purple { background: #f5f3ff; }
@@ -532,7 +532,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   position: relative;
   padding: 3rem 0 2.5rem;
   overflow: hidden;
-  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 45%, #fff 100%);
+  background: linear-gradient(135deg, #fff1f2 0%, #f8fafc 45%, #fff 100%);
   border-bottom: 1px solid #e2e8f0;
   margin: 0 -0.75rem 1.5rem;
   padding-left: 0.75rem;
@@ -545,7 +545,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   right: -80px;
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(0, 106, 255, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(227, 24, 55, 0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -970,7 +970,7 @@ body:has(.catalog-page) .container-xl.py-4 {
   margin-bottom: 0.85rem;
 }
 
-.catalog-trust-icon-blue { background: #eff6ff; }
+.catalog-trust-icon-blue { background: var(--brand-primary-soft); }
 .catalog-trust-icon-green { background: #ecfdf5; }
 .catalog-trust-icon-gold { background: #fffbeb; }
 .catalog-trust-icon-purple { background: #f5f3ff; }

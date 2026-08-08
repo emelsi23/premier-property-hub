@@ -24,7 +24,7 @@ public sealed class AppointmentEmailService(
         var subject = $"Visit request received — {property.Titulo}";
         var html = $"""
             <div style="font-family:Inter,Arial,sans-serif;color:#1a1a1b;line-height:1.6;max-width:560px;">
-                <p style="color:#006aff;font-weight:700;font-size:12px;text-transform:uppercase;">Premier Property Hub</p>
+                <p style="color:#e31837;font-weight:700;font-size:12px;text-transform:uppercase;">RE/MAX · Premier Property Hub</p>
                 <h1 style="font-size:22px;margin:0 0 12px;">We received your visit request</h1>
                 <p>Hi {appointment.NombreCliente.Trim()},</p>
                 <p>Thank you for applying to tour <strong>{property.Titulo}</strong>.</p>
