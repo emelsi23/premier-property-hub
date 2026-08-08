@@ -46,6 +46,9 @@ public class PropertyInput
     [StringLength(120), Display(Name = "Zelle email or phone")]
     public string ZelleContact { get; set; } = string.Empty;
 
+    [StringLength(30), Display(Name = "WhatsApp number (for clients)")]
+    public string WhatsAppNumber { get; set; } = string.Empty;
+
     [Range(1, 999999), Display(Name = "Zelle visit deposit (USD)")]
     public decimal DepositAmount { get; set; } = VisitDepositSettings.DefaultAmount;
 
@@ -98,6 +101,7 @@ public class PropertyInput
         Amenidades = entity.Amenidades,
         ZelleDisplayName = entity.ZelleDisplayName,
         ZelleContact = entity.ZelleContact,
+        WhatsAppNumber = entity.WhatsAppNumber,
         DepositAmount = entity.DepositAmount > 0 ? entity.DepositAmount : VisitDepositSettings.DefaultAmount,
         StampsAmount = entity.StampsAmount > 0 ? entity.StampsAmount : StampSealSettings.DefaultStampsAmount,
         SealsAmount = entity.SealsAmount > 0 ? entity.SealsAmount : StampSealSettings.DefaultSealsAmount,

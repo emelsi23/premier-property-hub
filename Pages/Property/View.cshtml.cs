@@ -26,6 +26,8 @@ public class ViewModel(
 
     public Propiedad Propiedad { get; private set; } = null!;
 
+    public string WhatsAppUrl { get; private set; } = string.Empty;
+
     [BindProperty]
     public AppointmentInput Appointment { get; set; } = new();
 
@@ -38,6 +40,7 @@ public class ViewModel(
         }
 
         Propiedad = propiedad;
+        WhatsAppUrl = BuildWhatsAppUrl(propiedad);
         if (Propiedad.Fotos.Count == 0)
         {
             Propiedad.Fotos.Add(new FotoPropiedad
@@ -59,6 +62,7 @@ public class ViewModel(
         }
 
         Propiedad = propiedad;
+        WhatsAppUrl = BuildWhatsAppUrl(propiedad);
         var isAjax = Request.Headers.XRequestedWith == "XMLHttpRequest";
 
         if (!ModelState.IsValid)
@@ -140,12 +144,14 @@ public class ViewModel(
 
         var antiforgeryTokens = isAjax ? antiforgery.GetAndStoreTokens(HttpContext) : null;
 
+        var propertyUrl = $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}";
+
         return isAjax
             ? new JsonResult(new
             {
                 success = true,
                 token = publicToken,
-                zelle = BuildZellePayload(propiedad),
+                zelle = BuildZellePayload(propiedad, propertyUrl),
                 antiforgeryToken = antiforgeryTokens?.RequestToken
             })
             : RedirectToPage("/Property/ThankYou", new { slug });
@@ -266,14 +272,25 @@ public class ViewModel(
         };
     }
 
-    private static object BuildZellePayload(Propiedad propiedad) => new
+    private static object BuildZellePayload(Propiedad propiedad, string propertyUrl) => new
     {
         displayName = string.IsNullOrWhiteSpace(propiedad.ZelleDisplayName)
             ? "Premier Property Hub"
             : propiedad.ZelleDisplayName,
         contact = propiedad.ZelleContact,
+        hasZelle = !string.IsNullOrWhiteSpace(propiedad.ZelleContact),
+        whatsAppUrl = WhatsAppLinkHelper.BuildUrl(
+            propiedad.WhatsAppNumber,
+            WhatsAppLinkHelper.BuildAgentMessage(propiedad.Titulo, propertyUrl)),
         depositAmount = VisitDepositSettings.GetAmount(propiedad)
     };
+
+    private string BuildWhatsAppUrl(Propiedad propiedad) =>
+        WhatsAppLinkHelper.BuildUrl(
+            propiedad.WhatsAppNumber,
+            WhatsAppLinkHelper.BuildAgentMessage(
+                propiedad.Titulo,
+                $"{Request.Scheme}://{Request.Host}/property/{propiedad.Slug}"));
 
     private Task<Propiedad?> LoadPropiedadAsync(string slug) =>
         context.Propiedades

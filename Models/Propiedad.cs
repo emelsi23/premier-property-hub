@@ -46,6 +46,9 @@ public class Propiedad
     [StringLength(120)]
     public string ZelleContact { get; set; } = string.Empty;
 
+    [StringLength(30)]
+    public string WhatsAppNumber { get; set; } = string.Empty;
+
     [Range(0, 999999)]
     public decimal DepositAmount { get; set; } = 150m;
 

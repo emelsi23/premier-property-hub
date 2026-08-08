@@ -1,5 +1,6 @@
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -21,4 +22,12 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public string BuildLink(string slug) =>
         $"{Request.Scheme}://{Request.Host}/property/{slug}";
+
+    public string BuildWhatsAppShareLink(Propiedad propiedad)
+    {
+        var propertyUrl = BuildLink(propiedad.Slug);
+        return WhatsAppLinkHelper.BuildUrl(
+            propiedad.WhatsAppNumber,
+            WhatsAppLinkHelper.BuildShareMessage(propiedad.Titulo, propertyUrl));
+    }
 }

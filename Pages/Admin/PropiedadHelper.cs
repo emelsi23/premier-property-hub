@@ -23,6 +23,7 @@ public static class PropiedadHelper
         propiedad.Amenidades = input.Amenidades.Trim();
         propiedad.ZelleDisplayName = input.ZelleDisplayName.Trim();
         propiedad.ZelleContact = input.ZelleContact.Trim();
+        propiedad.WhatsAppNumber = input.WhatsAppNumber.Trim();
         propiedad.DepositAmount = input.DepositAmount > 0
             ? input.DepositAmount
             : VisitDepositSettings.DefaultAmount;

@@ -84,7 +84,12 @@
     <div class="col-md-4">
         <label asp-for="ZelleContact" class="form-label"></label>
         <input asp-for="ZelleContact" class="form-control" placeholder="payments@email.com" />
-        <div class="form-text">Zelle email or mobile number.</div>
+        <div class="form-text">Zelle email or mobile number. Leave empty to show a WhatsApp agent link.</div>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="WhatsAppNumber" class="form-label"></label>
+        <input asp-for="WhatsAppNumber" class="form-control" placeholder="(945) 384-6408" />
+        <div class="form-text">Shown on the property page chat bubble and when Zelle is empty. Uses default if blank.</div>
     </div>
     <div class="col-12">
         <hr class="my-1" />

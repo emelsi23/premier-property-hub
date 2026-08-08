@@ -302,6 +302,16 @@
     </div>
 </div>
 
+<div class="wa-float-widget" aria-label="WhatsApp chat">
+    <span class="wa-float-cloud">Chat with us</span>
+    <a href="@Model.WhatsAppUrl" class="wa-float-bubble" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.882L0 24l6.335-1.662A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.37l-.358-.214-3.742.982 1-3.648-.233-.375A9.818 9.818 0 1 1 12 21.818z"/>
+        </svg>
+    </a>
+</div>
+
 <div class="status-modal" id="statusModal" aria-hidden="true">
     <div class="status-modal-backdrop"></div>
     <div class="status-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -359,8 +369,13 @@
             <div class="zelle-card">
                 <div class="zelle-row"><span>Amount</span><strong id="zelleAmount">$0</strong></div>
                 <div class="zelle-row"><span>Send to</span><strong id="zelleName">—</strong></div>
-                <div class="zelle-row"><span>Zelle</span><strong id="zelleContact" class="font-monospace">—</strong></div>
+                <div class="zelle-row zelle-row-contact"><span>Zelle</span><strong id="zelleContact" class="font-monospace">—</strong></div>
             </div>
+            <p id="zelleWhatsAppHint" class="zelle-whatsapp-hint d-none">
+                Zelle not set for this listing.
+                <a id="zelleWhatsAppLink" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">Click here to contact your agent on WhatsApp</a>
+                — the fastest way to get payment details.
+            </p>
             <div class="payment-upload-box">
                 <label for="paymentProofInput" class="form-label">Payment screenshot</label>
                 <input type="file" id="paymentProofInput" class="form-control" accept="image/*" />
@@ -518,6 +533,9 @@
         const zelleAmount = document.getElementById('zelleAmount');
         const zelleName = document.getElementById('zelleName');
         const zelleContact = document.getElementById('zelleContact');
+        const zelleWhatsAppHint = document.getElementById('zelleWhatsAppHint');
+        const zelleWhatsAppLink = document.getElementById('zelleWhatsAppLink');
+        const pageWhatsAppUrl = '@Model.WhatsAppUrl';
         const paymentProofInput = document.getElementById('paymentProofInput');
         const paymentPreviewWrap = document.getElementById('paymentPreviewWrap');
         const paymentPreview = document.getElementById('paymentPreview');
@@ -700,7 +718,34 @@
             const info = zelleInfo || {};
             zelleAmount.textContent = formatCurrency(info.depositAmount);
             zelleName.textContent = info.displayName || 'Premier Property Hub';
-            zelleContact.textContent = info.contact || 'Contact your agent';
+
+            const contact = (info.contact || '').trim();
+            const whatsAppUrl = info.whatsAppUrl || pageWhatsAppUrl;
+
+            zelleContact.innerHTML = '';
+            zelleContact.className = '';
+
+            if (contact) {
+                zelleContact.className = 'font-monospace';
+                zelleContact.textContent = contact;
+                zelleWhatsAppHint?.classList.add('d-none');
+            } else if (whatsAppUrl) {
+                const link = document.createElement('a');
+                link.href = whatsAppUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'zelle-contact-link';
+                link.textContent = 'Contact your agent';
+                zelleContact.appendChild(link);
+                if (zelleWhatsAppLink) {
+                    zelleWhatsAppLink.href = whatsAppUrl;
+                }
+                zelleWhatsAppHint?.classList.remove('d-none');
+            } else {
+                zelleContact.textContent = '—';
+                zelleWhatsAppHint?.classList.add('d-none');
+            }
+
             paymentProofInput.value = '';
             paymentPreviewWrap.classList.add('d-none');
             uploadProgressWrap.classList.add('d-none');

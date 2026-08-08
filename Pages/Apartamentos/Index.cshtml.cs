@@ -8,7 +8,9 @@ namespace ApartamentosRenta.Pages.Apartamentos;
 
 public class IndexModel(AppDbContext context) : PageModel
 {
-    private const string DefaultWhatsAppUrl = "https://wa.me/19453846408?text=Hi%2C%20I%27d%20like%20help%20finding%20a%20rental%20on%20Premier%20Property%20Hub.";
+    public string WhatsAppUrl { get; } = WhatsAppLinkHelper.BuildUrl(
+        null,
+        "Hi, I'd like help finding a rental on Premier Property Hub.");
 
     [BindProperty(SupportsGet = true)]
     public CatalogFilterInput Filters { get; set; } = new();
@@ -21,7 +23,6 @@ public class IndexModel(AppDbContext context) : PageModel
     public int PageSize { get; } = PropertyCatalogHelper.DefaultPageSize;
     public decimal MinListingRent { get; private set; }
     public decimal MaxListingRent { get; private set; }
-    public string WhatsAppUrl { get; } = DefaultWhatsAppUrl;
 
     public async Task OnGetAsync()
     {
