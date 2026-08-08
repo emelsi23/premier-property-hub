@@ -11,6 +11,156 @@ body:has(.catalog-page) .container-xl.py-4 {
   padding-bottom: 0;
 }
 
+.catalog-hero-carousel-wrap {
+  margin: 0 -0.75rem 1.25rem;
+  padding: 0 0.75rem;
+}
+
+.catalog-hero-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 1.125rem;
+  overflow: hidden;
+  background: #0f172a;
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.06),
+    0 20px 48px rgba(227, 24, 55, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.catalog-carousel-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.65s ease;
+  pointer-events: none;
+}
+
+.catalog-carousel-photo.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.catalog-carousel-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.05) 0%,
+    rgba(15, 23, 42, 0) 35%,
+    rgba(15, 23, 42, 0.45) 100%
+  );
+  pointer-events: none;
+}
+
+.catalog-carousel-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.catalog-carousel-nav:hover {
+  background: #fff;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.catalog-carousel-prev {
+  left: 0.75rem;
+}
+
+.catalog-carousel-next {
+  right: 0.75rem;
+}
+
+.catalog-carousel-dots {
+  position: absolute;
+  bottom: 0.875rem;
+  left: 50%;
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+.catalog-carousel-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.catalog-carousel-dot.is-active {
+  width: 1.25rem;
+  background: var(--brand-primary);
+}
+
+.catalog-carousel-counter {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 4;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 767px) {
+  .catalog-hero-carousel {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.875rem;
+  }
+
+  .catalog-carousel-nav {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .catalog-carousel-prev {
+    left: 0.5rem;
+  }
+
+  .catalog-carousel-next {
+    right: 0.5rem;
+  }
+
+  .catalog-hero-carousel-wrap {
+    margin-bottom: 1rem;
+  }
+}
+
 .catalog-hero {
   position: relative;
   padding: 3rem 0 2.5rem;
@@ -515,10 +665,11 @@ body:has(.catalog-page) .container-xl.py-4 {
     width: 100%;
   }
 
-  .catalog-hero {
-    padding-top: 2rem;
+  .catalog-hero-carousel-wrap {
+    margin-bottom: 1rem;
   }
 }
+
 body:has(.catalog-page) .container-xl.py-4 {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -1032,7 +1183,7 @@ body:has(.catalog-page) .container-xl.py-4 {
     width: 100%;
   }
 
-  .catalog-hero {
-    padding-top: 2rem;
+  .catalog-hero-carousel-wrap {
+    margin-bottom: 1rem;
   }
 }

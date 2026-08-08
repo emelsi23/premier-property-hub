@@ -7,29 +7,37 @@
 }
 
 <div class="catalog-page">
-    <section class="catalog-hero">
-        <div class="catalog-hero-glow" aria-hidden="true"></div>
-        <div class="catalog-hero-inner">
-            <partial name="_BrandLockup" model="@("hero")" />
-            <h1 class="catalog-hero-title">Encuentra un alquiler verificado con confianza</h1>
-            <p class="catalog-hero-lead">
-                Explora @Model.TotalAvailable hogares seleccionados en los mejores mercados. Cada listado incluye reserva segura de visita,
-                documentación oficial del contrato y manejo transparente del depósito en los 50 estados.
-            </p>
-            <div class="catalog-hero-stats">
-                <div class="catalog-stat">
-                    <strong>@Model.TotalAvailable</strong>
-                    <span>Hogares disponibles</span>
-                </div>
-                <div class="catalog-stat">
-                    <strong>@Model.StateOptions.Count</strong>
-                    <span>Estados cubiertos</span>
-                </div>
-                <div class="catalog-stat">
-                    <strong>100%</strong>
-                    <span>Proceso verificado</span>
-                </div>
+    <section class="catalog-hero-carousel-wrap" aria-label="Apartamentos destacados">
+        <div class="catalog-hero-carousel" id="catalogHeroCarousel">
+            @for (var i = 0; i < Model.HeroSlides.Count; i++)
+            {
+                var slide = Model.HeroSlides[i];
+                <img src="@slide.Url"
+                     alt="@slide.Alt"
+                     class="catalog-carousel-photo @(i == 0 ? "is-active" : "")"
+                     data-index="@i"
+                     loading="@(i == 0 ? "eager" : "lazy")"
+                     decoding="async" />
+            }
+            <div class="catalog-carousel-shade" aria-hidden="true"></div>
+            <button type="button" class="catalog-carousel-nav catalog-carousel-prev" id="catalogCarouselPrev" aria-label="Foto anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="catalog-carousel-nav catalog-carousel-next" id="catalogCarouselNext" aria-label="Foto siguiente">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <div class="catalog-carousel-dots" id="catalogCarouselDots" role="tablist" aria-label="Fotos del carrusel">
+                @for (var i = 0; i < Model.HeroSlides.Count; i++)
+                {
+                    <button type="button"
+                            class="catalog-carousel-dot @(i == 0 ? "is-active" : "")"
+                            data-index="@i"
+                            role="tab"
+                            aria-label="Foto @(i + 1)"
+                            @(i == 0 ? "aria-selected=\"true\"" : "aria-selected=\"false\"")></button>
+                }
             </div>
+            <span class="catalog-carousel-counter" id="catalogCarouselCounter">1 / @Model.HeroSlides.Count</span>
         </div>
     </section>
 
@@ -245,3 +253,71 @@
         </div>
     </section>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const carousel = document.getElementById('catalogHeroCarousel');
+            if (!carousel) return;
+
+            const photos = carousel.querySelectorAll('.catalog-carousel-photo');
+            const dots = carousel.querySelectorAll('.catalog-carousel-dot');
+            const counter = document.getElementById('catalogCarouselCounter');
+            const prevBtn = document.getElementById('catalogCarouselPrev');
+            const nextBtn = document.getElementById('catalogCarouselNext');
+            const total = photos.length;
+            let index = 0;
+            let timer = null;
+            const intervalMs = 5000;
+
+            function goTo(nextIndex) {
+                if (!total) return;
+                index = (nextIndex + total) % total;
+                photos.forEach((img, i) => img.classList.toggle('is-active', i === index));
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('is-active', i === index);
+                    dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
+                });
+                if (counter) counter.textContent = `${index + 1} / ${total}`;
+            }
+
+            function next() { goTo(index + 1); }
+            function prev() { goTo(index - 1); }
+
+            function startAuto() {
+                stopAuto();
+                timer = setInterval(next, intervalMs);
+            }
+
+            function stopAuto() {
+                if (timer) clearInterval(timer);
+                timer = null;
+            }
+
+            prevBtn?.addEventListener('click', () => { prev(); startAuto(); });
+            nextBtn?.addEventListener('click', () => { next(); startAuto(); });
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const i = parseInt(dot.dataset.index, 10);
+                    if (!Number.isNaN(i)) { goTo(i); startAuto(); }
+                });
+            });
+
+            carousel.addEventListener('mouseenter', stopAuto);
+            carousel.addEventListener('mouseleave', startAuto);
+
+            let touchStartX = 0;
+            carousel.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                stopAuto();
+            }, { passive: true });
+            carousel.addEventListener('touchend', e => {
+                const diff = e.changedTouches[0].screenX - touchStartX;
+                if (Math.abs(diff) > 50) goTo(index + (diff < 0 ? 1 : -1));
+                startAuto();
+            }, { passive: true });
+
+            startAuto();
+        })();
+    </script>
+}

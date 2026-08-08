@@ -24,6 +24,8 @@ public class IndexModel(AppDbContext context) : PageModel
     public decimal MinListingRent { get; private set; }
     public decimal MaxListingRent { get; private set; }
 
+    public IReadOnlyList<CatalogHeroSlide> HeroSlides { get; } = CatalogHeroCarousel.Slides;
+
     public async Task OnGetAsync()
     {
         var availableQuery = context.Propiedades.AsNoTracking().Where(p => p.Disponible);
