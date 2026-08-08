@@ -13,7 +13,7 @@
     <section class="agent-hero card border-0 shadow-sm">
         <div class="agent-hero-grid">
             <div class="agent-photo-wrap">
-                <img src="@agente.FotoUrl" alt="@agente.NombreCompleto" class="agent-photo"
+                <img src="@Url.Content(agente.FotoUrl)" alt="@agente.NombreCompleto" class="agent-photo" asp-append-version="true"
                      onerror="this.onerror=null;this.src='@photoFallback';" />
                 @if (agente.Verificado)
                 {
