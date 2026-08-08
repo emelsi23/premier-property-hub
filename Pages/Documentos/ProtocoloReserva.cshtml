@@ -1,0 +1,127 @@
+@page "/documentos/protocolo-reserva"
+@{
+    Layout = "_PrintDocumentLayout";
+    ViewData["Title"] = "Protocolo de seguridad y reserva";
+    const decimal depositAmount = 150m;
+    const decimal noShowRetention = 5m;
+    const decimal noShowRefund = depositAmount - noShowRetention;
+}
+
+<div class="doc-sheet">
+    <header class="doc-header">
+        <div class="doc-brand-block">
+            <p class="doc-brand-name">Premier Property Hub</p>
+            <div class="doc-brand-by">
+                <span>by</span>
+                <img src="~/images/remax-logo.svg" alt="RE/MAX" asp-append-version="true" />
+            </div>
+        </div>
+        <div class="doc-code">
+            <strong>Código de documento</strong>
+            PPH-RES-2026-V<br />
+            RE/MAX · Red asociada
+        </div>
+    </header>
+
+    <h1 class="doc-title">Protocolo de seguridad y reserva de propiedad</h1>
+    <p class="doc-subtitle">Departamento jurídico y gestión de propiedades · Premier Property Hub by RE/MAX</p>
+
+    <div class="doc-alert">
+        <strong>Antes de cualquier pago:</strong> verifique que su agente tenga perfil <strong>Agente verificado</strong> en
+        <strong>premier-property-hub.onrender.com/agente/[nombre-agente]</strong> con foto, licencia y código único (PPH-XXXX).
+        No realice depósitos si no puede confirmar el perfil oficial.
+    </div>
+
+    <section class="doc-section">
+        <h2>1. Información del solicitante (el cliente)</h2>
+        <div class="doc-field">
+            <div class="doc-field-full">
+                <div class="doc-label">Nombre completo</div>
+                <div class="doc-line"></div>
+            </div>
+            <div>
+                <div class="doc-label">Teléfono de contacto</div>
+                <div class="doc-line"></div>
+            </div>
+            <div>
+                <div class="doc-label">Correo electrónico</div>
+                <div class="doc-line"></div>
+            </div>
+            <div>
+                <div class="doc-label">Fecha de visita</div>
+                <div class="doc-line"></div>
+            </div>
+            <div>
+                <div class="doc-label">Hora de visita</div>
+                <div class="doc-line"></div>
+            </div>
+            <div class="doc-field-full">
+                <div class="doc-label">Agente verificado (nombre y código PPH)</div>
+                <div class="doc-line"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="doc-section">
+        <h2>2. Requerimientos de residencia</h2>
+        <div class="doc-field">
+            <div>
+                <div class="doc-label">Ocupantes totales</div>
+                <div class="doc-line"></div>
+            </div>
+            <div>
+                <div class="doc-label">Vehículos</div>
+                <div class="doc-line"></div>
+            </div>
+        </div>
+        <div class="doc-check-row">
+            <span>¿Posee hijos?</span>
+            <span>¿Posee mascotas?</span>
+        </div>
+        <p class="mt-2 small text-muted" style="font-size:0.8125rem;color:#64748b;margin-top:0.5rem;">
+            La veracidad de estos datos es indispensable para la validación del perfil del arrendatario por parte de nuestro equipo.
+        </p>
+    </section>
+
+    <section class="doc-section">
+        <h2>3. Términos del depósito de reserva</h2>
+        <p style="font-size:0.875rem;color:#334155;margin:0 0 0.75rem;">
+            Para formalizar la cita y asegurar la exclusividad temporal de la propiedad, el cliente constituye un depósito de
+            <strong>$@depositAmount.ToString("N0") USD</strong>, bajo las siguientes condiciones:
+        </p>
+        <ul class="doc-list">
+            <li><strong>Garantía de reembolso:</strong> si tras la visita el cliente decide no proceder con la propiedad, el monto de $@depositAmount.ToString("N0") USD será reintegrado en su totalidad.</li>
+            <li><strong>Crédito a renta:</strong> en caso de arrendamiento, el 100% del depósito se aplicará como pago inicial del contrato.</li>
+            <li><strong>Política de inasistencia:</strong> cancelación o inasistencia sin aviso previo de 24 h conlleva una retención de $@noShowRetention.ToString("N0") USD por gastos de gestión, reembolsando $@noShowRefund.ToString("N0") USD.</li>
+            <li><strong>Seguridad:</strong> este proceso garantiza que la propiedad no sea mostrada a terceros durante el periodo de reserva del cliente.</li>
+            <li><strong>Método de pago:</strong> depósito vía Zelle con comprobante en la plataforma, o efectivo mediante código de barras en tiendas autorizadas (ver documento de pago en efectivo).</li>
+        </ul>
+    </section>
+
+    <section class="doc-section">
+        <h2>4. Declaración de legalidad y garantía de fondo</h2>
+        <p style="font-size:0.875rem;color:#334155;margin:0;">
+            El presente protocolo forma parte de los procedimientos administrativos internos de Premier Property Hub by RE/MAX,
+            debidamente estructurados bajo principios de legalidad y transparencia en gestión inmobiliaria.
+            Ningún pago realizado bajo este acuerdo se pierde fuera de las condiciones previamente estipuladas, contando el cliente
+            con respaldo documental y garantía de reembolso conforme a los términos establecidos.
+        </p>
+    </section>
+
+    <footer class="doc-footer">
+        <div class="doc-footer-org">
+            <strong>Premier Property Hub by RE/MAX</strong>
+            Departamento jurídico y gestión patrimonial<br />
+            Tel: +1 (945) 384-6408<br />
+            premier-property-hub.onrender.com
+        </div>
+        <div class="doc-signature">
+            <div class="doc-sig-line"></div>
+            <div class="doc-sig-label">Firma del solicitante — Acepto los términos y condiciones</div>
+        </div>
+        <p class="doc-legal">
+            Premier Property Hub by RE/MAX © @DateTime.Now.Year. Todos los derechos reservados.
+            Documento amparado bajo normativas de transparencia inmobiliaria.
+        </p>
+    </footer>
+</div>

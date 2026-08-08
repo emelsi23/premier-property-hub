@@ -605,6 +605,16 @@ body:has(.catalog-page) .container-xl.py-4 {
   font-size: 0.8125rem;
 }
 
+.catalog-trust-docs a {
+  color: var(--brand-secondary, #0054a4);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.catalog-trust-docs a:hover {
+  text-decoration: underline;
+}
+
 .catalog-trust-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1149,6 +1159,16 @@ body:has(.catalog-page) .container-xl.py-4 {
   color: #047857;
   font-weight: 700;
   font-size: 0.8125rem;
+}
+
+.catalog-trust-docs a {
+  color: var(--brand-secondary, #0054a4);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.catalog-trust-docs a:hover {
+  text-decoration: underline;
 }
 
 .catalog-trust-grid {

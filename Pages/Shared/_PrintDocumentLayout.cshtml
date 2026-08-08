@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Premier Property Hub</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/print-document.css" asp-append-version="true" />
+</head>
+<body class="print-document-body">
+    <div class="print-toolbar no-print">
+        <button type="button" class="print-btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+        <a class="print-back" href="/Apartamentos/Index">Volver al catálogo</a>
+    </div>
+    @RenderBody()
+</body>
+</html>
