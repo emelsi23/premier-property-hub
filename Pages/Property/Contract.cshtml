@@ -1,4 +1,5 @@
 @page "/property/{slug}/contract"
+@using ApartamentosRenta.Models
 @using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Property.ContractModel
 @{
@@ -7,7 +8,7 @@
 
 <article class="contract-page">
     <header class="contract-header">
-        <partial name="_BrandLockup" model="@("contract")" />
+        <partial name="_BrandLockup" model="@BrandLockupOptions.For("contract")" />
         <h1>@Model.RenderedTitle</h1>
         <p class="contract-subtitle">@Model.RenderedSubtitle</p>
         <p class="contract-effective">@propiedad.Titulo · $@propiedad.PrecioMensual.ToString("N0")/mes</p>

@@ -17,7 +17,7 @@
     <header class="listing-header">
         <div class="listing-header-inner">
             <div class="listing-header-brand">
-                <partial name="_BrandLockup" model="@("listing")" />
+                <partial name="_BrandLockup" model="@BrandLockupOptions.For("listing")" />
             </div>
             <a href="@Model.WhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="Chatear por WhatsApp">
                 <span class="site-wa-chip-icon" aria-hidden="true">

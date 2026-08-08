@@ -1,4 +1,5 @@
 @page
+@using ApartamentosRenta.Models
 @model ApartamentosRenta.Pages.Admin.LoginModel
 @{
     Layout = null;
@@ -19,7 +20,7 @@
 <body class="admin-login-page">
     <div class="admin-login-card">
         <div class="text-center mb-4">
-            <partial name="_BrandLockup" model="@("admin")" />
+            <partial name="_BrandLockup" model="@BrandLockupOptions.For("admin")" />
             <p class="text-muted small mb-0 mt-3">Acceso administrador</p>
         </div>
 

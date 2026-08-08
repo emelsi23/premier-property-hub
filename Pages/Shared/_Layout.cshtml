@@ -1,4 +1,5 @@
-﻿@using ApartamentosRenta.Services
+﻿@using ApartamentosRenta.Models
+@using ApartamentosRenta.Services
 @{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
     var path = ViewContext.HttpContext.Request.Path.Value ?? "";
@@ -32,9 +33,7 @@
         <div class="site-header-accent" aria-hidden="true"></div>
         <nav class="navbar navbar-expand-lg site-navbar">
             <div class="container-xl site-navbar-shell">
-                <a class="navbar-brand site-brand brand-lockup-link" asp-page="/Apartamentos/Index" aria-label="Premier Property Hub by RE/MAX">
-                    <partial name="_BrandLockup" model="@("nav")" />
-                </a>
+                <partial name="_BrandLockup" model="@BrandLockupOptions.For("nav")" />
 
                 <div class="site-navbar-tools">
                     <a href="@layoutWhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="Chatear por WhatsApp">
@@ -62,6 +61,7 @@
                         </li>
                     </ul>
                     <div class="site-nav-actions">
+                        <a class="btn btn-site-affiliate" asp-page="/Admin/Login">Portal afiliado</a>
                         <a class="btn btn-site-cta" asp-page="/Apartamentos/Index">
                             Ver alquileres
                         </a>
@@ -81,7 +81,7 @@
         <div class="container-xl">
             <div class="site-footer-inner">
                 <div class="site-footer-brand">
-                    <partial name="_BrandLockup" model="@("footer")" />
+                    <partial name="_BrandLockup" model="@BrandLockupOptions.For("footer")" />
                 </div>
                 <p class="site-footer-copy mb-0">&copy; @DateTime.Now.Year Todos los derechos reservados.</p>
             </div>

@@ -313,6 +313,27 @@
   color: var(--brand-primary);
 }
 
+.site-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-site-affiliate {
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  color: var(--brand-dark);
+  font-weight: 600;
+  border-radius: 0.625rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn-site-affiliate:hover {
+  background: #f4f4f5;
+  border-color: #a1a1aa;
+  color: var(--brand-dark);
+}
+
 .btn-site-cta {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
@@ -375,8 +396,12 @@
     width: 100%;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
+  .site-nav-actions .btn-site-affiliate,
   .site-nav-actions .btn-site-cta {
     width: 100%;
     text-align: center;
