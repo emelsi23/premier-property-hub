@@ -34,9 +34,23 @@ public static class AgenteHelper
         agente.EstadoLicencia = input.EstadoLicencia.Trim();
         agente.AnosExperiencia = Math.Max(0, input.AnosExperiencia);
         agente.Biografia = input.Biografia.Trim();
-        agente.WhatsAppNumber = input.WhatsAppNumber.Trim();
-        agente.Email = input.Email.Trim();
         agente.Telefono = input.Telefono.Trim();
+        var whatsApp = input.WhatsAppNumber.Trim();
+        if (string.IsNullOrWhiteSpace(whatsApp)
+            || WhatsAppLinkHelper.UsesSiteDefaultNumber(whatsApp))
+        {
+            var fromTelefono = WhatsAppLinkHelper.TryNormalizeNumber(agente.Telefono);
+            if (fromTelefono is not null)
+            {
+                whatsApp = fromTelefono;
+            }
+            else if (string.IsNullOrWhiteSpace(whatsApp) && !string.IsNullOrWhiteSpace(agente.Telefono))
+            {
+                whatsApp = agente.Telefono;
+            }
+        }
+        agente.WhatsAppNumber = whatsApp;
+        agente.Email = input.Email.Trim();
         agente.AreasServicio = input.AreasServicio.Trim();
         agente.Idiomas = string.IsNullOrWhiteSpace(input.Idiomas) ? "Español, Inglés" : input.Idiomas.Trim();
         agente.PropiedadesActivas = Math.Max(0, input.PropiedadesActivas);

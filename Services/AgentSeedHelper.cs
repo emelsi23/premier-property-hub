@@ -6,11 +6,18 @@ namespace ApartamentosRenta.Services;
 
 public static class AgentSeedHelper
 {
+    private static readonly DateTime MariaAngelicaVerificationDate =
+        new(2019, 1, 4, 0, 0, 0, DateTimeKind.Utc);
+
+    private static readonly DateTime RobertoJGuzmanVerificationDate =
+        new(2015, 1, 4, 0, 0, 0, DateTimeKind.Utc);
+
     public static async Task EnsureSampleAgentAsync(AppDbContext context)
     {
         await EnsureAgentAsync(context, BuildMariaAngelica());
         await EnsureAgentAsync(context, BuildRobertoJGuzman());
         await EnsureAgentAsync(context, BuildSofiaRamirez());
+        await SyncAgentWhatsAppFromTelefonoAsync(context);
     }
 
     private static async Task EnsureAgentAsync(AppDbContext context, Agente definition)
@@ -35,9 +42,13 @@ public static class AgentSeedHelper
         existing.EstadoLicencia = definition.EstadoLicencia;
         existing.AnosExperiencia = definition.AnosExperiencia;
         existing.Biografia = definition.Biografia;
-        existing.WhatsAppNumber = definition.WhatsAppNumber;
+        if (string.IsNullOrWhiteSpace(existing.Telefono))
+        {
+            existing.Telefono = definition.Telefono;
+        }
+
+        SyncWhatsAppNumber(existing, definition);
         existing.Email = definition.Email;
-        existing.Telefono = definition.Telefono;
         existing.AreasServicio = definition.AreasServicio;
         existing.Idiomas = definition.Idiomas;
         existing.PropiedadesActivas = definition.PropiedadesActivas;
@@ -47,7 +58,15 @@ public static class AgentSeedHelper
         existing.Activo = definition.Activo;
         existing.FechaActualizacion = DateTime.UtcNow;
 
-        if (existing.Verificado && existing.FechaVerificacion is null)
+        if (definition.Slug == "maria-angelica")
+        {
+            existing.FechaVerificacion = MariaAngelicaVerificationDate;
+        }
+        else if (definition.Slug == "roberto-j-guzman")
+        {
+            existing.FechaVerificacion = RobertoJGuzmanVerificationDate;
+        }
+        else if (existing.Verificado && existing.FechaVerificacion is null)
         {
             existing.FechaVerificacion = DateTime.UtcNow;
         }
@@ -55,6 +74,64 @@ public static class AgentSeedHelper
         await context.SaveChangesAsync();
         Console.WriteLine($"Agente actualizado: {definition.Slug}");
     }
+
+    private static void SyncWhatsAppNumber(Agente existing, Agente definition)
+    {
+        if (!string.IsNullOrWhiteSpace(existing.WhatsAppNumber)
+            && !WhatsAppLinkHelper.UsesSiteDefaultNumber(existing.WhatsAppNumber))
+        {
+            return;
+        }
+
+        var fromTelefono = WhatsAppLinkHelper.TryNormalizeNumber(existing.Telefono);
+        if (fromTelefono is not null && fromTelefono != WhatsAppLinkHelper.DefaultNumber)
+        {
+            existing.WhatsAppNumber = fromTelefono;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(existing.WhatsAppNumber)
+            || WhatsAppLinkHelper.UsesSiteDefaultNumber(existing.WhatsAppNumber))
+        {
+            existing.WhatsAppNumber = definition.WhatsAppNumber;
+        }
+    }
+
+    private static async Task SyncAgentWhatsAppFromTelefonoAsync(AppDbContext context)
+    {
+        var agentes = await context.Agentes.ToListAsync();
+        var updated = 0;
+
+        foreach (var agente in agentes)
+        {
+            var telefonoNorm = WhatsAppLinkHelper.TryNormalizeNumber(agente.Telefono);
+            if (telefonoNorm is null || telefonoNorm == WhatsAppLinkHelper.DefaultNumber)
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(agente.WhatsAppNumber)
+                && !WhatsAppLinkHelper.UsesSiteDefaultNumber(agente.WhatsAppNumber))
+            {
+                continue;
+            }
+
+            agente.WhatsAppNumber = telefonoNorm;
+            agente.FechaActualizacion = DateTime.UtcNow;
+            updated++;
+        }
+
+        if (updated > 0)
+        {
+            await context.SaveChangesAsync();
+            Console.WriteLine($"WhatsApp personal sincronizado para {updated} agente(s).");
+        }
+    }
+
+    private static string AgentWhatsAppFromTelefono(string telefono) =>
+        WhatsAppLinkHelper.ResolveAgentContactNumber(null, telefono)
+        ?? WhatsAppLinkHelper.TryNormalizeNumber(telefono)
+        ?? telefono;
 
     private static Agente BuildMariaAngelica() => new()
     {
@@ -69,9 +146,9 @@ public static class AgentSeedHelper
         AnosExperiencia = 6,
         Biografia =
             "Agente licenciada en Florida con enfoque en alquileres residenciales en el sur y centro del estado. Acompaño a clientes en español e inglés con perfiles verificados, visitas coordinadas y documentación clara para un proceso seguro y profesional.",
-        WhatsAppNumber = WhatsAppLinkHelper.DefaultNumber,
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(458) 331-7759"),
         Email = "maria.angelica@premierpropertyhub.com",
-        Telefono = "(945) 384-6408",
+        Telefono = "(458) 331-7759",
         AreasServicio = "Miami, Fort Lauderdale, Orlando, Tampa, Jacksonville, Florida",
         Idiomas = "Español, Inglés",
         PropiedadesActivas = 28,
@@ -80,8 +157,8 @@ public static class AgentSeedHelper
         CodigoVerificacion = "PPH-M8A3",
         Verificado = true,
         Activo = true,
-        FechaVerificacion = DateTime.UtcNow,
-        FechaCreacion = DateTime.UtcNow,
+        FechaVerificacion = MariaAngelicaVerificationDate,
+        FechaCreacion = MariaAngelicaVerificationDate,
         FechaActualizacion = DateTime.UtcNow
     };
 
@@ -98,7 +175,7 @@ public static class AgentSeedHelper
         AnosExperiencia = 10,
         Biografia =
             "Agente licenciado por el California Department of Real Estate (DRE) con más de diez años en el mercado de alquileres residenciales. Atiendo clientes en Los Angeles, Orange County, San Diego y el Bay Area con un proceso transparente: perfil verificable, visitas coordinadas, contratos claros y respuesta rápida en español e inglés. Puede confirmar mi licencia y código de verificación en este perfil oficial antes de cualquier trámite.",
-        WhatsAppNumber = WhatsAppLinkHelper.DefaultNumber,
+        WhatsAppNumber = AgentWhatsAppFromTelefono("+1 (945) 384-6408"),
         Email = "roberto.guzman@premierpropertyhub.com",
         Telefono = "+1 (945) 384-6408",
         AreasServicio = "Los Angeles, Orange County, San Diego, San Francisco, Sacramento, California",
@@ -109,8 +186,8 @@ public static class AgentSeedHelper
         CodigoVerificacion = "PPH-RJG7",
         Verificado = true,
         Activo = true,
-        FechaVerificacion = DateTime.UtcNow,
-        FechaCreacion = DateTime.UtcNow,
+        FechaVerificacion = RobertoJGuzmanVerificationDate,
+        FechaCreacion = RobertoJGuzmanVerificationDate,
         FechaActualizacion = DateTime.UtcNow
     };
 
@@ -127,7 +204,7 @@ public static class AgentSeedHelper
         AnosExperiencia = 8,
         Biografia =
             "Especialista en alquileres residenciales en Houston y el área metropolitana. Ayudo a familias y profesionales a encontrar propiedades verificadas con un proceso transparente, documentación clara y respuesta rápida.",
-        WhatsAppNumber = WhatsAppLinkHelper.DefaultNumber,
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(945) 384-6408"),
         Email = "sofia.ramirez@premierpropertyhub.com",
         Telefono = "(945) 384-6408",
         AreasServicio = "Houston, Katy, Sugar Land, The Woodlands, Dallas",

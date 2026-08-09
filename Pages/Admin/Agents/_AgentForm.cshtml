@@ -66,6 +66,8 @@
     <div class="col-md-4">
         <label asp-for="WhatsAppNumber" class="form-label"></label>
         <input asp-for="WhatsAppNumber" class="form-control" placeholder="9453846408" />
+        <div class="form-text">Número personal del agente. El perfil de verificación abre este WhatsApp, no el de la página.</div>
+        <span asp-validation-for="WhatsAppNumber" class="text-danger small"></span>
     </div>
     <div class="col-md-4">
         <label asp-for="Telefono" class="form-label"></label>

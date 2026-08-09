@@ -13,6 +13,8 @@ public class PerfilModel(AppDbContext context) : PageModel
 
     public string WhatsAppUrl { get; private set; } = string.Empty;
 
+    public bool HasWhatsAppContact { get; private set; }
+
     public string PerfilUrl { get; private set; } = string.Empty;
 
     public IReadOnlyList<string> AreasList { get; private set; } = [];
@@ -32,9 +34,13 @@ public class PerfilModel(AppDbContext context) : PageModel
 
         PerfilAgente = agente;
         PerfilUrl = $"{Request.Scheme}://{Request.Host}/agente/{agente.Slug}";
-        WhatsAppUrl = WhatsAppLinkHelper.BuildUrl(
+        var contactMessage =
+            $"Hola {agente.NombreCompleto}, quiero confirmar que eres agente verificado de Premier Property Hub. Perfil: {PerfilUrl}";
+        WhatsAppUrl = WhatsAppLinkHelper.BuildAgentContactUrl(
             agente.WhatsAppNumber,
-            $"Hola {agente.NombreCompleto}, quiero confirmar que eres agente verificado de Premier Property Hub. Perfil: {PerfilUrl}");
+            agente.Telefono,
+            contactMessage) ?? string.Empty;
+        HasWhatsAppContact = WhatsAppUrl.Length > 0;
 
         AreasList = SplitCsv(agente.AreasServicio);
         IdiomasList = SplitCsv(agente.Idiomas);

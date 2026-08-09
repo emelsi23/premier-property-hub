@@ -28,32 +28,43 @@ public sealed class AgenteApiResponse
     public bool Activo { get; init; }
     public DateTime? FechaVerificacion { get; init; }
     public string PerfilUrl { get; init; } = string.Empty;
+    public string? WhatsAppUrl { get; init; }
 
-    public static AgenteApiResponse From(Agente agente, string baseUrl) => new()
+    public static AgenteApiResponse From(Agente agente, string baseUrl)
     {
-        Id = agente.Id,
-        NombreCompleto = agente.NombreCompleto,
-        Slug = agente.Slug,
-        FotoUrl = agente.FotoUrl,
-        RolTitulo = agente.RolTitulo,
-        Calificacion = agente.Calificacion,
-        TotalResenas = agente.TotalResenas,
-        NumeroLicencia = agente.NumeroLicencia,
-        EstadoLicencia = agente.EstadoLicencia,
-        AnosExperiencia = agente.AnosExperiencia,
-        Biografia = agente.Biografia,
-        Email = string.IsNullOrWhiteSpace(agente.Email) ? null : agente.Email,
-        Telefono = string.IsNullOrWhiteSpace(agente.Telefono) ? null : agente.Telefono,
-        WhatsAppNumber = string.IsNullOrWhiteSpace(agente.WhatsAppNumber) ? null : agente.WhatsAppNumber,
-        AreasServicio = agente.AreasServicio,
-        Idiomas = agente.Idiomas,
-        PropiedadesActivas = agente.PropiedadesActivas,
-        TiempoRespuestaHoras = agente.TiempoRespuestaHoras,
-        PorcentajeRespuesta = agente.PorcentajeRespuesta,
-        CodigoVerificacion = agente.CodigoVerificacion,
-        Verificado = agente.Verificado,
-        Activo = agente.Activo,
-        FechaVerificacion = agente.FechaVerificacion,
-        PerfilUrl = $"{baseUrl.TrimEnd('/')}/agente/{agente.Slug}"
-    };
+        var perfilUrl = $"{baseUrl.TrimEnd('/')}/agente/{agente.Slug}";
+        var whatsAppUrl = WhatsAppLinkHelper.BuildAgentContactUrl(
+            agente.WhatsAppNumber,
+            agente.Telefono,
+            $"Hola {agente.NombreCompleto}, quiero confirmar que eres agente verificado de Premier Property Hub. Perfil: {perfilUrl}");
+
+        return new AgenteApiResponse
+        {
+            Id = agente.Id,
+            NombreCompleto = agente.NombreCompleto,
+            Slug = agente.Slug,
+            FotoUrl = agente.FotoUrl,
+            RolTitulo = agente.RolTitulo,
+            Calificacion = agente.Calificacion,
+            TotalResenas = agente.TotalResenas,
+            NumeroLicencia = agente.NumeroLicencia,
+            EstadoLicencia = agente.EstadoLicencia,
+            AnosExperiencia = agente.AnosExperiencia,
+            Biografia = agente.Biografia,
+            Email = string.IsNullOrWhiteSpace(agente.Email) ? null : agente.Email,
+            Telefono = string.IsNullOrWhiteSpace(agente.Telefono) ? null : agente.Telefono,
+            WhatsAppNumber = string.IsNullOrWhiteSpace(agente.WhatsAppNumber) ? null : agente.WhatsAppNumber,
+            AreasServicio = agente.AreasServicio,
+            Idiomas = agente.Idiomas,
+            PropiedadesActivas = agente.PropiedadesActivas,
+            TiempoRespuestaHoras = agente.TiempoRespuestaHoras,
+            PorcentajeRespuesta = agente.PorcentajeRespuesta,
+            CodigoVerificacion = agente.CodigoVerificacion,
+            Verificado = agente.Verificado,
+            Activo = agente.Activo,
+            FechaVerificacion = agente.FechaVerificacion,
+            PerfilUrl = perfilUrl,
+            WhatsAppUrl = whatsAppUrl
+        };
+    }
 }

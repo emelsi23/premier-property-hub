@@ -50,8 +50,9 @@ public class AgenteInput
     [Display(Name = "Biografía")]
     public string Biografia { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "El WhatsApp personal del agente es obligatorio.")]
     [StringLength(30)]
-    [Display(Name = "WhatsApp")]
+    [Display(Name = "WhatsApp personal")]
     public string WhatsAppNumber { get; set; } = string.Empty;
 
     [StringLength(120)]
