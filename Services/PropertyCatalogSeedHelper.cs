@@ -56,36 +56,10 @@ public static class PropertyCatalogSeedHelper
             Console.WriteLine($"Catalog seed complete: {seeded} properties added.");
         }
 
-        await PruneObsoleteBulkListingsAsync(context, catalogBySlug);
+        // Never delete admin-created properties. Only sync details/photos for known catalog slugs.
         await SyncCatalogDetailsAsync(context, catalogBySlug);
         await SyncCatalogPhotosAsync(context, catalogBySlug);
         await EnsureMissingPhotosAsync(context, catalogBySlug);
-    }
-
-    private static async Task PruneObsoleteBulkListingsAsync(
-        AppDbContext context,
-        IReadOnlyDictionary<string, CatalogProperty> catalogBySlug)
-    {
-        var validSlugs = new HashSet<string>(catalogBySlug.Keys, StringComparer.OrdinalIgnoreCase);
-        var allSlugs = await context.Propiedades
-            .Select(p => new { p.Id, p.Slug })
-            .ToListAsync();
-
-        var idsToRemove = allSlugs
-            .Where(p => !validSlugs.Contains(p.Slug))
-            .Select(p => p.Id)
-            .ToList();
-
-        if (idsToRemove.Count > 0)
-        {
-            await context.FotosPropiedad
-                .Where(f => idsToRemove.Contains(f.PropiedadId))
-                .ExecuteDeleteAsync();
-            var removed = await context.Propiedades
-                .Where(p => idsToRemove.Contains(p.Id))
-                .ExecuteDeleteAsync();
-            Console.WriteLine($"Removed {removed} non-catalog properties (keeping only real listings).");
-        }
     }
 
     private static async Task SyncCatalogDetailsAsync(
@@ -198,9 +172,11 @@ public static class PropertyCatalogSeedHelper
 
         while (true)
         {
+            // Only fill missing photos for catalog listings — never invent photos for admin-created ones.
+            var catalogSlugs = catalogBySlug.Keys.ToList();
             var properties = await context.Propiedades
                 .Include(p => p.Fotos)
-                .Where(p => p.Fotos.Count == 0)
+                .Where(p => catalogSlugs.Contains(p.Slug) && p.Fotos.Count == 0)
                 .OrderBy(p => p.Id)
                 .Take(PhotoRefreshBatchSize)
                 .ToListAsync();
@@ -212,10 +188,12 @@ public static class PropertyCatalogSeedHelper
 
             foreach (var property in properties)
             {
-                var targetPhotos = catalogBySlug.TryGetValue(property.Slug, out var definition)
-                    ? ResolvePhotos(definition)
-                    : CatalogPhotoLibrary.GetPhotosForSlug(property.Slug);
+                if (!catalogBySlug.TryGetValue(property.Slug, out var definition))
+                {
+                    continue;
+                }
 
+                var targetPhotos = ResolvePhotos(definition);
                 context.FotosPropiedad.RemoveRange(property.Fotos);
                 ReplacePhotos(property, targetPhotos);
                 updated++;
