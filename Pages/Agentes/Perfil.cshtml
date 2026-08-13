@@ -7,6 +7,7 @@
     var stars = (int)Math.Round(agente.Calificacion);
     var photoFallback = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=640&q=80";
     var telDigits = WhatsAppLinkHelper.ResolveAgentContactNumber(agente.WhatsAppNumber, agente.Telefono) ?? string.Empty;
+    var verifiedDate = agente.FechaVerificacion?.ToString(SiteCulture.IsEnglish ? "MM/dd/yyyy" : "dd/MM/yyyy");
 }
 
 <link rel="stylesheet" href="~/css/agent.css" asp-append-version="true" />
@@ -19,7 +20,7 @@
                      onerror="this.onerror=null;this.src='@photoFallback';" />
                 @if (agente.Verificado)
                 {
-                    <span class="agent-photo-badge" aria-label="Agente verificado">
+                    <span class="agent-photo-badge" aria-label="@UiText.T("Agent.Verified")">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                         </svg>
@@ -34,7 +35,7 @@
                         <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
                         </svg>
-                        Agente verificado
+                        @UiText.T("Agent.Verified")
                     </div>
                 }
 
@@ -42,32 +43,32 @@
                 <p class="agent-role">@agente.RolTitulo</p>
 
                 <div class="agent-rating-row">
-                    <div class="agent-stars" aria-label="Calificación @agente.Calificacion de 5">
+                    <div class="agent-stars" aria-label="@UiText.T("Agent.RatingAria", agente.Calificacion)">
                         @for (var i = 1; i <= 5; i++)
                         {
                             <span class="agent-star @(i <= stars ? "filled" : "")">★</span>
                         }
                     </div>
                     <span class="agent-rating-value">@agente.Calificacion.ToString("0.1")</span>
-                    <span class="agent-rating-count">(@agente.TotalResenas reseñas)</span>
+                    <span class="agent-rating-count">(@agente.TotalResenas @UiText.T("Agent.Reviews"))</span>
                 </div>
 
                 <div class="agent-stats-grid">
                     <div class="agent-stat">
                         <span class="agent-stat-value">@agente.AnosExperiencia+</span>
-                        <span class="agent-stat-label">Años de experiencia</span>
+                        <span class="agent-stat-label">@UiText.T("Agent.YearsExp")</span>
                     </div>
                     <div class="agent-stat">
                         <span class="agent-stat-value">@agente.PropiedadesActivas</span>
-                        <span class="agent-stat-label">Propiedades activas</span>
+                        <span class="agent-stat-label">@UiText.T("Agent.ActiveProps")</span>
                     </div>
                     <div class="agent-stat">
                         <span class="agent-stat-value">@agente.PorcentajeRespuesta%</span>
-                        <span class="agent-stat-label">Tasa de respuesta</span>
+                        <span class="agent-stat-label">@UiText.T("Agent.ResponseRate")</span>
                     </div>
                     <div class="agent-stat">
                         <span class="agent-stat-value">@PerfilModel.FormatResponseTime(agente.TiempoRespuestaHoras)</span>
-                        <span class="agent-stat-label">Tiempo de respuesta</span>
+                        <span class="agent-stat-label">@UiText.T("Agent.ResponseTime")</span>
                     </div>
                 </div>
 
@@ -75,10 +76,10 @@
                     @if (Model.HasWhatsAppContact)
                     {
                         <a href="@Model.WhatsAppUrl" class="btn btn-primary agent-btn-wa" target="_blank" rel="noopener noreferrer">
-                            Contactar por WhatsApp
+                            @UiText.T("Agent.ContactWa")
                         </a>
                     }
-                    <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Ver alquileres</a>
+                    <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">@UiText.T("Agent.ViewRentals")</a>
                 </div>
             </div>
         </div>
@@ -87,10 +88,10 @@
     <div class="agent-layout">
         <section class="agent-card card border-0 shadow-sm">
             <div class="agent-card-header">
-                <h2>Verificación de identidad</h2>
+                <h2>@UiText.T("Agent.IdVerify")</h2>
                 @if (agente.Verificado)
                 {
-                    <span class="badge bg-success">Verificado</span>
+                    <span class="badge bg-success">@UiText.T("Agent.VerifiedBadge")</span>
                 }
             </div>
             <div class="agent-verify-panel">
@@ -100,28 +101,26 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="agent-verify-title">Perfil autenticado por Premier Property Hub</p>
-                    <p class="agent-verify-text">
-                        Este agente está registrado en nuestra red. La licencia y el código de verificación pueden usarse para confirmar que el perfil es legítimo antes de compartir información personal o realizar pagos.
-                    </p>
+                    <p class="agent-verify-title">@UiText.T("Agent.AuthTitle")</p>
+                    <p class="agent-verify-text">@UiText.T("Agent.AuthBody")</p>
                     <dl class="agent-verify-details">
                         <div>
-                            <dt>Número de licencia</dt>
+                            <dt>@UiText.T("Agent.LicenseNumber")</dt>
                             <dd><code>@agente.NumeroLicencia</code></dd>
                         </div>
                         <div>
-                            <dt>Estado de licencia</dt>
+                            <dt>@UiText.T("Agent.LicenseState")</dt>
                             <dd>@agente.EstadoLicencia</dd>
                         </div>
                         <div>
-                            <dt>Código de verificación</dt>
+                            <dt>@UiText.T("Agent.VerifyCode")</dt>
                             <dd><code class="agent-verify-code">@agente.CodigoVerificacion</code></dd>
                         </div>
                         @if (agente.FechaVerificacion.HasValue)
                         {
                             <div>
-                                <dt>Verificado el</dt>
-                                <dd>@agente.FechaVerificacion.Value.ToString("dd/MM/yyyy")</dd>
+                                <dt>@UiText.T("Agent.VerifiedOn")</dt>
+                                <dd>@verifiedDate</dd>
                             </div>
                         }
                     </dl>
@@ -130,12 +129,12 @@
         </section>
 
         <section class="agent-card card border-0 shadow-sm">
-            <h2>Sobre el agente</h2>
+            <h2>@UiText.T("Agent.About")</h2>
             <p class="agent-bio">@agente.Biografia</p>
 
             @if (Model.AreasList.Count > 0)
             {
-                <h3 class="agent-subheading">Áreas de servicio</h3>
+                <h3 class="agent-subheading">@UiText.T("Agent.Areas")</h3>
                 <ul class="agent-chip-list">
                     @foreach (var area in Model.AreasList)
                     {
@@ -146,7 +145,7 @@
 
             @if (Model.IdiomasList.Count > 0)
             {
-                <h3 class="agent-subheading">Idiomas</h3>
+                <h3 class="agent-subheading">@UiText.T("Agent.Languages")</h3>
                 <ul class="agent-chip-list agent-chip-list--muted">
                     @foreach (var idioma in Model.IdiomasList)
                     {
@@ -157,20 +156,20 @@
         </section>
 
         <aside class="agent-card card border-0 shadow-sm">
-            <h2>Contacto directo</h2>
+            <h2>@UiText.T("Agent.DirectContact")</h2>
             <ul class="agent-contact-list">
                 @if (!string.IsNullOrWhiteSpace(agente.Telefono))
                 {
-                    <li><span>Teléfono</span><strong><a href="tel:+@telDigits" class="text-decoration-none">@agente.Telefono</a></strong></li>
+                    <li><span>@UiText.T("Agent.Phone")</span><strong><a href="tel:+@telDigits" class="text-decoration-none">@agente.Telefono</a></strong></li>
                 }
                 @if (!string.IsNullOrWhiteSpace(agente.Email))
                 {
-                    <li><span>Email</span><strong>@agente.Email</strong></li>
+                    <li><span>@UiText.T("Agent.Email")</span><strong>@agente.Email</strong></li>
                 }
-                <li><span>Perfil público</span><strong class="small"><a href="@Model.PerfilUrl">@Model.PerfilUrl</a></strong></li>
+                <li><span>@UiText.T("Agent.PublicProfile")</span><strong class="small"><a href="@Model.PerfilUrl">@Model.PerfilUrl</a></strong></li>
             </ul>
             <p class="agent-tip small text-muted mb-0">
-                Tip: pide al agente que confirme su código <strong>@agente.CodigoVerificacion</strong> antes de enviar documentos o pagos.
+                @Html.Raw(UiText.T("Agent.Tip", $"<strong>{agente.CodigoVerificacion}</strong>"))
             </p>
         </aside>
     </div>

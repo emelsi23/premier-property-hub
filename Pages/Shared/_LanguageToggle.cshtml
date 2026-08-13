@@ -1,0 +1,15 @@
+@using ApartamentosRenta.Services
+@{
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var isEn = SiteCulture.IsEnglish;
+}
+<div class="lang-toggle" role="group" aria-label="@UiText.T("Nav.Language")">
+    <a class="lang-toggle-btn @(isEn ? "" : "is-active")"
+       href="/language/es?returnUrl=@Uri.EscapeDataString(returnUrl)"
+       lang="es"
+       hreflang="es">ES</a>
+    <a class="lang-toggle-btn @(isEn ? "is-active" : "")"
+       href="/language/en?returnUrl=@Uri.EscapeDataString(returnUrl)"
+       lang="en"
+       hreflang="en">EN</a>
+</div>

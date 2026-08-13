@@ -36,7 +36,7 @@ public sealed class AgenteApiResponse
         var whatsAppUrl = WhatsAppLinkHelper.BuildAgentContactUrl(
             agente.WhatsAppNumber,
             agente.Telefono,
-            $"Hola {agente.NombreCompleto}, quiero confirmar que eres agente verificado de Premier Property Hub. Perfil: {perfilUrl}");
+            UiText.T("Agent.WaMessage", agente.NombreCompleto, perfilUrl));
 
         return new AgenteApiResponse
         {

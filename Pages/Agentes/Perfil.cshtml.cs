@@ -34,8 +34,7 @@ public class PerfilModel(AppDbContext context) : PageModel
 
         PerfilAgente = agente;
         PerfilUrl = $"{Request.Scheme}://{Request.Host}/agente/{agente.Slug}";
-        var contactMessage =
-            $"Hola {agente.NombreCompleto}, quiero confirmar que eres agente verificado de Premier Property Hub. Perfil: {PerfilUrl}";
+        var contactMessage = UiText.T("Agent.WaMessage", agente.NombreCompleto, PerfilUrl);
         WhatsAppUrl = WhatsAppLinkHelper.BuildAgentContactUrl(
             agente.WhatsAppNumber,
             agente.Telefono,
@@ -54,8 +53,8 @@ public class PerfilModel(AppDbContext context) : PageModel
 
     public static string FormatResponseTime(decimal hours) =>
         hours < 1m
-            ? $"{Math.Round(hours * 60)} min"
+            ? UiText.T("Agent.Minutes", Math.Round(hours * 60))
             : hours == 1m
-                ? "1 hora"
-                : $"{hours:0.#} horas";
+                ? UiText.T("Agent.Hour")
+                : UiText.T("Agent.Hours", hours.ToString("0.#"));
 }

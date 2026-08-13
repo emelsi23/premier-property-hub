@@ -2,7 +2,7 @@
 @using ApartamentosRenta.Services
 @model ApartamentosRenta.Pages.Apartamentos.IndexModel
 @{
-    ViewData["Title"] = "Buscar alquileres";
+    ViewData["Title"] = UiText.T("Catalog.Title");
     var filters = Model.Filters;
 }
 
@@ -20,20 +20,20 @@
                      decoding="async" />
             }
             <div class="catalog-carousel-shade" aria-hidden="true"></div>
-            <button type="button" class="catalog-carousel-nav catalog-carousel-prev" id="catalogCarouselPrev" aria-label="Foto anterior">
+            <button type="button" class="catalog-carousel-nav catalog-carousel-prev" id="catalogCarouselPrev" aria-label="@UiText.T("Catalog.PrevPhoto")">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <button type="button" class="catalog-carousel-nav catalog-carousel-next" id="catalogCarouselNext" aria-label="Foto siguiente">
+            <button type="button" class="catalog-carousel-nav catalog-carousel-next" id="catalogCarouselNext" aria-label="@UiText.T("Catalog.NextPhoto")">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
             </button>
-            <div class="catalog-carousel-dots" id="catalogCarouselDots" role="tablist" aria-label="Fotos del carrusel">
+            <div class="catalog-carousel-dots" id="catalogCarouselDots" role="tablist" aria-label="@UiText.T("Catalog.CarouselPhotos")">
                 @for (var i = 0; i < Model.HeroSlides.Count; i++)
                 {
                     <button type="button"
                             class="catalog-carousel-dot @(i == 0 ? "is-active" : "")"
                             data-index="@i"
                             role="tab"
-                            aria-label="Foto @(i + 1)"
+                            aria-label="@UiText.T("Catalog.PhotoN", i + 1)"
                             @(i == 0 ? "aria-selected=\"true\"" : "aria-selected=\"false\"")></button>
                 }
             </div>
@@ -45,14 +45,14 @@
         <form method="get" class="catalog-filters card border-0 shadow-sm">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-4">
-                    <label class="form-label catalog-filter-label" for="searchQuery">Buscar</label>
+                    <label class="form-label catalog-filter-label" for="searchQuery">@UiText.T("Catalog.Search")</label>
                     <input type="search" id="searchQuery" name="Filters.Query" value="@filters.Query"
-                           class="form-control catalog-input" placeholder="Ciudad, dirección, amenidades…" />
+                           class="form-control catalog-input" placeholder="@UiText.T("Catalog.SearchPlaceholder")" />
                 </div>
                 <div class="col-md-6 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterState">Estado</label>
+                    <label class="form-label catalog-filter-label" for="filterState">@UiText.T("Catalog.State")</label>
                     <select id="filterState" name="Filters.State" class="form-select catalog-input">
-                        <option value="">Todos los estados</option>
+                        <option value="">@UiText.T("Catalog.AllStates")</option>
                         @foreach (var state in Model.StateOptions)
                         {
                             <option value="@state.Code" selected="@(filters.State == state.Code ? "selected" : null)">
@@ -62,9 +62,9 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-3 col-lg-1">
-                    <label class="form-label catalog-filter-label" for="filterBeds">Habit.</label>
+                    <label class="form-label catalog-filter-label" for="filterBeds">@UiText.T("Catalog.Beds")</label>
                     <select id="filterBeds" name="Filters.Bedrooms" class="form-select catalog-input">
-                        <option value="">Cualquiera</option>
+                        <option value="">@UiText.T("Catalog.Any")</option>
                         @for (var b = 1; b <= 4; b++)
                         {
                             <option value="@b" selected="@(filters.Bedrooms == b ? "selected" : null)">@b+</option>
@@ -72,33 +72,33 @@
                     </select>
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterMinRent">Alquiler mín.</label>
+                    <label class="form-label catalog-filter-label" for="filterMinRent">@UiText.T("Catalog.MinRent")</label>
                     <input type="number" id="filterMinRent" name="Filters.MinRent" value="@filters.MinRent"
                            class="form-control catalog-input" min="0" step="50" placeholder="@Model.MinListingRent.ToString("N0")" />
                 </div>
                 <div class="col-6 col-md-3 col-lg-2">
-                    <label class="form-label catalog-filter-label" for="filterMaxRent">Alquiler máx.</label>
+                    <label class="form-label catalog-filter-label" for="filterMaxRent">@UiText.T("Catalog.MaxRent")</label>
                     <input type="number" id="filterMaxRent" name="Filters.MaxRent" value="@filters.MaxRent"
                            class="form-control catalog-input" min="0" step="50" placeholder="@Model.MaxListingRent.ToString("N0")" />
                 </div>
                 <div class="col-6 col-md-3 col-lg-1">
-                    <label class="form-label catalog-filter-label" for="filterSort">Orden</label>
+                    <label class="form-label catalog-filter-label" for="filterSort">@UiText.T("Catalog.Sort")</label>
                     <select id="filterSort" name="Filters.Sort" class="form-select catalog-input">
-                        <option value="price-asc" selected="@(filters.Sort == "price-asc" ? "selected" : null)">Precio ↑</option>
-                        <option value="price-desc" selected="@(filters.Sort == "price-desc" ? "selected" : null)">Precio ↓</option>
-                        <option value="beds-desc" selected="@(filters.Sort == "beds-desc" ? "selected" : null)">Habitaciones</option>
-                        <option value="newest" selected="@(filters.Sort == "newest" ? "selected" : null)">Más recientes</option>
+                        <option value="price-asc" selected="@(filters.Sort == "price-asc" ? "selected" : null)">@UiText.T("Catalog.SortPriceAsc")</option>
+                        <option value="price-desc" selected="@(filters.Sort == "price-desc" ? "selected" : null)">@UiText.T("Catalog.SortPriceDesc")</option>
+                        <option value="beds-desc" selected="@(filters.Sort == "beds-desc" ? "selected" : null)">@UiText.T("Catalog.SortBeds")</option>
+                        <option value="newest" selected="@(filters.Sort == "newest" ? "selected" : null)">@UiText.T("Catalog.SortNewest")</option>
                     </select>
                 </div>
             </div>
             <div class="catalog-filter-actions">
-                <button type="submit" class="btn btn-primary catalog-btn-search">Buscar listados</button>
-                <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">Limpiar filtros</a>
+                <button type="submit" class="btn btn-primary catalog-btn-search">@UiText.T("Catalog.SearchListings")</button>
+                <a asp-page="/Apartamentos/Index" class="btn btn-outline-secondary">@UiText.T("Catalog.ClearFilters")</a>
                 <span class="catalog-results-count">
-                    @Model.TotalFiltered.ToString("N0") resultado@(Model.TotalFiltered == 1 ? "" : "s")
+                    @Model.TotalFiltered.ToString("N0") @(Model.TotalFiltered == 1 ? UiText.T("Catalog.Result") : UiText.T("Catalog.Results"))
                     @if (Model.TotalPages > 1)
                     {
-                        <span> · Página @Model.Filters.Page de @Model.TotalPages</span>
+                        <span> · @UiText.T("Catalog.PageOf", Model.Filters.Page, Model.TotalPages)</span>
                     }
                 </span>
             </div>
@@ -108,14 +108,14 @@
     @if (!Model.Listings.Any())
     {
         <div class="catalog-empty card border-0 shadow-sm">
-            <h2>No hay listados que coincidan con tu búsqueda</h2>
-            <p>Prueba otro estado, rango de precio o palabra de búsqueda.</p>
-            <a asp-page="/Apartamentos/Index" class="btn btn-primary">Ver todos los alquileres</a>
+            <h2>@UiText.T("Catalog.EmptyTitle")</h2>
+            <p>@UiText.T("Catalog.EmptyBody")</p>
+            <a asp-page="/Apartamentos/Index" class="btn btn-primary">@UiText.T("Catalog.ViewAll")</a>
         </div>
     }
     else
     {
-        <section class="catalog-grid" aria-label="Listados de alquiler">
+        <section class="catalog-grid" aria-label="@UiText.T("Catalog.ListingsAria")">
             @foreach (var item in Model.Listings)
             {
                 <article class="catalog-card">
@@ -127,12 +127,12 @@
                         }
                         else
                         {
-                            <div class="catalog-card-placeholder">Sin foto</div>
+                            <div class="catalog-card-placeholder">@UiText.T("Catalog.NoPhoto")</div>
                         }
                         <span class="catalog-card-badge">@item.StateName</span>
                         <span class="catalog-card-verified">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                            Verificado
+                            @UiText.T("Catalog.Verified")
                         </span>
                     </a>
                     <div class="catalog-card-body">
@@ -141,11 +141,11 @@
                             <a href="@item.ScheduleUrl">@item.Titulo</a>
                         </h2>
                         <p class="catalog-card-address">@item.Direccion</p>
-                        <p class="catalog-card-price">$@item.PrecioMensual.ToString("N0")<span>/mes</span></p>
+                        <p class="catalog-card-price">$@item.PrecioMensual.ToString("N0")<span>@UiText.T("Catalog.PerMonth")</span></p>
                         <div class="catalog-card-stats">
-                            <span>@item.Habitaciones hab.</span>
-                            <span>@item.Banos baños</span>
-                            <span>@item.MetrosCuadrados.ToString("N0") pies²</span>
+                            <span>@item.Habitaciones @UiText.T("Catalog.BedsShort")</span>
+                            <span>@item.Banos @UiText.T("Catalog.BathsShort")</span>
+                            <span>@item.MetrosCuadrados.ToString("N0") @UiText.T("Catalog.SqFt")</span>
                         </div>
                         @if (item.AmenityTags.Any())
                         {
@@ -157,8 +157,8 @@
                             </div>
                         }
                         <div class="catalog-card-footer">
-                            <span class="catalog-deposit-note">Depósito de visita desde $@item.DepositAmount.ToString("N0")</span>
-                            <a href="@item.ScheduleUrl" class="btn btn-primary catalog-card-cta">Agendar visita</a>
+                            <span class="catalog-deposit-note">@UiText.T("Catalog.DepositFrom", item.DepositAmount.ToString("N0"))</span>
+                            <a href="@item.ScheduleUrl" class="btn btn-primary catalog-card-cta">@UiText.T("Catalog.ScheduleTour")</a>
                         </div>
                     </div>
                 </article>
@@ -167,10 +167,10 @@
 
         @if (Model.TotalPages > 1)
         {
-            <nav class="catalog-pagination" aria-label="Páginas de listados">
+            <nav class="catalog-pagination" aria-label="@UiText.T("Catalog.Pagination")">
                 @if (Model.Filters.Page > 1)
                 {
-                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page - 1)">Anterior</a>
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page - 1)">@UiText.T("Catalog.Prev")</a>
                 }
                 @{
                     var startPage = Math.Max(1, Model.Filters.Page - 2);
@@ -184,91 +184,91 @@
                 }
                 @if (Model.Filters.Page < Model.TotalPages)
                 {
-                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page + 1)">Siguiente</a>
+                    <a class="catalog-page-link" href="@Model.BuildPageUrl(Model.Filters.Page + 1)">@UiText.T("Catalog.Next")</a>
                 }
             </nav>
         }
     }
 
-    <section class="catalog-trust" aria-label="Por qué confían en nosotros">
+    <section class="catalog-trust" aria-label="@UiText.T("Trust.Aria")">
         <div class="catalog-trust-header">
-            <p class="catalog-eyebrow">Proceso de alquiler confiable</p>
-            <h2>Diseñado para dar confianza en cada paso</h2>
-            <p>Desde tu primera búsqueda hasta la documentación firmada, Premier Property Hub mantiene el proceso profesional, seguro y transparente.</p>
+            <p class="catalog-eyebrow">@UiText.T("Trust.Eyebrow")</p>
+            <h2>@UiText.T("Trust.Title")</h2>
+            <p>@UiText.T("Trust.Lead")</p>
             <div class="catalog-trust-alert" role="note">
-                <strong>Antes de cualquier pago:</strong> verifica que tu agente tenga perfil <span class="catalog-trust-alert-badge">Agente verificado</span> en este sitio — con foto, licencia y código de verificación. No envíes depósitos, Zelle ni pagos de sellos si no puedes confirmar el perfil oficial.
+                <strong>@UiText.T("Trust.AlertStrong")</strong>@Html.Raw(UiText.T("Trust.AlertBody", $"<span class=\"catalog-trust-alert-badge\">{UiText.T("Trust.VerifiedAgent")}</span>"))
             </div>
         </div>
         <div class="catalog-trust-grid">
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-blue" aria-hidden="true">🛡️</div>
-                <h3>Listados verificados</h3>
-                <p>Cada propiedad se revisa antes de publicarse. Sin spam ni anuncios falsos — solo hogares reales listos para visitar.</p>
+                <h3>@UiText.T("Trust.VerifiedListings")</h3>
+                <p>@UiText.T("Trust.VerifiedListingsBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-green" aria-hidden="true">✓</div>
-                <h3>Reserva segura de visita</h3>
-                <p>Agenda una visita certificada de 30 minutos con depósito reembolsable y pasos claros.</p>
+                <h3>@UiText.T("Trust.SecureTour")</h3>
+                <p>@UiText.T("Trust.SecureTourBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-gold" aria-hidden="true">📜</div>
-                <h3>Contratos oficiales</h3>
-                <p>Acuerdos de arrendamiento digitales adaptados a cada propiedad con firma electrónica.</p>
+                <h3>@UiText.T("Trust.OfficialContracts")</h3>
+                <p>@UiText.T("Trust.OfficialContractsBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-purple" aria-hidden="true">🏷️</div>
-                <h3>Sellos y estampillas</h3>
-                <p>Paquetes de documentación oficial cuando se requiera — sellos, estampillas o ambos.</p>
+                <h3>@UiText.T("Trust.Stamps")</h3>
+                <p>@UiText.T("Trust.StampsBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-red" aria-hidden="true">✓</div>
-                <h3>Agente verificado</h3>
-                <p>Pide el enlace del perfil oficial de tu agente. Debe mostrar licencia, código único y sello de verificación antes de que compartas datos o realices un pago.</p>
+                <h3>@UiText.T("Trust.VerifiedAgent")</h3>
+                <p>@UiText.T("Trust.AgentBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-teal" aria-hidden="true">🔒</div>
-                <h3>Pagos seguros</h3>
-                <p>Solo después de verificar al agente: depósito vía Zelle con comprobante y revisión administrativa. Sin perfil verificado, no pagues.</p>
+                <h3>@UiText.T("Trust.SecurePayments")</h3>
+                <p>@UiText.T("Trust.SecurePaymentsBody")</p>
             </article>
             <article class="catalog-trust-card">
                 <div class="catalog-trust-icon catalog-trust-icon-navy" aria-hidden="true">👤</div>
-                <h3>Soporte con licencia</h3>
-                <p>Nuestro equipo confirma las citas por teléfono o <a href="@Model.WhatsAppUrl" class="catalog-inline-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a> una vez aprobado tu depósito.</p>
+                <h3>@UiText.T("Trust.LicensedSupport")</h3>
+                <p>@Html.Raw(UiText.T("Trust.LicensedSupportBody", $"<a href=\"{Model.WhatsAppUrl}\" class=\"catalog-inline-wa\" target=\"_blank\" rel=\"noopener noreferrer\">WhatsApp</a>"))</p>
             </article>
         </div>
 
         <div class="catalog-seals-strip">
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">PREMIER</span>
-                <small>Centro de propiedades</small>
+                <small>@UiText.T("Trust.SealPropertyHub")</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">RE/MAX</span>
-                <small>Red asociada</small>
+                <small>@UiText.T("Trust.SealPartner")</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">SSL</span>
-                <small>Navegación segura</small>
+                <small>@UiText.T("Trust.SealSecure")</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">OFICIAL</span>
-                <small>Contrato y sellos</small>
+                <small>@UiText.T("Trust.SealContract")</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">AGENTE</span>
-                <small>Verifica antes de pagar</small>
+                <small>@UiText.T("Trust.SealVerify")</small>
             </div>
             <div class="catalog-seal">
                 <span class="catalog-seal-ring">REEMBOLSO</span>
-                <small>Depósito de visita</small>
+                <small>@UiText.T("Trust.SealRefund")</small>
             </div>
         </div>
 
         <p class="catalog-trust-docs small text-muted text-center mb-0">
-            Documentos oficiales (PDF):
-            <a href="/documentos/Protocolo-Reserva-PREMAX.pdf" target="_blank" rel="noopener">Protocolo de reserva</a>
+            @UiText.T("Trust.Docs")
+            <a href="/documentos/Protocolo-Reserva-PREMAX.pdf" target="_blank" rel="noopener">@UiText.T("Trust.Protocol")</a>
             ·
-            <a href="/documentos/Pago-Efectivo-Barcode-PREMAX.pdf" target="_blank" rel="noopener">Pago en efectivo (código de barras)</a>
+            <a href="/documentos/Pago-Efectivo-Barcode-PREMAX.pdf" target="_blank" rel="noopener">@UiText.T("Trust.CashPay")</a>
         </p>
     </section>
 </div>

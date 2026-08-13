@@ -6,6 +6,8 @@
 
 <h1 class="h3 mb-4">Editar propiedad</h1>
 
+<div asp-validation-summary="All" class="text-danger mb-3"></div>
+
 @if (!string.IsNullOrEmpty(Model.LinkPreview))
 {
     <div class="alert alert-light border mb-4">
@@ -18,7 +20,7 @@
     </div>
 }
 
-<form method="post" class="card shadow-sm border-0">
+<form method="post" enctype="multipart/form-data" class="card shadow-sm border-0">
     <div class="card-body">
         <partial name="_PropertyForm" model="Model.Input" />
         <div class="mt-4">

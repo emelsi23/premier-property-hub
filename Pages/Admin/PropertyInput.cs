@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using ApartamentosRenta.Models;
 using ApartamentosRenta.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace ApartamentosRenta.Pages.Admin;
 
@@ -36,8 +37,7 @@ public class PropertyInput
     [StringLength(500), Display(Name = "Amenidades")]
     public string Amenidades { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Agrega al menos una URL de foto.")]
-    [Display(Name = "Fotos (una URL por línea)")]
+    [Display(Name = "URLs externas (opcional)")]
     public string FotosUrls { get; set; } = string.Empty;
 
     [StringLength(120), Display(Name = "Nombre para mostrar en Zelle")]
@@ -86,6 +86,9 @@ public class PropertyInput
         FotosUrls
             .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Where(url => !string.IsNullOrWhiteSpace(url));
+
+    public static bool HasPhotoSources(IEnumerable<string> urls, IReadOnlyList<IFormFile>? uploads) =>
+        urls.Any() || uploads?.Any(file => file.Length > 0) == true;
 
     public static PropertyInput FromEntity(Propiedad entity) => new()
     {

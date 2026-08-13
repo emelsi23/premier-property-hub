@@ -30,6 +30,8 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 6 * 1024 * 1024;
 });
 
+builder.Services.AddScoped<PropertyPhotoUploadService>();
+SiteCulture.Configure(builder.Services);
 builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
 builder.Services.AddAdminAuth(builder.Configuration, builder.Environment.IsDevelopment());
@@ -66,6 +68,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRequestLocalization();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

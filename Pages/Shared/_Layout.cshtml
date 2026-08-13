@@ -6,12 +6,11 @@
     var isCatalog = currentPage.StartsWith("/Apartamentos", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/rentals", StringComparison.OrdinalIgnoreCase)
         || path.StartsWith("/listings", StringComparison.OrdinalIgnoreCase);
-    var layoutWhatsAppUrl = WhatsAppLinkHelper.BuildUrl(
-        null,
-        "Hola, me gustaría ayuda para encontrar un alquiler en Premier Property Hub.");
+    var layoutWhatsAppUrl = WhatsAppLinkHelper.BuildUrl(null, UiText.T("Wa.LayoutMessage"));
+    var htmlLang = SiteCulture.Current;
 }
 <!DOCTYPE html>
-<html lang="es">
+<html lang="@htmlLang">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,7 +35,8 @@
                 <partial name="_BrandLockup" model="@BrandLockupOptions.For("nav")" />
 
                 <div class="site-navbar-tools">
-                    <a href="@layoutWhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="Chatear por WhatsApp">
+                    <partial name="_LanguageToggle" />
+                    <a href="@layoutWhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="@UiText.T("Nav.ChatWhatsApp")">
                         <span class="site-wa-chip-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -47,7 +47,7 @@
                     </a>
 
                     <button class="navbar-toggler site-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                            aria-controls="mainNav" aria-expanded="false" aria-label="Abrir menú">
+                            aria-controls="mainNav" aria-expanded="false" aria-label="@UiText.T("Nav.OpenMenu")">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                 </div>
@@ -56,14 +56,14 @@
                     <ul class="navbar-nav site-nav mx-lg-auto">
                         <li class="nav-item">
                             <a class="nav-link site-nav-link @(isCatalog ? "active" : "")" asp-page="/Apartamentos/Index">
-                                Listados
+                                @UiText.T("Nav.Listings")
                             </a>
                         </li>
                     </ul>
                     <div class="site-nav-actions">
-                        <a class="btn btn-site-affiliate" asp-page="/Admin/Login">Portal afiliado</a>
+                        <a class="btn btn-site-affiliate" asp-page="/Admin/Login">@UiText.T("Nav.Affiliate")</a>
                         <a class="btn btn-site-cta" asp-page="/Apartamentos/Index">
-                            Ver alquileres
+                            @UiText.T("Nav.ViewRentals")
                         </a>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                 <div class="site-footer-brand">
                     <partial name="_BrandLockup" model="@BrandLockupOptions.For("footer")" />
                 </div>
-                <p class="site-footer-copy mb-0">&copy; @DateTime.Now.Year Todos los derechos reservados.</p>
+                <p class="site-footer-copy mb-0">&copy; @DateTime.Now.Year @UiText.T("Footer.Rights")</p>
             </div>
         </div>
     </footer>
@@ -92,9 +92,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <div class="wa-float-widget" aria-label="Chat de WhatsApp">
+    <div class="wa-float-widget" aria-label="WhatsApp">
         <span class="wa-float-cloud">WhatsApp</span>
-        <a href="@layoutWhatsAppUrl" class="wa-float-bubble" target="_blank" rel="noopener noreferrer" aria-label="Abrir chat de WhatsApp">
+        <a href="@layoutWhatsAppUrl" class="wa-float-bubble" target="_blank" rel="noopener noreferrer" aria-label="@UiText.T("Nav.OpenWhatsApp")">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.528 5.882L0 24l6.335-1.662A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.006-1.37l-.358-.214-3.742.982 1-3.648-.233-.375A9.818 9.818 0 1 1 12 21.818z"/>

@@ -19,7 +19,9 @@
             <div class="listing-header-brand">
                 <partial name="_BrandLockup" model="@BrandLockupOptions.For("listing")" />
             </div>
-            <a href="@Model.WhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="Chatear por WhatsApp">
+            <div class="listing-header-tools">
+                <partial name="_LanguageToggle" />
+                <a href="@Model.WhatsAppUrl" class="site-wa-chip" target="_blank" rel="noopener noreferrer" aria-label="@UiText.T("Property.ChatWa")">
                 <span class="site-wa-chip-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -28,6 +30,7 @@
                 </span>
                 <span class="site-wa-chip-text">WhatsApp</span>
             </a>
+            </div>
         </div>
     </header>
 
@@ -39,10 +42,10 @@
                 <span class="gallery-counter" id="galleryCounter">1 / @fotos.Count</span>
                 @if (fotos.Count > 1)
                 {
-                    <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="Foto anterior">
+                    <button type="button" class="gallery-nav gallery-prev" id="galleryPrev" aria-label="@UiText.T("Property.PrevPhoto")">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                     </button>
-                    <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="Foto siguiente">
+                    <button type="button" class="gallery-nav gallery-next" id="galleryNext" aria-label="@UiText.T("Property.NextPhoto")">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </button>
                 }
@@ -55,7 +58,7 @@
                 <div class="gallery-strip">
                     @for (var i = 0; i < fotos.Count; i++)
                     {
-                        <button type="button" class="gallery-thumb @(i == 0 ? "active" : "")" data-index="@i" data-photo="@fotos[i].Url" aria-label="Foto @(i + 1)">
+                        <button type="button" class="gallery-thumb @(i == 0 ? "active" : "")" data-index="@i" data-photo="@fotos[i].Url" aria-label="@UiText.T("Property.PhotoN", i + 1)">
                             <img src="@fotos[i].Url" alt="" loading="lazy"
                                  onerror="this.onerror=null;this.src='@photoFallback';" />
                         </button>
@@ -68,20 +71,20 @@
         <div class="listing-card">
             <p class="property-location">@Model.Propiedad.Direccion · @Model.Propiedad.Ciudad</p>
             <h1 class="property-title">@Model.Propiedad.Titulo</h1>
-            <p class="property-price">$@Model.Propiedad.PrecioMensual.ToString("N0")<span>/mes</span></p>
+            <p class="property-price">$@Model.Propiedad.PrecioMensual.ToString("N0")<span>@UiText.T("Property.PerMonth")</span></p>
 
             <div class="property-stats">
-                <div><strong>@Model.Propiedad.Habitaciones</strong><span>Habitaciones</span></div>
-                <div><strong>@Model.Propiedad.Banos</strong><span>Baños</span></div>
+                <div><strong>@Model.Propiedad.Habitaciones</strong><span>@UiText.T("Property.Beds")</span></div>
+                <div><strong>@Model.Propiedad.Banos</strong><span>@UiText.T("Property.Baths")</span></div>
                 <div><strong>@Model.Propiedad.MetrosCuadrados</strong><span>m²</span></div>
             </div>
 
-            <h2 class="section-title">Sobre esta propiedad</h2>
+            <h2 class="section-title">@UiText.T("Property.About")</h2>
             <p class="property-description">@Model.Propiedad.Descripcion</p>
 
             @if (amenidades.Length > 0)
             {
-                <h2 class="section-title">Amenidades</h2>
+                <h2 class="section-title">@UiText.T("Property.Amenities")</h2>
                 <div class="property-tags">
                     @foreach (var item in amenidades)
                     {
@@ -94,10 +97,10 @@
 
         <div class="listing-card listing-form-card" id="schedule">
             <div class="form-card-header">
-                <h2 class="form-card-title">Solicitud de alquiler</h2>
-                <p class="form-card-subtitle">Reserva tu visita certificada para conocer esta propiedad. Proceso seguro y profesional con depósito totalmente reembolsable.</p>
+                <h2 class="form-card-title">@UiText.T("Property.ApplicationTitle")</h2>
+                <p class="form-card-subtitle">@UiText.T("Property.ApplicationLead")</p>
                 <div class="form-highlights">
-                    <span>Depósito reembolsable</span>
+                    <span>@UiText.T("Property.RefundableDeposit")</span>
                     <span>Visita de 30 minutos</span>
                     <span>Agente con licencia</span>
                 </div>
@@ -109,55 +112,55 @@
                 @Html.AntiForgeryToken()
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información personal</legend>
+                    <legend class="form-section-title">@UiText.T("Form.PersonalInfo")</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.NombreCliente" class="form-label"></label>
+                            <label asp-for="Appointment.NombreCliente" class="form-label">@UiText.T("Form.FirstName")</label>
                             <input asp-for="Appointment.NombreCliente" class="form-control" placeholder="Juan" autocomplete="given-name" />
                             <span asp-validation-for="Appointment.NombreCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.ApellidoCliente" class="form-label"></label>
+                            <label asp-for="Appointment.ApellidoCliente" class="form-label">@UiText.T("Form.LastName")</label>
                             <input asp-for="Appointment.ApellidoCliente" class="form-control" placeholder="Pérez" autocomplete="family-name" />
                             <span asp-validation-for="Appointment.ApellidoCliente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.Telefono" class="form-label"></label>
+                            <label asp-for="Appointment.Telefono" class="form-label">@UiText.T("Form.Phone")</label>
                             <input asp-for="Appointment.Telefono" id="phoneInput" class="form-control" type="tel"
                                    placeholder="(809) 690-9988" autocomplete="tel" maxlength="14" inputmode="numeric" />
                             <span asp-validation-for="Appointment.Telefono" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.Email" class="form-label"></label>
+                            <label asp-for="Appointment.Email" class="form-label">@UiText.T("Form.Email")</label>
                             <input asp-for="Appointment.Email" class="form-control" type="email"
                                    placeholder="juan.perez@email.com" autocomplete="email" />
                             <span asp-validation-for="Appointment.Email" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaNacimiento" class="form-label"></label>
+                            <label asp-for="Appointment.FechaNacimiento" class="form-label">@UiText.T("Form.Dob")</label>
                             <input asp-for="Appointment.FechaNacimiento" class="form-control" type="date" max="@maxBirth" />
                             <span asp-validation-for="Appointment.FechaNacimiento" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.SsnItin" class="form-label"></label>
+                            <label asp-for="Appointment.SsnItin" class="form-label">@UiText.T("Form.Ssn")</label>
                             <input asp-for="Appointment.SsnItin" id="ssnInput" class="form-control"
-                                   placeholder="XXX-XX-XXXX (opcional)" autocomplete="off" inputmode="numeric" maxlength="11" />
-                            <span class="form-hint">Opcional — para verificación de identidad si lo proporcionas.</span>
+                                   placeholder="XXX-XX-XXXX" autocomplete="off" inputmode="numeric" maxlength="11" />
+                            <span class="form-hint">@UiText.T("Form.SsnHint")</span>
                             <span asp-validation-for="Appointment.SsnItin" class="field-error"></span>
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Detalles de la visita</legend>
+                    <legend class="form-section-title">@UiText.T("Form.TourDetails")</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaCita" class="form-label"></label>
+                            <label asp-for="Appointment.FechaCita" class="form-label">@UiText.T("Form.VisitDate")</label>
                             <input asp-for="Appointment.FechaCita" class="form-control" type="date" min="@minVisitDate" />
                             <span asp-validation-for="Appointment.FechaCita" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.HoraCita" class="form-label"></label>
+                            <label asp-for="Appointment.HoraCita" class="form-label">@UiText.T("Form.VisitTime")</label>
                             <input asp-for="Appointment.HoraCita" class="form-control" type="time" />
                             <span asp-validation-for="Appointment.HoraCita" class="field-error"></span>
                         </div>
@@ -165,45 +168,45 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Zona de la propiedad</legend>
+                    <legend class="form-section-title">@UiText.T("Form.PropertyArea")</legend>
                     <div class="form-field">
-                        <label asp-for="Appointment.CodigoPostal" class="form-label"></label>
+                        <label asp-for="Appointment.CodigoPostal" class="form-label">@UiText.T("Form.Zip")</label>
                         <input asp-for="Appointment.CodigoPostal" class="form-control" placeholder="33101" maxlength="10" inputmode="numeric" />
                         <span asp-validation-for="Appointment.CodigoPostal" class="field-error"></span>
                     </div>
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información del arrendatario</legend>
+                    <legend class="form-section-title">@UiText.T("Form.TenantInfo")</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block"><label asp-for="Appointment.EsCiudadanoAmericano"></label></span>
+                            <span class="form-label d-block">@UiText.T("Form.UsCitizen")</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EsCiudadanoAmericano" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.EsCiudadanoAmericano" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.PersonasEnUnidad" class="form-label"></label>
+                            <label asp-for="Appointment.PersonasEnUnidad" class="form-label">@UiText.T("Form.Occupants")</label>
                             <input asp-for="Appointment.PersonasEnUnidad" class="form-control" type="number" min="1" max="20" />
                             <span asp-validation-for="Appointment.PersonasEnUnidad" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.DuracionContratoDeseada" class="form-label"></label>
-                            <input asp-for="Appointment.DuracionContratoDeseada" class="form-control" placeholder="12 meses" />
+                            <label asp-for="Appointment.DuracionContratoDeseada" class="form-label">@UiText.T("Form.LeaseLength")</label>
+                            <input asp-for="Appointment.DuracionContratoDeseada" class="form-control" placeholder="@UiText.T("Form.LeasePlaceholder")" />
                             <span asp-validation-for="Appointment.DuracionContratoDeseada" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <label asp-for="Appointment.FechaMudanzaTemprana" class="form-label"></label>
+                            <label asp-for="Appointment.FechaMudanzaTemprana" class="form-label">@UiText.T("Form.MoveIn")</label>
                             <input asp-for="Appointment.FechaMudanzaTemprana" class="form-control" type="date" min="@minVisitDate" />
                             <span asp-validation-for="Appointment.FechaMudanzaTemprana" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field">
-                            <span class="form-label d-block"><label asp-for="Appointment.Fuma"></label></span>
+                            <span class="form-label d-block">@UiText.T("Form.Smokes")</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.Fuma" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.Fuma" class="field-error"></span>
                         </div>
@@ -211,28 +214,28 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Empleo e ingresos</legend>
+                    <legend class="form-section-title">@UiText.T("Form.Employment")</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block"><label asp-for="Appointment.EmpleadoActualmente"></label></span>
+                            <span class="form-label d-block">@UiText.T("Form.Employed")</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.EmpleadoActualmente" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.EmpleadoActualmente" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field d-none" id="employmentFields">
-                            <label asp-for="Appointment.NombreCompania" class="form-label"></label>
-                            <input asp-for="Appointment.NombreCompania" class="form-control" placeholder="Nombre de la empresa" />
+                            <label asp-for="Appointment.NombreCompania" class="form-label">@UiText.T("Form.Employer")</label>
+                            <input asp-for="Appointment.NombreCompania" class="form-control" placeholder="@UiText.T("Form.CompanyPlaceholder")" />
                             <span asp-validation-for="Appointment.NombreCompania" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field d-none" id="salaryField">
-                            <label asp-for="Appointment.Salario" class="form-label"></label>
+                            <label asp-for="Appointment.Salario" class="form-label">@UiText.T("Form.Income")</label>
                             <input asp-for="Appointment.Salario" class="form-control" type="number" min="0" step="0.01" placeholder="2500" />
                             <span asp-validation-for="Appointment.Salario" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field">
-                            <label asp-for="Appointment.DisponibleParaAsegurar" class="form-label"></label>
+                            <label asp-for="Appointment.DisponibleParaAsegurar" class="form-label">@UiText.T("Form.AvailableFunds")</label>
                             <input asp-for="Appointment.DisponibleParaAsegurar" class="form-control" type="number" min="0" step="0.01" placeholder="5000" />
                             <span asp-validation-for="Appointment.DisponibleParaAsegurar" class="field-error"></span>
                         </div>
@@ -240,21 +243,21 @@
                 </fieldset>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Información adicional</legend>
+                    <legend class="form-section-title">@UiText.T("Form.Additional")</legend>
                     <div class="row g-3">
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block"><label asp-for="Appointment.TieneMascotas"></label></span>
+                            <span class="form-label d-block">@UiText.T("Form.Pets")</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.TieneMascotas" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.TieneMascotas" class="field-error"></span>
                         </div>
                         <div class="col-md-6 form-field">
-                            <span class="form-label d-block"><label asp-for="Appointment.AceptaDepositoReserva"></label></span>
+                            <span class="form-label d-block">@UiText.T("Form.AcceptDeposit")</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.AceptaDepositoReserva" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.AceptaDepositoReserva" class="field-error"></span>
                         </div>
@@ -262,36 +265,35 @@
                 </fieldset>
 
                 <div class="form-program-box">
-                    <h3 class="h6 mb-2">Programa de visita certificada</h3>
+                    <h3 class="h6 mb-2">@UiText.T("Form.CertifiedProgram")</h3>
                     <p class="small mb-2">
-                        Al unirte a nuestro programa de alquiler y pagar la tarifa de solicitud de visita certificada de
-                        <strong>$@depositAmount.ToString("N0") USD</strong>, obtienes acceso exclusivo para visitar y alquilar nuestras propiedades disponibles mediante un proceso ordenado, seguro y profesional.
+                        @Html.Raw(UiText.T("Form.CertifiedProgramBody", depositAmount.ToString("N0")))
                     </p>
-                    <p class="payment-refundable-note mb-2"><strong>Este pago es reembolsable al momento de irse de la propiedad.</strong></p>
+                    <p class="payment-refundable-note mb-2"><strong>@UiText.T("Form.RefundableNote")</strong></p>
                     <ul class="small mb-2">
-                        <li>Si la propiedad no es adecuada, tu tarifa se reembolsa por completo.</li>
-                        <li>Si decides alquilar, los $@depositAmount.ToString("N0") USD se aplican íntegramente a tu depósito de seguridad.</li>
-                        <li>Reembolso garantizado si llegas a tiempo · Reprograma con al menos 2 horas de anticipación.</li>
+                        <li>@UiText.T("Form.RefundBullet1")</li>
+                        <li>@UiText.T("Form.RefundBullet2", depositAmount.ToString("N0"))</li>
+                        <li>@UiText.T("Form.RefundBullet3")</li>
                     </ul>
                 </div>
 
                 <fieldset class="form-section">
-                    <legend class="form-section-title">Opciones de pago</legend>
+                    <legend class="form-section-title">@UiText.T("Form.PaymentOptions")</legend>
                     <div class="row g-3">
                         <div class="col-12 form-field">
-                            <span class="form-label d-block">¿Pagarás la tarifa de visita certificada de $@depositAmount.ToString("N0") USD?</span>
+                            <span class="form-label d-block">@UiText.T("Form.PayTourFeeAmount", depositAmount.ToString("N0"))</span>
                             <div class="yes-no-group">
-                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> Sí</label>
-                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> No</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="true" required /> @UiText.T("Form.Yes")</label>
+                                <label class="yes-no-option"><input type="radio" name="Appointment.PagaraCitaCertificada" value="false" /> @UiText.T("Form.No")</label>
                             </div>
                             <span asp-validation-for="Appointment.PagaraCitaCertificada" class="field-error"></span>
                         </div>
                         <div class="col-12 form-field d-none" id="paymentMethodField">
-                            <span class="form-label d-block">Método de pago</span>
+                            <span class="form-label d-block">@UiText.T("Form.PaymentMethod")</span>
                             <div class="payment-zelle-only">
                                 <span class="payment-zelle-badge">Zelle</span>
-                                <p class="payment-refundable-note mb-2 mt-2"><strong>Este pago es reembolsable al momento de irse de la propiedad.</strong></p>
-                                <p class="small text-muted mb-0">Tu depósito de visita se paga vía Zelle tras una aprobación rápida.</p>
+                                <p class="payment-refundable-note mb-2 mt-2"><strong>@UiText.T("Form.RefundableNote")</strong></p>
+                                <p class="small text-muted mb-0">@UiText.T("Form.ZelleAfterApproval")</p>
                             </div>
                         </div>
                     </div>
@@ -299,12 +301,12 @@
 
                 <label class="terms-check mb-3">
                     <input asp-for="Appointment.AceptaTerminos" />
-                    <span>Acepto los términos y políticas</span>
+                    <span>@UiText.T("Form.Terms")</span>
                 </label>
                 <span asp-validation-for="Appointment.AceptaTerminos" class="field-error d-block mb-2"></span>
 
                 <button type="submit" class="btn btn-submit w-100" id="submitBtn">
-                    Enviar solicitud
+                    @UiText.T("Form.Submit")
                 </button>
             </form>
         </div>
@@ -388,7 +390,7 @@
                 — la forma más rápida de obtener los datos de pago.
             </p>
             <div class="payment-upload-box">
-                <label for="paymentProofInput" class="form-label">Captura del pago</label>
+                <label for="paymentProofInput" class="form-label">@UiText.T("Property.PaymentProof")</label>
                 <input type="file" id="paymentProofInput" class="form-control" accept="image/*" />
                 <div id="paymentPreviewWrap" class="payment-preview-wrap d-none">
                     <img id="paymentPreview" alt="Vista previa del pago" />

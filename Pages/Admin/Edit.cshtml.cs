@@ -1,14 +1,18 @@
 using ApartamentosRenta.Data;
+using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Admin;
 
-public class EditModel(AppDbContext context) : PageModel
+public class EditModel(AppDbContext context, PropertyPhotoUploadService photoUpload) : PageModel
 {
     [BindProperty]
     public PropertyInput Input { get; set; } = new();
+
+    [BindProperty]
+    public List<IFormFile> FotoUploads { get; set; } = [];
 
     public string LinkPreview { get; private set; } = string.Empty;
     public string ContractLinkPreview { get; private set; } = string.Empty;
@@ -36,9 +40,16 @@ public class EditModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPostAsync(int id)
     {
-        if (!Input.ParseFotoUrls().Any())
+        var urlList = Input.ParseFotoUrls().ToList();
+
+        if (!PropertyInput.HasPhotoSources(urlList, FotoUploads))
         {
-            ModelState.AddModelError("Input.FotosUrls", "Agrega al menos una URL de foto.");
+            ModelState.AddModelError("FotoUploads", "Sube al menos una imagen o agrega una URL.");
+        }
+
+        foreach (var error in photoUpload.ValidateFiles(FotoUploads))
+        {
+            ModelState.AddModelError("FotoUploads", error);
         }
 
         if (!ModelState.IsValid)
@@ -74,7 +85,9 @@ public class EditModel(AppDbContext context) : PageModel
             context.StampSealContracts.Add(stampSeal);
         }
 
-        await PropiedadHelper.ApplyFotosAsync(context, propiedad, Input.ParseFotoUrls());
+        var uploadedUrls = await photoUpload.SaveAsync(propiedad.Id, FotoUploads);
+        var allPhotoUrls = urlList.Concat(uploadedUrls).ToList();
+        await PropiedadHelper.ApplyFotosAsync(context, propiedad, allPhotoUrls);
         await context.SaveChangesAsync();
 
         return RedirectToPage("Index");

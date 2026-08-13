@@ -1,12 +1,13 @@
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApartamentosRenta.Pages.Admin;
 
-public class DeleteModel(AppDbContext context) : PageModel
+public class DeleteModel(AppDbContext context, PropertyPhotoUploadService photoUpload) : PageModel
 {
     [BindProperty]
     public Propiedad Propiedad { get; set; } = null!;
@@ -33,6 +34,7 @@ public class DeleteModel(AppDbContext context) : PageModel
 
         context.Propiedades.Remove(propiedad);
         await context.SaveChangesAsync();
+        photoUpload.TryDeletePropertyFolder(id);
         return RedirectToPage("Index");
     }
 }
