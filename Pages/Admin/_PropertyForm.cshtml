@@ -24,20 +24,20 @@
     </div>
     <div class="col-md-3">
         <label asp-for="PrecioMensual" class="form-label"></label>
-        <input asp-for="PrecioMensual" class="form-control" type="number" step="100" />
+        <input asp-for="PrecioMensual" class="form-control" type="number" step="any" />
         <span asp-validation-for="PrecioMensual" class="text-danger"></span>
     </div>
     <div class="col-md-3">
         <label asp-for="Habitaciones" class="form-label"></label>
-        <input asp-for="Habitaciones" class="form-control" type="number" />
+        <input asp-for="Habitaciones" class="form-control" type="number" step="any" />
     </div>
     <div class="col-md-3">
         <label asp-for="Banos" class="form-label"></label>
-        <input asp-for="Banos" class="form-control" type="number" />
+        <input asp-for="Banos" class="form-control" type="number" step="any" />
     </div>
     <div class="col-md-3">
         <label asp-for="MetrosCuadrados" class="form-label"></label>
-        <input asp-for="MetrosCuadrados" class="form-control" type="number" step="0.1" />
+        <input asp-for="MetrosCuadrados" class="form-control" type="number" step="any" />
     </div>
     <div class="col-12">
         @{
@@ -79,20 +79,20 @@
     </div>
     <div class="col-md-4">
         <label asp-for="DepositAmount" class="form-label"></label>
-        <input asp-for="DepositAmount" class="form-control" type="number" min="1" step="1" />
-        <div class="form-text">En solicitud, contrato y paso de depósito Zelle.</div>
+        <input asp-for="DepositAmount" class="form-control" type="number" step="any" />
+        <div class="form-text">En solicitud, contrato y paso de depósito Zelle. Puedes dejarlo vacío.</div>
         <span asp-validation-for="DepositAmount" class="text-danger"></span>
     </div>
     <div class="col-md-4">
         <label asp-for="StampsAmount" class="form-label"></label>
-        <input asp-for="StampsAmount" class="form-control" type="number" min="1" step="1" />
-        <div class="form-text">Tarifa solo estampillas en el acuerdo de estampillas y sellos.</div>
+        <input asp-for="StampsAmount" class="form-control" type="number" step="any" />
+        <div class="form-text">Tarifa solo estampillas. Puedes dejarlo vacío.</div>
         <span asp-validation-for="StampsAmount" class="text-danger"></span>
     </div>
     <div class="col-md-4">
         <label asp-for="SealsAmount" class="form-label"></label>
-        <input asp-for="SealsAmount" class="form-control" type="number" min="1" step="1" />
-        <div class="form-text">Tarifa solo sellos en el acuerdo de estampillas y sellos.</div>
+        <input asp-for="SealsAmount" class="form-control" type="number" step="any" />
+        <div class="form-text">Tarifa solo sellos. Puedes dejarlo vacío.</div>
         <span asp-validation-for="SealsAmount" class="text-danger"></span>
     </div>
     <div class="col-md-4">

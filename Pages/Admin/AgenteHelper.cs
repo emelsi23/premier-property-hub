@@ -26,9 +26,12 @@ public static class AgenteHelper
     public static void ApplyInput(Models.Agente agente, AgenteInput input)
     {
         agente.NombreCompleto = input.NombreCompleto.Trim();
-        agente.FotoUrl = input.FotoUrl.Trim();
+        if (!string.IsNullOrWhiteSpace(input.FotoUrl))
+        {
+            agente.FotoUrl = input.FotoUrl.Trim();
+        }
         agente.RolTitulo = input.RolTitulo.Trim();
-        agente.Calificacion = Math.Clamp(input.Calificacion, 0m, 5m);
+        agente.Calificacion = Math.Max(0m, input.Calificacion);
         agente.TotalResenas = Math.Max(0, input.TotalResenas);
         agente.NumeroLicencia = input.NumeroLicencia.Trim();
         agente.EstadoLicencia = input.EstadoLicencia.Trim();
@@ -54,8 +57,8 @@ public static class AgenteHelper
         agente.AreasServicio = input.AreasServicio.Trim();
         agente.Idiomas = string.IsNullOrWhiteSpace(input.Idiomas) ? "Español, Inglés" : input.Idiomas.Trim();
         agente.PropiedadesActivas = Math.Max(0, input.PropiedadesActivas);
-        agente.TiempoRespuestaHoras = Math.Clamp(input.TiempoRespuestaHoras, 0m, 168m);
-        agente.PorcentajeRespuesta = Math.Clamp(input.PorcentajeRespuesta, 0, 100);
+        agente.TiempoRespuestaHoras = Math.Max(0m, input.TiempoRespuestaHoras);
+        agente.PorcentajeRespuesta = Math.Max(0, input.PorcentajeRespuesta);
         agente.Verificado = input.Verificado;
         agente.Activo = input.Activo;
 
@@ -68,14 +71,17 @@ public static class AgenteHelper
             agente.CodigoVerificacion = GenerateVerificationCode();
         }
 
-        if (input.Verificado && agente.FechaVerificacion is null)
-        {
-            agente.FechaVerificacion = DateTime.UtcNow;
-        }
-
         if (!input.Verificado)
         {
             agente.FechaVerificacion = null;
+        }
+        else if (input.FechaVerificacion.HasValue)
+        {
+            agente.FechaVerificacion = DateTime.SpecifyKind(input.FechaVerificacion.Value.Date, DateTimeKind.Utc);
+        }
+        else if (agente.FechaVerificacion is null)
+        {
+            agente.FechaVerificacion = DateTime.UtcNow;
         }
 
         agente.FechaActualizacion = DateTime.UtcNow;
@@ -102,6 +108,7 @@ public static class AgenteHelper
         TiempoRespuestaHoras = agente.TiempoRespuestaHoras,
         PorcentajeRespuesta = agente.PorcentajeRespuesta,
         CodigoVerificacion = agente.CodigoVerificacion,
+        FechaVerificacion = agente.FechaVerificacion,
         Verificado = agente.Verificado,
         Activo = agente.Activo
     };

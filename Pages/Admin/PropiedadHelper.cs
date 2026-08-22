@@ -15,23 +15,31 @@ public static class PropiedadHelper
         propiedad.Descripcion = input.Descripcion.Trim();
         propiedad.Direccion = input.Direccion.Trim();
         propiedad.Ciudad = input.Ciudad.Trim();
-        propiedad.PrecioMensual = input.PrecioMensual;
-        propiedad.Habitaciones = input.Habitaciones;
-        propiedad.Banos = input.Banos;
-        propiedad.MetrosCuadrados = input.MetrosCuadrados;
+        propiedad.PrecioMensual = input.PrecioMensual is > 0
+            ? input.PrecioMensual.Value
+            : 0m;
+        propiedad.Habitaciones = input.Habitaciones is >= 0
+            ? input.Habitaciones.Value
+            : 0;
+        propiedad.Banos = input.Banos is >= 0
+            ? input.Banos.Value
+            : 0;
+        propiedad.MetrosCuadrados = input.MetrosCuadrados is >= 0
+            ? input.MetrosCuadrados.Value
+            : 0m;
         propiedad.Disponible = input.Disponible;
         propiedad.Amenidades = input.Amenidades.Trim();
         propiedad.ZelleDisplayName = input.ZelleDisplayName.Trim();
         propiedad.ZelleContact = input.ZelleContact.Trim();
         propiedad.WhatsAppNumber = input.WhatsAppNumber.Trim();
-        propiedad.DepositAmount = input.DepositAmount > 0
-            ? input.DepositAmount
+        propiedad.DepositAmount = input.DepositAmount is > 0
+            ? input.DepositAmount.Value
             : VisitDepositSettings.DefaultAmount;
-        propiedad.StampsAmount = input.StampsAmount > 0
-            ? input.StampsAmount
+        propiedad.StampsAmount = input.StampsAmount is > 0
+            ? input.StampsAmount.Value
             : StampSealSettings.DefaultStampsAmount;
-        propiedad.SealsAmount = input.SealsAmount > 0
-            ? input.SealsAmount
+        propiedad.SealsAmount = input.SealsAmount is > 0
+            ? input.SealsAmount.Value
             : StampSealSettings.DefaultSealsAmount;
     }
 

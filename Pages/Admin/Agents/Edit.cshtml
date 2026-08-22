@@ -6,8 +6,9 @@
 
 <h1 class="h3 mb-4">Editar agente</h1>
 
-<form method="post" class="card border-0 shadow-sm">
+<form method="post" enctype="multipart/form-data" class="card border-0 shadow-sm">
     <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
         <partial name="_AgentForm" model="Model.Input" />
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary">Guardar cambios</button>

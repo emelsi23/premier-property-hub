@@ -21,16 +21,13 @@ public class Propiedad
     [Required, StringLength(80)]
     public string Ciudad { get; set; } = string.Empty;
 
-    [Range(1, 999999)]
+    [Range(0, 999999999)]
     public decimal PrecioMensual { get; set; }
 
-    [Range(0, 20)]
     public int Habitaciones { get; set; }
 
-    [Range(1, 10)]
     public int Banos { get; set; }
 
-    [Range(10, 10000)]
     public decimal MetrosCuadrados { get; set; }
 
     [StringLength(500)]

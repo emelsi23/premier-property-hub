@@ -12,11 +12,15 @@ public static class AgentSeedHelper
     private static readonly DateTime RobertoJGuzmanVerificationDate =
         new(2015, 1, 4, 0, 0, 0, DateTimeKind.Utc);
 
+    private static readonly DateTime MarisolDelgadoVerificationDate =
+        new(2017, 1, 4, 0, 0, 0, DateTimeKind.Utc);
+
     public static async Task EnsureSampleAgentAsync(AppDbContext context)
     {
         await EnsureAgentAsync(context, BuildMariaAngelica());
         await EnsureAgentAsync(context, BuildRobertoJGuzman());
         await EnsureAgentAsync(context, BuildSofiaRamirez());
+        await EnsureAgentAsync(context, BuildMarisolDelgado());
         await SyncAgentWhatsAppFromTelefonoAsync(context);
     }
 
@@ -34,7 +38,12 @@ public static class AgentSeedHelper
         }
 
         existing.NombreCompleto = definition.NombreCompleto;
-        existing.FotoUrl = definition.FotoUrl;
+        if (string.IsNullOrWhiteSpace(existing.FotoUrl)
+            || existing.FotoUrl.StartsWith("/images/agents/", StringComparison.OrdinalIgnoreCase)
+            || existing.FotoUrl.Contains("unsplash.com", StringComparison.OrdinalIgnoreCase))
+        {
+            existing.FotoUrl = definition.FotoUrl;
+        }
         existing.RolTitulo = definition.RolTitulo;
         existing.Calificacion = definition.Calificacion;
         existing.TotalResenas = definition.TotalResenas;
@@ -65,6 +74,10 @@ public static class AgentSeedHelper
         else if (definition.Slug == "roberto-j-guzman")
         {
             existing.FechaVerificacion = RobertoJGuzmanVerificationDate;
+        }
+        else if (definition.Slug == "marisol-delgado")
+        {
+            existing.FechaVerificacion = MarisolDelgadoVerificationDate;
         }
         else if (existing.Verificado && existing.FechaVerificacion is null)
         {
@@ -217,6 +230,35 @@ public static class AgentSeedHelper
         Activo = true,
         FechaVerificacion = DateTime.UtcNow,
         FechaCreacion = DateTime.UtcNow,
+        FechaActualizacion = DateTime.UtcNow
+    };
+
+    private static Agente BuildMarisolDelgado() => new()
+    {
+        NombreCompleto = "Marisol Delgado",
+        Slug = "marisol-delgado",
+        FotoUrl = "/images/agents/marisol-delgado.png",
+        RolTitulo = "Agente inmobiliario RE/MAX",
+        Calificacion = 4.9m,
+        TotalResenas = 118,
+        NumeroLicencia = "NY-RE-4192837",
+        EstadoLicencia = "New York",
+        AnosExperiencia = 9,
+        Biografia =
+            "Agente verificada con amplia experiencia en alquileres residenciales. Guío a mis clientes con transparencia, documentación clara y un proceso seguro desde la primera consulta hasta la firma.",
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(945) 384-6408"),
+        Email = "marisol.delgado@premierpropertyhub.com",
+        Telefono = "(945) 384-6408",
+        AreasServicio = "New York, Brooklyn, Queens, Manhattan, Bronx",
+        Idiomas = "Español, Inglés",
+        PropiedadesActivas = 31,
+        TiempoRespuestaHoras = 1m,
+        PorcentajeRespuesta = 98,
+        CodigoVerificacion = "PPH-MD17",
+        Verificado = true,
+        Activo = true,
+        FechaVerificacion = MarisolDelgadoVerificationDate,
+        FechaCreacion = MarisolDelgadoVerificationDate,
         FechaActualizacion = DateTime.UtcNow
     };
 }

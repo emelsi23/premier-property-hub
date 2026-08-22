@@ -31,6 +31,7 @@ builder.Services.Configure<FormOptions>(options =>
 });
 
 builder.Services.AddScoped<PropertyPhotoUploadService>();
+builder.Services.AddScoped<AgentPhotoUploadService>();
 SiteCulture.Configure(builder.Services);
 builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
