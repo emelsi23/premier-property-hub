@@ -48,6 +48,11 @@ public class IndexModel(AppDbContext context) : PageModel
             return new JsonResult(new { success = false, errors = new[] { "Fecha u hora de visita inválida." } });
         }
 
+        if (!Input.AceptaPagoReserva)
+        {
+            return new JsonResult(new { success = false, errors = new[] { "Debe confirmar que está de acuerdo en proceder con el pago del depósito de reserva." } });
+        }
+
         if (visita <= DateTime.UtcNow)
         {
             return new JsonResult(new { success = false, errors = new[] { "La fecha de visita debe ser en el futuro." } });
@@ -207,6 +212,8 @@ public class ReservaInput
     public int CantidadVehiculos { get; set; }
 
     public bool PoseeMascotas { get; set; }
+
+    public bool AceptaPagoReserva { get; set; }
 
     [Required]
     public string FirmaDataUrl { get; set; } = string.Empty;

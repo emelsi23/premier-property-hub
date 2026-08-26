@@ -281,6 +281,55 @@ html {
   margin-bottom: 0.4rem;
 }
 
+.reserva-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.reserva-trust-row span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #15803d;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+}
+
+.reserva-confirm-ask {
+  margin-top: 1.15rem;
+  padding: 1.15rem 1.1rem;
+  border-radius: 1rem;
+  border: 1.5px solid #fecaca;
+  background: linear-gradient(180deg, #fff7f7, #fff);
+}
+
+.reserva-confirm-ask-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e31837;
+}
+
+.reserva-confirm-ask-text {
+  margin: 0 0 0.9rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+.reserva-confirm-ask .reserva-toggles {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .reserva-legal {
   margin: 0 0 1rem;
   font-size: 0.92rem;

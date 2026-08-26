@@ -28,7 +28,7 @@
                 </div>
                 <p class="reserva-doc-code">Documento REMAX-ELITE-2026-V</p>
                 <h1 class="reserva-doc-title">Protocolo de Seguridad y Reserva de Propiedad</h1>
-                <p class="reserva-doc-lead">Complete este formulario en línea. Al firmar, se le pedirá verificar su identidad con documento y selfie.</p>
+                <p class="reserva-doc-lead">Complete este protocolo de forma segura. Su reserva queda protegida y el depósito es reembolsable según los términos. Al firmar, verificaremos su identidad con documento y selfie.</p>
             </header>
 
             <form id="reservaForm" class="reserva-form" novalidate>
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="reserva-note">La veracidad de estos datos es indispensable para la validación legal del perfil del inquilino.</p>
+                    <p class="reserva-note">Sus datos se tratan de forma confidencial y se utilizan únicamente para validar su perfil de arrendamiento de manera segura.</p>
                 </section>
 
                 <section class="reserva-section">
@@ -100,15 +100,38 @@
                     </div>
                     <div class="reserva-deposit">
                         <div class="reserva-deposit-amount">
-                            <span>Monto del depósito</span>
+                            <span>Depósito de reserva protegido</span>
                             <strong>$150.00 USD</strong>
                         </div>
                         <ul>
-                            <li><strong>Reembolso:</strong> Si no procede tras la visita, se reembolsa el 100%.</li>
-                            <li><strong>Crédito a renta:</strong> Si renta, el 100% aplica al primer mes.</li>
-                            <li><strong>Inasistencia:</strong> Sin aviso de 24h → cargo $10.00 (reembolso $140.00).</li>
-                            <li><strong>Seguridad:</strong> La propiedad no se muestra a terceros durante su reserva.</li>
+                            <li><strong>Garantía total de reembolso:</strong> si decide no continuar después de la visita, se le reembolsa el 100% del depósito.</li>
+                            <li><strong>Crédito a su renta:</strong> si renta la propiedad, el 100% del depósito se aplica al primer mes — no pierde ese dinero.</li>
+                            <li><strong>Política de inasistencia:</strong> cancelación o no-show sin aviso de 24 horas genera un cargo administrativo de $10.00 (reembolso $140.00).</li>
+                            <li><strong>Reserva exclusiva y segura:</strong> mientras su cita esté activa, la propiedad no se ofrece a terceros.</li>
+                            <li><strong>Proceso verificado REMAX:</strong> su depósito queda documentado y respaldado bajo nuestro protocolo de transparencia.</li>
                         </ul>
+                        <div class="reserva-trust-row" aria-hidden="true">
+                            <span>Depósito protegido</span>
+                            <span>Reembolso garantizado</span>
+                            <span>Proceso seguro</span>
+                        </div>
+                    </div>
+
+                    <div class="reserva-confirm-ask">
+                        <p class="reserva-confirm-ask-title">Confirmación de acuerdo</p>
+                        <p class="reserva-confirm-ask-text">
+                            ¿Está de acuerdo en proceder con el pago del depósito de <strong>$150.00 USD</strong> para reservar su cita de manera segura y exclusiva?
+                        </p>
+                        <div class="reserva-toggles" role="radiogroup" aria-label="Acuerdo de pago del depósito">
+                            <label class="reserva-toggle">
+                                <input type="radio" name="Input.AceptaPagoReserva" id="aceptaPagoSi" value="true" required />
+                                <span>Sí, estoy de acuerdo</span>
+                            </label>
+                            <label class="reserva-toggle">
+                                <input type="radio" name="Input.AceptaPagoReserva" id="aceptaPagoNo" value="false" />
+                                <span>No por ahora</span>
+                            </label>
+                        </div>
                     </div>
                 </section>
 
@@ -118,7 +141,7 @@
                         <h2>Declaración y firma</h2>
                     </div>
                     <p class="reserva-legal">
-                        Este protocolo forma parte de los procedimientos administrativos internos bajo principios de legalidad y transparencia en gestión inmobiliaria. Ningún pago se pierde fuera de las condiciones estipuladas; el cliente cuenta con respaldo documental y garantía de reembolso.
+                        Este protocolo forma parte de los procedimientos administrativos de Premier Property Hub By REMAX, estructurados bajo principios de legalidad, transparencia y protección al cliente. Su información y depósito cuentan con respaldo documental; ningún pago se pierde fuera de las condiciones aquí estipuladas.
                     </p>
                     <p class="reserva-sign-label">Firma del solicitante</p>
                     <div class="reserva-pad">
@@ -127,7 +150,7 @@
                     </div>
                     <label class="reserva-accept">
                         <input type="checkbox" id="aceptaTerminos" required />
-                        <span>Acepto los términos y condiciones del protocolo de reserva</span>
+                        <span>He leído y acepto los términos del protocolo. Confirmo que la información proporcionada es verídica.</span>
                     </label>
                 </section>
 
@@ -151,7 +174,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 16.5c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M14 10h5M14 13h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </div>
             <h2 id="identityTitle">Verificación de identidad</h2>
-            <p class="reserva-modal-text">Para completar su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara).</p>
+            <p class="reserva-modal-text">Para proteger su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara). Este paso garantiza que la cita quede a su nombre de forma segura.</p>
             <ul class="reserva-modal-tips">
                 <li>Buena iluminación, sin reflejos</li>
                 <li>ID legible y rostro visible</li>
@@ -270,6 +293,11 @@
         e.preventDefault();
         hideErr(formError);
         if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (!document.getElementById('aceptaPagoSi')?.checked) {
+            showErr(formError, 'Por favor confirme que está de acuerdo en proceder con el pago del depósito para reservar su cita.');
+            document.querySelector('.reserva-confirm-ask')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
         if (!hasSignature) { showErr(formError, 'Debe firmar el protocolo antes de continuar.'); return; }
         if (!document.getElementById('aceptaTerminos').checked) { showErr(formError, 'Debe aceptar los términos y condiciones.'); return; }
 
