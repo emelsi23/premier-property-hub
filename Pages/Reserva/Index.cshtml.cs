@@ -11,7 +11,7 @@ namespace ApartamentosRenta.Pages.Reserva;
 [IgnoreAntiforgeryToken]
 public class IndexModel(AppDbContext context) : PageModel
 {
-    public const decimal DefaultDeposit = 125m;
+    public const decimal DefaultDeposit = 150m;
 
     [BindProperty]
     public ReservaInput Input { get; set; } = new();

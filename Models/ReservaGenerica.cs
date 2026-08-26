@@ -56,7 +56,7 @@ public class ReservaGenerica
 
     public DateTime? IdentidadUploadedAt { get; set; }
 
-    public decimal DepositAmount { get; set; } = 125m;
+    public decimal DepositAmount { get; set; } = 150m;
 
     public EstadoReservaGenerica Estado { get; set; } = EstadoReservaGenerica.EsperandoIdentidad;
 
