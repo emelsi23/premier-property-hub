@@ -721,6 +721,40 @@ html {
   padding: 0.5rem;
 }
 
+.reserva-waiting-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: grid;
+  place-items: center;
+}
+
+.reserva-waiting-note {
+  margin-top: 0.75rem !important;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.reserva-waiting-pulse {
+  width: 42px;
+  height: 42px;
+  margin: 1.25rem auto 0;
+  border-radius: 50%;
+  border: 3px solid #fecaca;
+  border-top-color: #e31837;
+  animation: reserva-spin 0.9s linear infinite;
+}
+
+@keyframes reserva-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 560px) {
   .reserva-pay-methods {
     grid-template-columns: 1fr;

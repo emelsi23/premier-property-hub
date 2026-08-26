@@ -29,8 +29,18 @@ else
                 ApartamentosRenta.Models.EstadoReservaGenerica.Completada => "bg-success",
                 ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoIdentidad => "bg-warning text-dark",
                 ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoPago => "bg-info text-dark",
+                ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoConfirmacion => "bg-primary",
                 ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada => "bg-secondary",
-                _ => "bg-primary"
+                _ => "bg-secondary"
+            };
+            var estadoLabel = r.Estado switch
+            {
+                ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoConfirmacion => "Verificando pago",
+                ApartamentosRenta.Models.EstadoReservaGenerica.Completada => "Confirmada",
+                ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoPago => "Esperando pago",
+                ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoIdentidad => "Esperando identidad",
+                ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada => "Cancelada",
+                _ => r.Estado.ToString()
             };
             var metodoLabel = r.MetodoPago switch
             {
@@ -52,8 +62,15 @@ else
                             }
                         </div>
                         <div class="small mt-1">
-                            Código: <code class="fw-bold">@r.CodigoConfirmacion</code>
-                            · Ocupantes: @r.OcupantesTotales
+                            @if (r.Estado == ApartamentosRenta.Models.EstadoReservaGenerica.Completada)
+                            {
+                                <text>Código: <code class="fw-bold">@r.CodigoConfirmacion</code> · </text>
+                            }
+                            else
+                            {
+                                <text>Código: <span class="text-muted">se entrega al confirmar</span> · </text>
+                            }
+                            Ocupantes: @r.OcupantesTotales
                             · Hijos: @(r.PoseeHijos ? "Sí" : "No")
                             · Vehículos: @r.CantidadVehiculos
                             · Mascotas: @(r.PoseeMascotas ? "Sí" : "No")
@@ -61,7 +78,7 @@ else
                         <div class="small text-muted mt-1">Enviado: @r.FechaSolicitud.ToLocalTime().ToString("g")</div>
                     </div>
                     <div class="text-end">
-                        <span class="badge @badge">@r.Estado</span>
+                        <span class="badge @badge">@estadoLabel</span>
                         <div class="mt-2 d-flex flex-wrap gap-1 justify-content-end">
                             @if (r.FirmaData is { Length: > 0 })
                             {
@@ -75,7 +92,14 @@ else
                             {
                                 <a class="btn btn-sm btn-outline-success" href="?handler=Comprobante&id=@r.Id" target="_blank">Ver comprobante</a>
                             }
-                            @if (r.Estado != ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada)
+                            @if (r.Estado == ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoConfirmacion)
+                            {
+                                <form method="post" asp-page-handler="Confirm" class="d-inline">
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('¿Confirmar esta reserva y liberar el código al cliente?')">Confirmar reserva</button>
+                                </form>
+                            }
+                            @if (r.Estado != ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada && r.Estado != ApartamentosRenta.Models.EstadoReservaGenerica.Completada)
                             {
                                 <form method="post" asp-page-handler="Cancel" class="d-inline">
                                     <input type="hidden" name="id" value="@r.Id" />

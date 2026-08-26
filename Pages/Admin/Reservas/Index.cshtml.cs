@@ -50,6 +50,24 @@ public class IndexModel(AppDbContext context) : PageModel
         return File(r.PaymentProofData, r.PaymentProofContentType ?? "image/jpeg");
     }
 
+    public async Task<IActionResult> OnPostConfirmAsync(int id)
+    {
+        var r = await context.ReservasGenericas.FindAsync(id);
+        if (r is null)
+        {
+            return NotFound();
+        }
+
+        if (r.Estado == EstadoReservaGenerica.EsperandoConfirmacion)
+        {
+            r.Estado = EstadoReservaGenerica.Completada;
+            r.FechaCompletada = DateTime.UtcNow;
+            await context.SaveChangesAsync();
+        }
+
+        return RedirectToPage();
+    }
+
     public async Task<IActionResult> OnPostCancelAsync(int id)
     {
         var r = await context.ReservasGenericas.FindAsync(id);

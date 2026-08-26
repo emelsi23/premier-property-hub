@@ -53,7 +53,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
         if (!Input.AceptaPagoReserva)
         {
-            return new JsonResult(new { success = false, errors = new[] { "Debe confirmar que está de acuerdo en proceder con el pago del depósito de reserva." } });
+            return new JsonResult(new { success = false, errors = new[] { "Debe confirmar que está de acuerdo en proceder con el depósito de reserva." } });
         }
 
         if (visita <= DateTime.UtcNow)
@@ -190,18 +190,48 @@ public class IndexModel(AppDbContext context) : PageModel
         reserva.PaymentProofData = bytes;
         reserva.PaymentProofContentType = contentType;
         reserva.PaymentProofUploadedAt = DateTime.UtcNow;
-        reserva.Estado = EstadoReservaGenerica.Completada;
-        reserva.FechaCompletada = DateTime.UtcNow;
+        reserva.Estado = EstadoReservaGenerica.EsperandoConfirmacion;
         await context.SaveChangesAsync();
 
         return new JsonResult(new
         {
             success = true,
-            confirmationCode = reserva.CodigoConfirmacion,
-            nombre = reserva.NombreCompleto,
-            fechaVisita = reserva.FechaVisita.ToLocalTime().ToString("dddd, MMM d, yyyy · h:mm tt"),
-            monto = reserva.DepositAmount.ToString("N2"),
-            metodo = metodo == MetodoPagoReserva.Zelle ? "Zelle" : "Código de barras"
+            next = "waiting",
+            status = nameof(EstadoReservaGenerica.EsperandoConfirmacion)
+        });
+    }
+
+    public async Task<IActionResult> OnGetStatusAsync(Guid token)
+    {
+        var reserva = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(r => r.PublicToken == token);
+        if (reserva is null)
+        {
+            return new JsonResult(new { success = false });
+        }
+
+        var confirmed = reserva.Estado == EstadoReservaGenerica.Completada;
+        var cancelled = reserva.Estado == EstadoReservaGenerica.Cancelada;
+
+        return new JsonResult(new
+        {
+            success = true,
+            status = reserva.Estado.ToString(),
+            confirmed,
+            cancelled,
+            confirmationCode = confirmed ? reserva.CodigoConfirmacion : null,
+            nombre = confirmed ? reserva.NombreCompleto : null,
+            fechaVisita = confirmed
+                ? reserva.FechaVisita.ToLocalTime().ToString("dddd, MMM d, yyyy · h:mm tt")
+                : null,
+            monto = confirmed ? reserva.DepositAmount.ToString("N2") : null,
+            metodo = confirmed
+                ? reserva.MetodoPago switch
+                {
+                    MetodoPagoReserva.Zelle => "Zelle",
+                    MetodoPagoReserva.CodigoBarras => "Código de barras",
+                    _ => null
+                }
+                : null
         });
     }
 

@@ -123,7 +123,7 @@
                     <div class="reserva-confirm-ask">
                         <p class="reserva-confirm-ask-title">Confirmación de acuerdo</p>
                         <p class="reserva-confirm-ask-text">
-                            ¿Está de acuerdo en proceder con el pago del depósito de <strong>$@deposit.ToString("N2") USD</strong> para reservar su cita de manera segura y exclusiva?
+                            ¿Está de acuerdo en proceder con el depósito de <strong>$@deposit.ToString("N2") USD</strong> para reservar su cita de manera segura y exclusiva?
                         </p>
                         <div class="reserva-toggles" role="radiogroup" aria-label="Acuerdo de pago del depósito">
                             <label class="reserva-toggle">
@@ -254,6 +254,19 @@
         </div>
     </div>
 
+    @* Modal esperando verificación *@
+    <div class="reserva-overlay" id="waitingModal" hidden>
+        <div class="reserva-modal reserva-modal-success" role="dialog" aria-modal="true" aria-labelledby="waitingTitle">
+            <div class="reserva-waiting-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </div>
+            <h2 id="waitingTitle">Verificando su pago</h2>
+            <p class="reserva-modal-text">Recibimos su comprobante. Nuestro equipo lo está revisando para confirmar su cita.</p>
+            <p class="reserva-modal-sub reserva-waiting-note"><strong>No cierre ni refresque esta página.</strong> En cuanto el pago sea aprobado, verá aquí su código de confirmación.</p>
+            <div class="reserva-waiting-pulse" aria-hidden="true"></div>
+        </div>
+    </div>
+
     @* Modal confirmación *@
     <div class="reserva-overlay" id="confirmModal" hidden>
         <div class="reserva-modal reserva-modal-success" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
@@ -286,6 +299,7 @@
     const satisfactionModal = document.getElementById('satisfactionModal');
     const satisfactionBar = document.getElementById('satisfactionBar');
     const paymentModal = document.getElementById('paymentModal');
+    const waitingModal = document.getElementById('waitingModal');
     const paymentFile = document.getElementById('paymentFile');
     const paymentFileLabel = document.getElementById('paymentFileLabel');
     const paymentPreviewWrap = document.getElementById('paymentPreviewWrap');
@@ -300,6 +314,7 @@
     let publicToken = null;
     let selectedPayMethod = null;
     let paymentInfo = null;
+    let statusPollTimer = null;
 
     document.getElementById('telefono').addEventListener('input', (e) => {
         const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -377,7 +392,7 @@
         hideErr(formError);
         if (!form.checkValidity()) { form.reportValidity(); return; }
         if (!document.getElementById('aceptaPagoSi')?.checked) {
-            showErr(formError, 'Por favor confirme que está de acuerdo en proceder con el pago del depósito para reservar su cita.');
+            showErr(formError, 'Por favor confirme que está de acuerdo en proceder con el depósito para reservar su cita.');
             document.querySelector('.reserva-confirm-ask')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
@@ -485,16 +500,59 @@
         }, 5000);
     }
 
-    function showConfirm(data) {
+    function showWaiting() {
         paymentModal.hidden = true;
+        openOverlay(waitingModal);
+        startStatusPolling();
+    }
+
+    function showConfirm(data) {
+        stopStatusPolling();
+        paymentModal.hidden = true;
+        waitingModal.hidden = true;
         document.getElementById('confirmName').textContent = data.nombre
-            ? `Gracias, ${data.nombre}. Su cita quedó registrada.`
-            : 'Su cita quedó registrada.';
+            ? `Gracias, ${data.nombre}. Su cita quedó confirmada.`
+            : 'Su cita quedó confirmada.';
         document.getElementById('confirmVisit').textContent = data.fechaVisita ? `Visita: ${data.fechaVisita}` : '';
         document.getElementById('confirmPay').textContent =
             data.monto ? `Depósito: $${data.monto} USD · Método: ${data.metodo || '—'}` : '';
         document.getElementById('confirmCode').textContent = data.confirmationCode || '';
         openOverlay(confirmModal);
+    }
+
+    function startStatusPolling() {
+        stopStatusPolling();
+        checkStatus();
+        statusPollTimer = setInterval(checkStatus, 4000);
+    }
+
+    function stopStatusPolling() {
+        if (statusPollTimer) {
+            clearInterval(statusPollTimer);
+            statusPollTimer = null;
+        }
+    }
+
+    async function checkStatus() {
+        if (!publicToken) return;
+        try {
+            const res = await fetch(`${window.location.pathname}?handler=Status&token=${encodeURIComponent(publicToken)}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.success) return;
+            if (data.confirmed) {
+                showConfirm(data);
+            } else if (data.cancelled) {
+                stopStatusPolling();
+                waitingModal.hidden = true;
+                showErr(formError, 'Su reserva fue cancelada. Si cree que es un error, contáctenos.');
+                document.body.classList.remove('reserva-modal-open');
+            }
+        } catch {
+            /* keep polling */
+        }
     }
 
     uploadIdentityBtn.addEventListener('click', async () => {
@@ -578,7 +636,7 @@
                 uploadPaymentBtn.textContent = 'Enviar comprobante';
                 return;
             }
-            showConfirm(data);
+            showWaiting();
         } catch {
             showErr(paymentError, 'Error de conexión. Intente de nuevo.');
             uploadPaymentBtn.disabled = false;
