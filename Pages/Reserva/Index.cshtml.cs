@@ -5,25 +5,46 @@ using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace ApartamentosRenta.Pages.Reserva;
 
 [IgnoreAntiforgeryToken]
-public class IndexModel(AppDbContext context) : PageModel
+public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSettings) : PageModel
 {
     [BindProperty]
     public ReservaInput Input { get; set; } = new();
 
     public ReservaPaymentSettings PaymentSettings { get; private set; } = new();
 
-    public async Task OnGetAsync()
+    public string AgentUsername { get; private set; } = string.Empty;
+
+    public string AgentDisplayName { get; private set; } = string.Empty;
+
+    public bool AgentNotFound { get; private set; }
+
+    public async Task<IActionResult> OnGetAsync(string? agent)
     {
-        PaymentSettings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        if (!TryResolveAgent(agent, out var account))
+        {
+            AgentNotFound = true;
+            return Page();
+        }
+
+        AgentUsername = account.Username;
+        AgentDisplayName = account.EffectiveDisplayName;
+        PaymentSettings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, account.Username);
+        return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(string? agent)
     {
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        if (!TryResolveAgent(agent, out var account))
+        {
+            return new JsonResult(new { success = false, errors = new[] { "Enlace de reserva inválido." } });
+        }
+
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, account.Username);
 
         if (!ModelState.IsValid)
         {
@@ -80,6 +101,7 @@ public class IndexModel(AppDbContext context) : PageModel
             FirmaData = firmaBytes,
             FirmaContentType = "image/png",
             DepositAmount = settings.DepositAmount,
+            AdminUsername = account.Username,
             Estado = EstadoReservaGenerica.EsperandoIdentidad,
             FechaSolicitud = DateTime.UtcNow
         };
@@ -120,7 +142,7 @@ public class IndexModel(AppDbContext context) : PageModel
         reserva.Estado = EstadoReservaGenerica.EsperandoPago;
         await context.SaveChangesAsync();
 
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, reserva.AdminUsername);
         return new JsonResult(new
         {
             success = true,
@@ -137,7 +159,7 @@ public class IndexModel(AppDbContext context) : PageModel
             return new JsonResult(new { success = false, error = "Reserva no encontrada." });
         }
 
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, reserva.AdminUsername);
         return new JsonResult(new
         {
             success = true,
@@ -145,9 +167,14 @@ public class IndexModel(AppDbContext context) : PageModel
         });
     }
 
-    public async Task<IActionResult> OnGetBarcodeImageAsync()
+    public async Task<IActionResult> OnGetBarcodeImageAsync(string? agent)
     {
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        if (!TryResolveAgent(agent, out var account))
+        {
+            return NotFound();
+        }
+
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, account.Username);
         if (settings.BarcodeImageData is null || settings.BarcodeImageData.Length == 0)
         {
             return NotFound();
@@ -233,6 +260,19 @@ public class IndexModel(AppDbContext context) : PageModel
                 }
                 : null
         });
+    }
+
+    private bool TryResolveAgent(string? agent, out AdminUserAccount account)
+    {
+        var found = AdminUsers.Find(authSettings.Value, agent);
+        if (found is null)
+        {
+            account = new AdminUserAccount();
+            return false;
+        }
+
+        account = found;
+        return true;
     }
 
     private static object BuildPaymentPayload(ReservaPaymentSettings settings, decimal amount)

@@ -1,0 +1,318 @@
+.admin-body {
+  --admin-bg: #f3f5f8;
+  --admin-surface: #ffffff;
+  --admin-ink: #0f172a;
+  --admin-muted: #64748b;
+  --admin-line: #e2e8f0;
+  --admin-accent: #e31837;
+  --admin-accent-soft: #fff1f2;
+  --admin-side: 260px;
+  --admin-top: 58px;
+  --admin-bottom: 64px;
+  margin: 0;
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-ink);
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.admin-topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--admin-top);
+  padding: 0.55rem 0.9rem;
+  padding-left: max(0.9rem, env(safe-area-inset-left));
+  padding-right: max(0.9rem, env(safe-area-inset-right));
+}
+
+.admin-menu-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: #fff;
+  display: inline-grid;
+  place-items: center;
+  gap: 4px;
+  padding: 0;
+}
+
+.admin-menu-btn span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--admin-ink);
+}
+
+@media (min-width: 992px) {
+  .admin-menu-btn {
+    display: none;
+  }
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #e31837, #b9102c);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.admin-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.admin-brand-text strong {
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-brand-text small,
+.admin-sidebar-head small {
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+}
+
+.admin-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 42vw;
+}
+
+.admin-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.admin-user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 420px) {
+  .admin-user-name {
+    display: none;
+  }
+}
+
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--admin-side);
+  background: var(--admin-surface);
+  border-right: 1px solid var(--admin-line);
+  flex-direction: column;
+  z-index: 1020;
+}
+
+.admin-sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1rem;
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.admin-sidebar-head strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 0.75rem;
+}
+
+.admin-nav-label {
+  margin: 0.85rem 0.55rem 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.admin-nav-label:first-child {
+  margin-top: 0.15rem;
+}
+
+.admin-nav-link {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  color: var(--admin-ink);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.admin-nav-link:hover {
+  background: #f8fafc;
+  color: var(--admin-ink);
+}
+
+.admin-nav-link.active {
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-weight: 700;
+}
+
+.admin-offcanvas {
+  --bs-offcanvas-width: min(88vw, 320px);
+}
+
+.admin-nav-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-main {
+  min-height: 100vh;
+  padding-bottom: calc(var(--admin-bottom) + env(safe-area-inset-bottom) + 0.75rem);
+}
+
+@media (min-width: 992px) {
+  .admin-topbar {
+    display: none;
+  }
+
+  .admin-main {
+    margin-left: var(--admin-side);
+    padding-bottom: 1.5rem;
+  }
+}
+
+.admin-main-inner {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 1rem 0.9rem 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .admin-main-inner {
+    padding: 1.5rem 1.5rem 2rem;
+  }
+}
+
+.admin-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.15rem;
+  padding: 0.35rem 0.35rem calc(0.35rem + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--admin-line);
+  backdrop-filter: blur(10px);
+}
+
+.admin-bottom-nav a,
+.admin-bottom-nav button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--admin-muted);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  min-height: 48px;
+  border-radius: 12px;
+  padding: 0.2rem;
+}
+
+.admin-bottom-nav a span,
+.admin-bottom-nav button span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.admin-bottom-nav a.active,
+.admin-bottom-nav button:focus-visible {
+  color: var(--admin-accent);
+  background: var(--admin-accent-soft);
+}
+
+.admin-body .list-group-item {
+  border-radius: 14px !important;
+  margin-bottom: 0.65rem;
+  border: 1px solid var(--admin-line) !important;
+}
+
+.admin-body .btn {
+  border-radius: 10px;
+}
+
+.admin-body .card {
+  border-radius: 16px;
+}
+
+@media (max-width: 991.98px) {
+  .admin-body .d-flex.flex-wrap.gap-1 .btn,
+  .admin-body .mt-2.d-flex.flex-wrap.gap-1 .btn {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-height: 40px;
+  }
+
+  .admin-body h1.h3 {
+    font-size: 1.25rem;
+  }
+}

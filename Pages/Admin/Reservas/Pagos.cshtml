@@ -7,10 +7,18 @@
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <h1 class="h3 mb-1">Métodos de pago</h1>
-        <p class="text-muted mb-0">Zelle, código de barras y monto del depósito para <code>/reserva</code></p>
+        <p class="text-muted mb-0">Zelle, código de barras y monto · solo su cuenta (<strong>@Model.CurrentUsername</strong>)</p>
     </div>
     <a class="btn btn-outline-secondary btn-sm" asp-page="./Index">Volver a reservas</a>
 </div>
+
+@if (!string.IsNullOrEmpty(Model.PublicReservaUrl))
+{
+    <div class="alert alert-light border mb-3">
+        <div class="small text-muted mb-1">Clientes usarán este enlace con sus datos de pago:</div>
+        <code class="user-select-all">@Model.PublicReservaUrl</code>
+    </div>
+}
 
 @if (!string.IsNullOrEmpty(Model.StatusMessage))
 {

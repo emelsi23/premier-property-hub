@@ -1,4 +1,4 @@
-@page "/reserva"
+@page "/reserva/{agent?}"
 @model ApartamentosRenta.Pages.Reserva.IndexModel
 @{
     Layout = null;
@@ -21,12 +21,28 @@
 <body class="reserva-body">
     <div class="reserva-shell">
         <div class="reserva-doc">
+            @if (Model.AgentNotFound)
+            {
+                <header class="reserva-doc-header">
+                    <div class="reserva-brand-row">
+                        <img src="~/images/remax-logo.svg" alt="RE/MAX" class="reserva-brand-logo" asp-append-version="true" />
+                        <div>
+                            <p class="reserva-doc-brand">Premier Property Hub</p>
+                            <p class="reserva-doc-by">By REMAX · Departamento Jurídico</p>
+                        </div>
+                    </div>
+                    <h1 class="reserva-doc-title">Enlace de reserva no válido</h1>
+                    <p class="reserva-doc-lead">Use el enlace personalizado que le compartió su agente (por ejemplo <code>/reserva/azul</code>). Si no lo tiene, solicítelo directamente.</p>
+                </header>
+            }
+            else
+            {
             <header class="reserva-doc-header">
                 <div class="reserva-brand-row">
                     <img src="~/images/remax-logo.svg" alt="RE/MAX" class="reserva-brand-logo" asp-append-version="true" />
                     <div>
                         <p class="reserva-doc-brand">Premier Property Hub</p>
-                        <p class="reserva-doc-by">By REMAX · Departamento Jurídico</p>
+                        <p class="reserva-doc-by">By REMAX · Agente @Model.AgentDisplayName</p>
                     </div>
                 </div>
                 <p class="reserva-doc-code">Documento REMAX-ELITE-2026-V</p>
@@ -167,9 +183,12 @@
                 <p>Documento amparado bajo normativas de transparencia inmobiliaria</p>
                 <p>Proceso verificado · Depósito protegido · Gestión profesional</p>
             </footer>
+            } @* end agent found *@
         </div>
     </div>
 
+    @if (!Model.AgentNotFound)
+    {
     @* Modal ID + selfie *@
     <div class="reserva-overlay" id="identityModal" hidden>
         <div class="reserva-modal" role="dialog" aria-modal="true" aria-labelledby="identityTitle">
@@ -651,5 +670,6 @@
     });
 })();
 </script>
+    }
 </body>
 </html>

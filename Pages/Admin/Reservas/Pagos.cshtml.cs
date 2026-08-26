@@ -16,15 +16,23 @@ public class PagosModel(AppDbContext context) : PageModel
 
     public string? StatusMessage { get; private set; }
 
+    public string CurrentUsername { get; private set; } = string.Empty;
+
+    public string PublicReservaUrl { get; private set; } = string.Empty;
+
     public async Task OnGetAsync()
     {
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        CurrentUsername = AdminUsers.CurrentUsername(User);
+        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, CurrentUsername);
         MapFrom(settings);
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        CurrentUsername = AdminUsers.CurrentUsername(User);
+        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, CurrentUsername);
         HasBarcodeImage = settings.BarcodeImageData is { Length: > 0 };
 
         if (!ModelState.IsValid)
@@ -71,13 +79,14 @@ public class PagosModel(AppDbContext context) : PageModel
 
         await context.SaveChangesAsync();
         MapFrom(settings);
-        StatusMessage = "Métodos de pago y montos actualizados.";
+        StatusMessage = "Métodos de pago y montos actualizados (solo para su cuenta).";
         return Page();
     }
 
     public async Task<IActionResult> OnGetBarcodeAsync()
     {
-        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        var me = AdminUsers.CurrentUsername(User);
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, me);
         if (settings.BarcodeImageData is null || settings.BarcodeImageData.Length == 0)
         {
             return NotFound();

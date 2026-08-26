@@ -30,10 +30,7 @@ public class LoginModel(IOptions<AdminAuthSettings> authSettings) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var settings = authSettings.Value;
-
-        if (!string.Equals(Input.Username, settings.Username, StringComparison.Ordinal)
-            || !string.Equals(Input.Password, settings.Password, StringComparison.Ordinal))
+        if (!AdminUsers.TryAuthenticate(authSettings.Value, Input.Username, Input.Password, out var account) || account is null)
         {
             ErrorMessage = "Usuario o contraseña incorrectos.";
             return Page();
@@ -41,7 +38,8 @@ public class LoginModel(IOptions<AdminAuthSettings> authSettings) : PageModel
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, settings.Username),
+            new(ClaimTypes.Name, account.Username),
+            new("display_name", account.EffectiveDisplayName),
             new(ClaimTypes.Role, "Admin")
         };
 

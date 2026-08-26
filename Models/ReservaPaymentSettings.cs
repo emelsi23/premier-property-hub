@@ -2,10 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApartamentosRenta.Models;
 
-/// <summary>Singleton-style settings for the generic reservation payment step.</summary>
+/// <summary>Per-admin-agent settings for the generic reservation payment step.</summary>
 public class ReservaPaymentSettings
 {
-    public int Id { get; set; } = 1;
+    public int Id { get; set; }
+
+    /// <summary>Admin username key (azul, pingui, …).</summary>
+    [Required, StringLength(64)]
+    public string AdminUsername { get; set; } = string.Empty;
 
     [Range(1, 999999)]
     public decimal DepositAmount { get; set; } = 150m;

@@ -85,5 +85,9 @@ public class Cita
 
     public DateTime? PaymentProofUploadedAt { get; set; }
 
+    /// <summary>Admin that claimed/owns this appointment. Empty = shared pool from property applications.</summary>
+    [StringLength(64)]
+    public string AdminUsername { get; set; } = string.Empty;
+
     public string NombreCompleto => $"{NombreCliente} {ApellidoCliente}".Trim();
 }

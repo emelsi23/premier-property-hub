@@ -45,9 +45,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .OnDelete(DeleteBehavior.Cascade);
             entity.Property(c => c.Salario).HasPrecision(10, 2);
             entity.Property(c => c.DisponibleParaAsegurar).HasPrecision(10, 2);
+            entity.Property(c => c.AdminUsername).HasMaxLength(64);
             entity.HasIndex(c => c.FechaHora);
             entity.HasIndex(c => c.Estado);
             entity.HasIndex(c => c.PublicToken).IsUnique();
+            entity.HasIndex(c => c.AdminUsername);
         });
 
         modelBuilder.Entity<LeaseContract>(entity =>
@@ -105,16 +107,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<ReservaGenerica>(entity =>
         {
             entity.Property(r => r.DepositAmount).HasPrecision(10, 2);
+            entity.Property(r => r.AdminUsername).HasMaxLength(64);
             entity.HasIndex(r => r.PublicToken).IsUnique();
             entity.HasIndex(r => r.CodigoConfirmacion).IsUnique();
             entity.HasIndex(r => r.Estado);
             entity.HasIndex(r => r.FechaSolicitud);
+            entity.HasIndex(r => r.AdminUsername);
         });
 
         modelBuilder.Entity<ReservaPaymentSettings>(entity =>
         {
             entity.Property(s => s.DepositAmount).HasPrecision(10, 2);
             entity.Property(s => s.NoShowFee).HasPrecision(10, 2);
+            entity.Property(s => s.AdminUsername).HasMaxLength(64);
+            entity.HasIndex(s => s.AdminUsername).IsUnique();
         });
     }
 }

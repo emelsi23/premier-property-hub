@@ -59,11 +59,6 @@
                                 @UiText.T("Nav.Listings")
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link site-nav-link @(path.StartsWith("/reserva", StringComparison.OrdinalIgnoreCase) ? "active" : "")" href="/reserva">
-                                Reserva
-                            </a>
-                        </li>
                     </ul>
                     <div class="site-nav-actions">
                         <a class="btn btn-site-affiliate" asp-page="/Admin/Login">@UiText.T("Nav.Affiliate")</a>

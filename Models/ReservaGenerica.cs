@@ -70,6 +70,10 @@ public class ReservaGenerica
 
     public EstadoReservaGenerica Estado { get; set; } = EstadoReservaGenerica.EsperandoIdentidad;
 
+    /// <summary>Admin agent that owns this reservation (e.g. azul, pingui).</summary>
+    [Required, StringLength(64)]
+    public string AdminUsername { get; set; } = string.Empty;
+
     public DateTime FechaSolicitud { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaCompletada { get; set; }

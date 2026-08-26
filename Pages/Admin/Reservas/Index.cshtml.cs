@@ -11,16 +11,24 @@ public class IndexModel(AppDbContext context) : PageModel
 {
     public IList<ReservaGenerica> Reservas { get; private set; } = [];
 
+    public string CurrentUsername { get; private set; } = string.Empty;
+
+    public string PublicReservaUrl { get; private set; } = string.Empty;
+
     public async Task OnGetAsync()
     {
+        CurrentUsername = AdminUsers.CurrentUsername(User);
+        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+
         Reservas = await context.ReservasGenericas
+            .Where(r => r.AdminUsername == CurrentUsername)
             .OrderByDescending(r => r.FechaSolicitud)
             .ToListAsync();
     }
 
     public async Task<IActionResult> OnGetFirmaAsync(int id)
     {
-        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var r = await FindOwnedAsync(id);
         if (r?.FirmaData is null || r.FirmaData.Length == 0)
         {
             return NotFound();
@@ -31,7 +39,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnGetIdentidadAsync(int id)
     {
-        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var r = await FindOwnedAsync(id);
         if (r?.IdentidadData is null || r.IdentidadData.Length == 0)
         {
             return NotFound();
@@ -42,7 +50,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnGetComprobanteAsync(int id)
     {
-        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var r = await FindOwnedAsync(id);
         if (r?.PaymentProofData is null || r.PaymentProofData.Length == 0)
         {
             return NotFound();
@@ -53,7 +61,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnGetPdfAsync(int id)
     {
-        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var r = await FindOwnedAsync(id);
         if (r is null)
         {
             return NotFound();
@@ -74,7 +82,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPostConfirmAsync(int id)
     {
-        var r = await context.ReservasGenericas.FindAsync(id);
+        var r = await FindOwnedTrackedAsync(id);
         if (r is null)
         {
             return NotFound();
@@ -92,7 +100,7 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPostCancelAsync(int id)
     {
-        var r = await context.ReservasGenericas.FindAsync(id);
+        var r = await FindOwnedTrackedAsync(id);
         if (r is null)
         {
             return NotFound();
@@ -105,5 +113,19 @@ public class IndexModel(AppDbContext context) : PageModel
         }
 
         return RedirectToPage();
+    }
+
+    private async Task<ReservaGenerica?> FindOwnedAsync(int id)
+    {
+        var me = AdminUsers.CurrentUsername(User);
+        return await context.ReservasGenericas.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id && x.AdminUsername == me);
+    }
+
+    private async Task<ReservaGenerica?> FindOwnedTrackedAsync(int id)
+    {
+        var me = AdminUsers.CurrentUsername(User);
+        return await context.ReservasGenericas
+            .FirstOrDefaultAsync(x => x.Id == id && x.AdminUsername == me);
     }
 }
