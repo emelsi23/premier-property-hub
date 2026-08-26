@@ -6,6 +6,8 @@ public enum EstadoReservaGenerica
 {
     Borrador,
     EsperandoIdentidad,
+    EsperandoPago,
+    EsperandoConfirmacion,
     Completada,
     Cancelada
 }
@@ -16,7 +18,7 @@ public class ReservaGenerica
 
     public Guid PublicToken { get; set; } = Guid.NewGuid();
 
-    /// <summary>Human-readable confirmation code shown to the client, e.g. PPH-A7K29M.</summary>
+    /// <summary>Human-readable confirmation code shown to the client, e.g. RMX-A7K29M.</summary>
     [Required, StringLength(20)]
     public string CodigoConfirmacion { get; set; } = string.Empty;
 
@@ -43,7 +45,6 @@ public class ReservaGenerica
 
     public bool AceptaTerminos { get; set; }
 
-    /// <summary>PNG signature as data URL or raw bytes stored as PNG.</summary>
     public byte[]? FirmaData { get; set; }
 
     [StringLength(100)]
@@ -55,6 +56,15 @@ public class ReservaGenerica
     public string? IdentidadContentType { get; set; }
 
     public DateTime? IdentidadUploadedAt { get; set; }
+
+    public MetodoPagoReserva MetodoPago { get; set; } = MetodoPagoReserva.Ninguno;
+
+    public byte[]? PaymentProofData { get; set; }
+
+    [StringLength(100)]
+    public string? PaymentProofContentType { get; set; }
+
+    public DateTime? PaymentProofUploadedAt { get; set; }
 
     public decimal DepositAmount { get; set; } = 150m;
 

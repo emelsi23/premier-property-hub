@@ -1,0 +1,89 @@
+@page
+@model ApartamentosRenta.Pages.Admin.Reservas.PagosModel
+@{
+    ViewData["Title"] = "Métodos de pago · Reservas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-1">Métodos de pago</h1>
+        <p class="text-muted mb-0">Zelle, código de barras y monto del depósito para <code>/reserva</code></p>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" asp-page="./Index">Volver a reservas</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-success">@Model.StatusMessage</div>
+}
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+<form method="post" enctype="multipart/form-data" class="card shadow-sm border-0">
+    <div class="card-body">
+        <h2 class="h6 text-muted mb-3">Montos</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label asp-for="Input.DepositAmount" class="form-label"></label>
+                <input asp-for="Input.DepositAmount" class="form-control" step="0.01" min="1" />
+                <span asp-validation-for="Input.DepositAmount" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Input.NoShowFee" class="form-label"></label>
+                <input asp-for="Input.NoShowFee" class="form-control" step="0.01" min="0" />
+                <span asp-validation-for="Input.NoShowFee" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <h2 class="h6 text-muted mb-3">Zelle</h2>
+        <div class="form-check mb-3">
+            <input asp-for="Input.ZelleEnabled" class="form-check-input" />
+            <label asp-for="Input.ZelleEnabled" class="form-check-label"></label>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label asp-for="Input.ZelleDisplayName" class="form-label"></label>
+                <input asp-for="Input.ZelleDisplayName" class="form-control" />
+                <span asp-validation-for="Input.ZelleDisplayName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.ZelleContact" class="form-label"></label>
+                <input asp-for="Input.ZelleContact" class="form-control" placeholder="email@dominio.com o teléfono" />
+                <span asp-validation-for="Input.ZelleContact" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Input.ZelleInstructions" class="form-label"></label>
+                <textarea asp-for="Input.ZelleInstructions" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+
+        <h2 class="h6 text-muted mb-3">Código de barras</h2>
+        <div class="form-check mb-3">
+            <input asp-for="Input.BarcodeEnabled" class="form-check-input" />
+            <label asp-for="Input.BarcodeEnabled" class="form-check-label"></label>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Input.BarcodeInstructions" class="form-label"></label>
+            <textarea asp-for="Input.BarcodeInstructions" class="form-control" rows="2"></textarea>
+        </div>
+        @if (Model.HasBarcodeImage)
+        {
+            <div class="mb-3">
+                <p class="small text-muted mb-2">Imagen actual:</p>
+                <img src="?handler=Barcode" alt="Código de barras" style="max-height:140px;border:1px solid #dee2e6;border-radius:8px;padding:8px;background:#fff;" />
+                <div class="form-check mt-2">
+                    <input asp-for="Input.RemoveBarcodeImage" class="form-check-input" />
+                    <label asp-for="Input.RemoveBarcodeImage" class="form-check-label"></label>
+                </div>
+            </div>
+        }
+        <div class="mb-4">
+            <label asp-for="Input.BarcodeImage" class="form-label"></label>
+            <input asp-for="Input.BarcodeImage" class="form-control" type="file" accept="image/*" />
+            <div class="form-text">JPG o PNG · máx. 8 MB. Se muestra al cliente en el modal de pago.</div>
+            <span asp-validation-for="Input.BarcodeImage" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </div>
+</form>

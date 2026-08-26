@@ -39,6 +39,17 @@ public class IndexModel(AppDbContext context) : PageModel
         return File(r.IdentidadData, r.IdentidadContentType ?? "image/jpeg");
     }
 
+    public async Task<IActionResult> OnGetComprobanteAsync(int id)
+    {
+        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (r?.PaymentProofData is null || r.PaymentProofData.Length == 0)
+        {
+            return NotFound();
+        }
+
+        return File(r.PaymentProofData, r.PaymentProofContentType ?? "image/jpeg");
+    }
+
     public async Task<IActionResult> OnPostCancelAsync(int id)
     {
         var r = await context.ReservasGenericas.FindAsync(id);

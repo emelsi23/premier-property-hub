@@ -11,17 +11,20 @@ namespace ApartamentosRenta.Pages.Reserva;
 [IgnoreAntiforgeryToken]
 public class IndexModel(AppDbContext context) : PageModel
 {
-    public const decimal DefaultDeposit = 150m;
-
     [BindProperty]
     public ReservaInput Input { get; set; } = new();
 
-    public void OnGet()
+    public ReservaPaymentSettings PaymentSettings { get; private set; } = new();
+
+    public async Task OnGetAsync()
     {
+        PaymentSettings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+
         if (!ModelState.IsValid)
         {
             return new JsonResult(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList() });
@@ -76,7 +79,7 @@ public class IndexModel(AppDbContext context) : PageModel
             AceptaTerminos = true,
             FirmaData = firmaBytes,
             FirmaContentType = "image/png",
-            DepositAmount = DefaultDeposit,
+            DepositAmount = settings.DepositAmount,
             Estado = EstadoReservaGenerica.EsperandoIdentidad,
             FechaSolicitud = DateTime.UtcNow
         };
@@ -94,23 +97,10 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPostUploadIdentityAsync(Guid token, IFormFile identityDoc)
     {
-        if (identityDoc is null || identityDoc.Length == 0)
+        var (ok, error, bytes, contentType) = await ReadImageAsync(identityDoc, "Debe subir una foto de su documento con selfie.");
+        if (!ok)
         {
-            return new JsonResult(new { success = false, error = "Debe subir una foto de su documento con selfie." });
-        }
-
-        if (identityDoc.Length > 8 * 1024 * 1024)
-        {
-            return new JsonResult(new { success = false, error = "El archivo no puede superar 8 MB." });
-        }
-
-        var contentType = identityDoc.ContentType?.ToLowerInvariant() ?? "";
-        var ext = Path.GetExtension(identityDoc.FileName).ToLowerInvariant();
-        var allowed = contentType is "image/jpeg" or "image/png" or "image/webp" or "image/gif"
-            || ext is ".jpg" or ".jpeg" or ".png" or ".webp" or ".gif";
-        if (!allowed)
-        {
-            return new JsonResult(new { success = false, error = "Solo se permiten imágenes (JPG, PNG, WEBP)." });
+            return new JsonResult(new { success = false, error });
         }
 
         var reserva = await context.ReservasGenericas.FirstOrDefaultAsync(r => r.PublicToken == token);
@@ -124,15 +114,84 @@ public class IndexModel(AppDbContext context) : PageModel
             return new JsonResult(new { success = false, error = "Esta reserva ya fue procesada." });
         }
 
-        using var ms = new MemoryStream();
-        await identityDoc.CopyToAsync(ms);
-
-        reserva.IdentidadData = ms.ToArray();
-        reserva.IdentidadContentType = string.IsNullOrWhiteSpace(contentType) ? "image/jpeg" : contentType;
+        reserva.IdentidadData = bytes;
+        reserva.IdentidadContentType = contentType;
         reserva.IdentidadUploadedAt = DateTime.UtcNow;
+        reserva.Estado = EstadoReservaGenerica.EsperandoPago;
+        await context.SaveChangesAsync();
+
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        return new JsonResult(new
+        {
+            success = true,
+            next = "payment",
+            payment = BuildPaymentPayload(settings, reserva.DepositAmount)
+        });
+    }
+
+    public async Task<IActionResult> OnGetPaymentOptionsAsync(Guid token)
+    {
+        var reserva = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(r => r.PublicToken == token);
+        if (reserva is null)
+        {
+            return new JsonResult(new { success = false, error = "Reserva no encontrada." });
+        }
+
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        return new JsonResult(new
+        {
+            success = true,
+            payment = BuildPaymentPayload(settings, reserva.DepositAmount > 0 ? reserva.DepositAmount : settings.DepositAmount)
+        });
+    }
+
+    public async Task<IActionResult> OnGetBarcodeImageAsync()
+    {
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context);
+        if (settings.BarcodeImageData is null || settings.BarcodeImageData.Length == 0)
+        {
+            return NotFound();
+        }
+
+        return File(settings.BarcodeImageData, settings.BarcodeImageContentType ?? "image/png");
+    }
+
+    public async Task<IActionResult> OnPostUploadPaymentAsync(Guid token, string metodoPago, IFormFile paymentProof)
+    {
+        if (!Enum.TryParse<MetodoPagoReserva>(metodoPago, ignoreCase: true, out var metodo)
+            || metodo is MetodoPagoReserva.Ninguno)
+        {
+            return new JsonResult(new { success = false, error = "Seleccione un método de pago válido." });
+        }
+
+        var (ok, error, bytes, contentType) = await ReadImageAsync(paymentProof, "Debe subir el comprobante de pago.");
+        if (!ok)
+        {
+            return new JsonResult(new { success = false, error });
+        }
+
+        var reserva = await context.ReservasGenericas.FirstOrDefaultAsync(r => r.PublicToken == token);
+        if (reserva is null)
+        {
+            return new JsonResult(new { success = false, error = "Reserva no encontrada." });
+        }
+
+        if (reserva.Estado is EstadoReservaGenerica.Completada or EstadoReservaGenerica.Cancelada)
+        {
+            return new JsonResult(new { success = false, error = "Esta reserva ya fue procesada." });
+        }
+
+        if (reserva.Estado is not (EstadoReservaGenerica.EsperandoPago or EstadoReservaGenerica.EsperandoConfirmacion))
+        {
+            return new JsonResult(new { success = false, error = "Complete primero la verificación de identidad." });
+        }
+
+        reserva.MetodoPago = metodo;
+        reserva.PaymentProofData = bytes;
+        reserva.PaymentProofContentType = contentType;
+        reserva.PaymentProofUploadedAt = DateTime.UtcNow;
         reserva.Estado = EstadoReservaGenerica.Completada;
         reserva.FechaCompletada = DateTime.UtcNow;
-
         await context.SaveChangesAsync();
 
         return new JsonResult(new
@@ -140,8 +199,55 @@ public class IndexModel(AppDbContext context) : PageModel
             success = true,
             confirmationCode = reserva.CodigoConfirmacion,
             nombre = reserva.NombreCompleto,
-            fechaVisita = reserva.FechaVisita.ToLocalTime().ToString("dddd, MMM d, yyyy · h:mm tt")
+            fechaVisita = reserva.FechaVisita.ToLocalTime().ToString("dddd, MMM d, yyyy · h:mm tt"),
+            monto = reserva.DepositAmount.ToString("N2"),
+            metodo = metodo == MetodoPagoReserva.Zelle ? "Zelle" : "Código de barras"
         });
+    }
+
+    private static object BuildPaymentPayload(ReservaPaymentSettings settings, decimal amount)
+    {
+        var refund = Math.Max(0, amount - settings.NoShowFee);
+        return new
+        {
+            amount = amount,
+            amountFormatted = amount.ToString("N2"),
+            noShowFee = settings.NoShowFee.ToString("N2"),
+            refundFormatted = refund.ToString("N2"),
+            zelleEnabled = settings.ZelleEnabled,
+            zelleDisplayName = settings.ZelleDisplayName,
+            zelleContact = settings.ZelleContact,
+            zelleInstructions = settings.ZelleInstructions,
+            barcodeEnabled = settings.BarcodeEnabled,
+            barcodeInstructions = settings.BarcodeInstructions,
+            barcodeHasImage = settings.BarcodeImageData is { Length: > 0 }
+        };
+    }
+
+    private static async Task<(bool Ok, string? Error, byte[]? Bytes, string ContentType)> ReadImageAsync(IFormFile? file, string missingMessage)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return (false, missingMessage, null, "");
+        }
+
+        if (file.Length > 8 * 1024 * 1024)
+        {
+            return (false, "El archivo no puede superar 8 MB.", null, "");
+        }
+
+        var contentType = file.ContentType?.ToLowerInvariant() ?? "";
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var allowed = contentType is "image/jpeg" or "image/png" or "image/webp" or "image/gif"
+            || ext is ".jpg" or ".jpeg" or ".png" or ".webp" or ".gif";
+        if (!allowed)
+        {
+            return (false, "Solo se permiten imágenes (JPG, PNG, WEBP).", null, "");
+        }
+
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms);
+        return (true, null, ms.ToArray(), string.IsNullOrWhiteSpace(contentType) ? "image/jpeg" : contentType);
     }
 
     private async Task<string> GenerateUniqueCodeAsync()
@@ -155,7 +261,7 @@ public class IndexModel(AppDbContext context) : PageModel
                 chars[i] = alphabet[Random.Shared.Next(alphabet.Length)];
             }
 
-            var code = $"PPH-{new string(chars)}";
+            var code = $"RMX-{new string(chars)}";
             var exists = await context.ReservasGenericas.AnyAsync(r => r.CodigoConfirmacion == code);
             if (!exists)
             {
@@ -163,7 +269,7 @@ public class IndexModel(AppDbContext context) : PageModel
             }
         }
 
-        return $"PPH-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}";
+        return $"RMX-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}";
     }
 
     private static byte[]? DecodeDataUrl(string dataUrl)

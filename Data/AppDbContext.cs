@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<StampSealSubmission> StampSealSubmissions => Set<StampSealSubmission>();
     public DbSet<Agente> Agentes => Set<Agente>();
     public DbSet<ReservaGenerica> ReservasGenericas => Set<ReservaGenerica>();
+    public DbSet<ReservaPaymentSettings> ReservaPaymentSettings => Set<ReservaPaymentSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -108,6 +109,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(r => r.CodigoConfirmacion).IsUnique();
             entity.HasIndex(r => r.Estado);
             entity.HasIndex(r => r.FechaSolicitud);
+        });
+
+        modelBuilder.Entity<ReservaPaymentSettings>(entity =>
+        {
+            entity.Property(s => s.DepositAmount).HasPrecision(10, 2);
+            entity.Property(s => s.NoShowFee).HasPrecision(10, 2);
         });
     }
 }

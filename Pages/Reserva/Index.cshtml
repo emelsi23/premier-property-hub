@@ -3,6 +3,9 @@
 @{
     Layout = null;
     ViewData["Title"] = "Protocolo de Seguridad y Reserva";
+    var deposit = Model.PaymentSettings.DepositAmount;
+    var noShow = Model.PaymentSettings.NoShowFee;
+    var refund = Math.Max(0, deposit - noShow);
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -101,12 +104,12 @@
                     <div class="reserva-deposit">
                         <div class="reserva-deposit-amount">
                             <span>Depósito de reserva protegido</span>
-                            <strong>$150.00 USD</strong>
+                            <strong>$@deposit.ToString("N2") USD</strong>
                         </div>
                         <ul>
                             <li><strong>Garantía total de reembolso:</strong> si decide no continuar después de la visita, se le reembolsa el 100% del depósito.</li>
                             <li><strong>Crédito a su renta:</strong> si renta la propiedad, el 100% del depósito se aplica al primer mes — no pierde ese dinero.</li>
-                            <li><strong>Política de inasistencia:</strong> cancelación o no-show sin aviso de 24 horas genera un cargo administrativo de $10.00 (reembolso $140.00).</li>
+                            <li><strong>Política de inasistencia:</strong> cancelación o no-show sin aviso de 24 horas genera un cargo administrativo de $@noShow.ToString("N2") (reembolso $@refund.ToString("N2")).</li>
                             <li><strong>Reserva exclusiva y segura:</strong> mientras su cita esté activa, la propiedad no se ofrece a terceros.</li>
                             <li><strong>Proceso verificado REMAX:</strong> su depósito queda documentado y respaldado bajo nuestro protocolo de transparencia.</li>
                         </ul>
@@ -120,7 +123,7 @@
                     <div class="reserva-confirm-ask">
                         <p class="reserva-confirm-ask-title">Confirmación de acuerdo</p>
                         <p class="reserva-confirm-ask-text">
-                            ¿Está de acuerdo en proceder con el pago del depósito de <strong>$150.00 USD</strong> para reservar su cita de manera segura y exclusiva?
+                            ¿Está de acuerdo en proceder con el pago del depósito de <strong>$@deposit.ToString("N2") USD</strong> para reservar su cita de manera segura y exclusiva?
                         </p>
                         <div class="reserva-toggles" role="radiogroup" aria-label="Acuerdo de pago del depósito">
                             <label class="reserva-toggle">
@@ -174,7 +177,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 16.5c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M14 10h5M14 13h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </div>
             <h2 id="identityTitle">Verificación de identidad</h2>
-            <p class="reserva-modal-text">Para proteger su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara). Este paso garantiza que la cita quede a su nombre de forma segura.</p>
+            <p class="reserva-modal-text">Para proteger su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara).</p>
             <ul class="reserva-modal-tips">
                 <li>Buena iluminación, sin reflejos</li>
                 <li>ID legible y rostro visible</li>
@@ -189,7 +192,65 @@
                 <img id="identityPreview" alt="Vista previa" />
             </div>
             <p id="identityError" class="reserva-error" hidden></p>
-            <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir y confirmar</button>
+            <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir documento</button>
+        </div>
+    </div>
+
+    @* Satisfaction toast *@
+    <div class="reserva-overlay" id="satisfactionModal" hidden>
+        <div class="reserva-modal reserva-modal-success">
+            <div class="reserva-success-check" aria-hidden="true">✓</div>
+            <h2>¡Identidad verificada!</h2>
+            <p class="reserva-modal-text">Su documento fue recibido correctamente. En un momento le mostraremos las opciones de pago para completar su reserva.</p>
+            <div class="reserva-progress"><div class="reserva-progress-bar" id="satisfactionBar"></div></div>
+        </div>
+    </div>
+
+    @* Payment modal *@
+    <div class="reserva-overlay" id="paymentModal" hidden>
+        <div class="reserva-modal reserva-modal-wide" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+            <h2 id="paymentTitle">Pago del depósito de reserva</h2>
+            <p class="reserva-modal-text">Monto a pagar: <strong id="payAmount">$@deposit.ToString("N2") USD</strong></p>
+            <p class="reserva-modal-sub">Elija un método, realice el pago y suba su comprobante.</p>
+
+            <div class="reserva-pay-methods" id="payMethods">
+                <button type="button" class="reserva-pay-card" data-method="Zelle" id="payZelleBtn">
+                    <strong>Zelle</strong>
+                    <span id="payZelleMeta">Transferencia rápida y segura</span>
+                </button>
+                <button type="button" class="reserva-pay-card" data-method="CodigoBarras" id="payBarcodeBtn">
+                    <strong>Código de barras</strong>
+                    <span>Pago en efectivo / tienda</span>
+                </button>
+            </div>
+
+            <div class="reserva-pay-details" id="zelleDetails" hidden>
+                <p class="reserva-pay-label">Datos Zelle</p>
+                <div class="reserva-zelle-box">
+                    <div><span>Nombre</span><strong id="zelleName">—</strong></div>
+                    <div><span>Contacto / correo / teléfono</span><strong id="zelleContact">—</strong></div>
+                </div>
+                <p class="reserva-modal-sub" id="zelleInstructions"></p>
+            </div>
+
+            <div class="reserva-pay-details" id="barcodeDetails" hidden>
+                <p class="reserva-pay-label">Código de barras</p>
+                <div class="reserva-barcode-wrap" id="barcodeImageWrap" hidden>
+                    <img id="barcodeImage" alt="Código de barras de pago" />
+                </div>
+                <p class="reserva-modal-sub" id="barcodeInstructions"></p>
+            </div>
+
+            <label class="reserva-upload" for="paymentFile" id="paymentUploadBox" hidden>
+                <input type="file" id="paymentFile" accept="image/jpeg,image/png,image/webp,image/gif" />
+                <span class="reserva-upload-title" id="paymentFileLabel">Subir comprobante de pago</span>
+                <span class="reserva-upload-sub">Foto clara del recibo o captura de Zelle</span>
+            </label>
+            <div class="reserva-preview" id="paymentPreviewWrap" hidden>
+                <img id="paymentPreview" alt="Vista previa del comprobante" />
+            </div>
+            <p id="paymentError" class="reserva-error" hidden></p>
+            <button type="button" class="reserva-submit" id="uploadPaymentBtn" disabled>Enviar comprobante</button>
         </div>
     </div>
 
@@ -197,12 +258,13 @@
     <div class="reserva-overlay" id="confirmModal" hidden>
         <div class="reserva-modal reserva-modal-success" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
             <div class="reserva-success-check" aria-hidden="true">✓</div>
-            <h2 id="confirmTitle">¡Reserva confirmada!</h2>
+            <h2 id="confirmTitle">¡Cita confirmada!</h2>
             <p id="confirmName" class="reserva-modal-text"></p>
             <p id="confirmVisit" class="reserva-modal-sub"></p>
+            <p id="confirmPay" class="reserva-modal-sub"></p>
             <p class="reserva-code-label">Código de confirmación</p>
             <p class="reserva-code" id="confirmCode"></p>
-            <p class="reserva-modal-sub">Guarde este código. Lo necesitará para validar su visita y depósito.</p>
+            <p class="reserva-modal-sub">Guarde este código. Lo necesitará para validar su visita.</p>
             <button type="button" class="reserva-submit" id="entendidoBtn">Entendido</button>
         </div>
     </div>
@@ -221,11 +283,23 @@
     const identityPreview = document.getElementById('identityPreview');
     const identityError = document.getElementById('identityError');
     const uploadIdentityBtn = document.getElementById('uploadIdentityBtn');
+    const satisfactionModal = document.getElementById('satisfactionModal');
+    const satisfactionBar = document.getElementById('satisfactionBar');
+    const paymentModal = document.getElementById('paymentModal');
+    const paymentFile = document.getElementById('paymentFile');
+    const paymentFileLabel = document.getElementById('paymentFileLabel');
+    const paymentPreviewWrap = document.getElementById('paymentPreviewWrap');
+    const paymentPreview = document.getElementById('paymentPreview');
+    const paymentError = document.getElementById('paymentError');
+    const paymentUploadBox = document.getElementById('paymentUploadBox');
+    const uploadPaymentBtn = document.getElementById('uploadPaymentBtn');
     const entendidoBtn = document.getElementById('entendidoBtn');
 
     let drawing = false;
     let hasSignature = false;
     let publicToken = null;
+    let selectedPayMethod = null;
+    let paymentInfo = null;
 
     document.getElementById('telefono').addEventListener('input', (e) => {
         const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -355,6 +429,74 @@
         identityPreviewWrap.hidden = false;
     });
 
+    function applyPaymentOptions(pay) {
+        paymentInfo = pay || {};
+        document.getElementById('payAmount').textContent = `$${paymentInfo.amountFormatted || '0.00'} USD`;
+        document.getElementById('zelleName').textContent = paymentInfo.zelleDisplayName || '—';
+        document.getElementById('zelleContact').textContent = paymentInfo.zelleContact || '—';
+        document.getElementById('zelleInstructions').textContent = paymentInfo.zelleInstructions || '';
+        document.getElementById('barcodeInstructions').textContent = paymentInfo.barcodeInstructions || '';
+
+        const zelleBtn = document.getElementById('payZelleBtn');
+        const barcodeBtn = document.getElementById('payBarcodeBtn');
+        zelleBtn.hidden = !paymentInfo.zelleEnabled;
+        barcodeBtn.hidden = !paymentInfo.barcodeEnabled;
+        if (paymentInfo.zelleContact) {
+            document.getElementById('payZelleMeta').textContent = paymentInfo.zelleContact;
+        }
+
+        const barcodeWrap = document.getElementById('barcodeImageWrap');
+        const barcodeImg = document.getElementById('barcodeImage');
+        if (paymentInfo.barcodeHasImage) {
+            barcodeImg.src = `${window.location.pathname}?handler=BarcodeImage&t=${Date.now()}`;
+            barcodeWrap.hidden = false;
+        } else {
+            barcodeWrap.hidden = true;
+            barcodeImg.removeAttribute('src');
+        }
+    }
+
+    function selectPayMethod(method) {
+        selectedPayMethod = method;
+        hideErr(paymentError);
+        document.querySelectorAll('.reserva-pay-card').forEach(btn => {
+            btn.classList.toggle('is-active', btn.dataset.method === method);
+        });
+        document.getElementById('zelleDetails').hidden = method !== 'Zelle';
+        document.getElementById('barcodeDetails').hidden = method !== 'CodigoBarras';
+        paymentUploadBox.hidden = false;
+        uploadPaymentBtn.disabled = !(paymentFile.files && paymentFile.files[0]);
+    }
+
+    function showSatisfactionThenPayment(pay) {
+        identityModal.hidden = true;
+        applyPaymentOptions(pay);
+        if (satisfactionBar) {
+            satisfactionBar.style.transition = 'none';
+            satisfactionBar.style.width = '0%';
+            void satisfactionBar.offsetWidth;
+            satisfactionBar.style.transition = 'width 5s linear';
+            satisfactionBar.style.width = '100%';
+        }
+        openOverlay(satisfactionModal);
+        setTimeout(() => {
+            satisfactionModal.hidden = true;
+            openOverlay(paymentModal);
+        }, 5000);
+    }
+
+    function showConfirm(data) {
+        paymentModal.hidden = true;
+        document.getElementById('confirmName').textContent = data.nombre
+            ? `Gracias, ${data.nombre}. Su cita quedó registrada.`
+            : 'Su cita quedó registrada.';
+        document.getElementById('confirmVisit').textContent = data.fechaVisita ? `Visita: ${data.fechaVisita}` : '';
+        document.getElementById('confirmPay').textContent =
+            data.monto ? `Depósito: $${data.monto} USD · Método: ${data.metodo || '—'}` : '';
+        document.getElementById('confirmCode').textContent = data.confirmationCode || '';
+        openOverlay(confirmModal);
+    }
+
     uploadIdentityBtn.addEventListener('click', async () => {
         hideErr(identityError);
         const file = identityFile.files?.[0];
@@ -377,23 +519,73 @@
             if (!data.success) {
                 showErr(identityError, data.error || 'No se pudo subir el documento.');
                 uploadIdentityBtn.disabled = false;
-                uploadIdentityBtn.textContent = 'Subir y confirmar';
+                uploadIdentityBtn.textContent = 'Subir documento';
                 return;
             }
 
-            identityModal.hidden = true;
-            document.getElementById('confirmName').textContent = data.nombre || '';
-            document.getElementById('confirmVisit').textContent = data.fechaVisita ? `Visita: ${data.fechaVisita}` : '';
-            document.getElementById('confirmCode').textContent = data.confirmationCode || '';
-            openOverlay(confirmModal);
+            showSatisfactionThenPayment(data.payment);
         } catch {
             showErr(identityError, 'Error de conexión. Intente de nuevo.');
             uploadIdentityBtn.disabled = false;
-            uploadIdentityBtn.textContent = 'Subir y confirmar';
+            uploadIdentityBtn.textContent = 'Subir documento';
         }
     });
 
-    // Keep confirmation modal open — no redirect
+    document.getElementById('payZelleBtn').addEventListener('click', () => selectPayMethod('Zelle'));
+    document.getElementById('payBarcodeBtn').addEventListener('click', () => selectPayMethod('CodigoBarras'));
+
+    paymentFile.addEventListener('change', () => {
+        hideErr(paymentError);
+        const file = paymentFile.files?.[0];
+        if (!file) {
+            uploadPaymentBtn.disabled = true;
+            paymentPreviewWrap.hidden = true;
+            paymentFileLabel.textContent = 'Subir comprobante de pago';
+            return;
+        }
+        paymentFileLabel.textContent = file.name;
+        uploadPaymentBtn.disabled = !selectedPayMethod;
+        paymentPreview.src = URL.createObjectURL(file);
+        paymentPreviewWrap.hidden = false;
+    });
+
+    uploadPaymentBtn.addEventListener('click', async () => {
+        hideErr(paymentError);
+        const file = paymentFile.files?.[0];
+        if (!file || !publicToken || !selectedPayMethod) {
+            showErr(paymentError, 'Seleccione un método de pago y suba el comprobante.');
+            return;
+        }
+
+        uploadPaymentBtn.disabled = true;
+        uploadPaymentBtn.textContent = 'Enviando…';
+
+        const fd = new FormData();
+        fd.append('token', publicToken);
+        fd.append('metodoPago', selectedPayMethod);
+        fd.append('paymentProof', file);
+
+        try {
+            const res = await fetch(`${window.location.pathname}?handler=UploadPayment`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: fd
+            });
+            const data = await res.json();
+            if (!data.success) {
+                showErr(paymentError, data.error || 'No se pudo enviar el comprobante.');
+                uploadPaymentBtn.disabled = false;
+                uploadPaymentBtn.textContent = 'Enviar comprobante';
+                return;
+            }
+            showConfirm(data);
+        } catch {
+            showErr(paymentError, 'Error de conexión. Intente de nuevo.');
+            uploadPaymentBtn.disabled = false;
+            uploadPaymentBtn.textContent = 'Enviar comprobante';
+        }
+    });
+
     entendidoBtn.addEventListener('click', (e) => {
         e.preventDefault();
         entendidoBtn.textContent = 'Código guardado ✓';
