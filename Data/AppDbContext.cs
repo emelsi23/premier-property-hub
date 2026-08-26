@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<StampSealContract> StampSealContracts => Set<StampSealContract>();
     public DbSet<StampSealSubmission> StampSealSubmissions => Set<StampSealSubmission>();
     public DbSet<Agente> Agentes => Set<Agente>();
+    public DbSet<ReservaGenerica> ReservasGenericas => Set<ReservaGenerica>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -98,6 +99,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(a => a.Slug).IsUnique();
             entity.HasIndex(a => a.Activo);
             entity.HasIndex(a => a.CodigoVerificacion);
+        });
+
+        modelBuilder.Entity<ReservaGenerica>(entity =>
+        {
+            entity.Property(r => r.DepositAmount).HasPrecision(10, 2);
+            entity.HasIndex(r => r.PublicToken).IsUnique();
+            entity.HasIndex(r => r.CodigoConfirmacion).IsUnique();
+            entity.HasIndex(r => r.Estado);
+            entity.HasIndex(r => r.FechaSolicitud);
         });
     }
 }

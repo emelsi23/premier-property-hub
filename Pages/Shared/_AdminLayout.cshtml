@@ -2,6 +2,7 @@
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
     var isProperties = currentPage == "/Admin/Index" || currentPage.StartsWith("/Admin/Create", StringComparison.Ordinal) || currentPage.StartsWith("/Admin/Edit", StringComparison.Ordinal);
     var isAppointments = currentPage.StartsWith("/Admin/Appointments", StringComparison.OrdinalIgnoreCase);
+    var isReservas = currentPage.StartsWith("/Admin/Reservas", StringComparison.OrdinalIgnoreCase);
     var isContract = currentPage.StartsWith("/Admin/Contract", StringComparison.OrdinalIgnoreCase);
     var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
     var isAgents = currentPage.StartsWith("/Admin/Agents", StringComparison.OrdinalIgnoreCase);
@@ -23,6 +24,7 @@
             <div class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
                 <a class="nav-link @(isProperties ? "active fw-semibold" : "")" asp-page="/Admin/Index">Propiedades</a>
                 <a class="nav-link @(isAppointments ? "active fw-semibold" : "")" asp-page="/Admin/Appointments/Index">Citas</a>
+                <a class="nav-link @(isReservas ? "active fw-semibold" : "")" asp-page="/Admin/Reservas/Index">Reservas</a>
                 <a class="nav-link @(isContract ? "active fw-semibold" : "")" asp-page="/Admin/Contract/Submissions">Firmas de contrato</a>
                 <a class="nav-link @(isStampSeals ? "active fw-semibold" : "")" asp-page="/Admin/StampSeals/Submissions">Firmas estampillas</a>
                 <a class="nav-link @(isAgents ? "active fw-semibold" : "")" asp-page="/Admin/Agents/Index">Agentes</a>

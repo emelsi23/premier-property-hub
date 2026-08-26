@@ -1,0 +1,73 @@
+@page
+@model ApartamentosRenta.Pages.Admin.Reservas.IndexModel
+@{
+    ViewData["Title"] = "Reservas genéricas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-1">Protocolos de reserva</h1>
+        <p class="text-muted mb-0">Formularios genéricos enviados desde /reserva</p>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="/reserva" target="_blank">Abrir formulario público</a>
+</div>
+
+@if (Model.Reservas.Count == 0)
+{
+    <div class="alert alert-light border">Aún no hay reservas genéricas.</div>
+}
+else
+{
+    <div class="list-group shadow-sm">
+        @foreach (var r in Model.Reservas)
+        {
+            var badge = r.Estado switch
+            {
+                ApartamentosRenta.Models.EstadoReservaGenerica.Completada => "bg-success",
+                ApartamentosRenta.Models.EstadoReservaGenerica.EsperandoIdentidad => "bg-warning text-dark",
+                ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada => "bg-secondary",
+                _ => "bg-primary"
+            };
+            <div class="list-group-item py-3">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <div class="fw-semibold">@r.NombreCompleto</div>
+                        <div class="small text-muted">@r.Email · @r.Telefono</div>
+                        <div class="small mt-1">
+                            Visita: <strong>@r.FechaVisita.ToLocalTime().ToString("g")</strong>
+                            · Depósito: $@r.DepositAmount.ToString("0.00")
+                        </div>
+                        <div class="small mt-1">
+                            Código: <code class="fw-bold">@r.CodigoConfirmacion</code>
+                            · Ocupantes: @r.OcupantesTotales
+                            · Hijos: @(r.PoseeHijos ? "Sí" : "No")
+                            · Vehículos: @r.CantidadVehiculos
+                            · Mascotas: @(r.PoseeMascotas ? "Sí" : "No")
+                        </div>
+                        <div class="small text-muted mt-1">Enviado: @r.FechaSolicitud.ToLocalTime().ToString("g")</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge @badge">@r.Estado</span>
+                        <div class="mt-2 d-flex flex-wrap gap-1 justify-content-end">
+                            @if (r.FirmaData is { Length: > 0 })
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="?handler=Firma&id=@r.Id" target="_blank">Ver firma</a>
+                            }
+                            @if (r.IdentidadData is { Length: > 0 })
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="?handler=Identidad&id=@r.Id" target="_blank">Ver ID + selfie</a>
+                            }
+                            @if (r.Estado != ApartamentosRenta.Models.EstadoReservaGenerica.Cancelada)
+                            {
+                                <form method="post" asp-page-handler="Cancel" class="d-inline">
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Cancelar esta reserva?')">Cancelar</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,341 @@
+@page "/reserva"
+@model ApartamentosRenta.Pages.Reserva.IndexModel
+@{
+    ViewData["Title"] = "Protocolo de Seguridad y Reserva";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
+
+<div class="reserva-page">
+    <div class="reserva-doc">
+        <header class="reserva-doc-header">
+            <p class="reserva-doc-brand">Premier Property Hub</p>
+            <p class="reserva-doc-by">By Zillow · Departamento Jurídico y Gestión de Propiedades</p>
+            <p class="reserva-doc-code">Código de Documento: PPH-ELITE-2026-V</p>
+            <h1 class="reserva-doc-title">PROTOCOLO DE SEGURIDAD Y RESERVA DE PROPIEDAD</h1>
+        </header>
+
+        <form id="reservaForm" class="reserva-form" novalidate>
+            <section class="reserva-section">
+                <h2 class="reserva-section-title">1. INFORMACIÓN DEL SOLICITANTE (EL CLIENTE)</h2>
+                <div class="reserva-fields">
+                    <label class="reserva-field">
+                        <span>NOMBRE COMPLETO</span>
+                        <input type="text" name="Input.NombreCompleto" id="nombreCompleto" maxlength="160" required autocomplete="name" />
+                    </label>
+                    <label class="reserva-field">
+                        <span>TELÉFONO DE CONTACTO</span>
+                        <input type="tel" name="Input.Telefono" id="telefono" maxlength="14" placeholder="(945) 384-6408" required autocomplete="tel" />
+                    </label>
+                    <label class="reserva-field">
+                        <span>CORREO ELECTRÓNICO</span>
+                        <input type="email" name="Input.Email" id="email" maxlength="256" required autocomplete="email" />
+                    </label>
+                    <div class="reserva-field-row">
+                        <label class="reserva-field">
+                            <span>FECHA DE VISITA</span>
+                            <input type="date" name="Input.FechaVisita" id="fechaVisita" required />
+                        </label>
+                        <label class="reserva-field">
+                            <span>HORA</span>
+                            <input type="time" name="Input.HoraVisita" id="horaVisita" value="10:00" required />
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reserva-section">
+                <h2 class="reserva-section-title">2. REQUERIMIENTOS DE RESIDENCIA</h2>
+                <div class="reserva-fields">
+                    <label class="reserva-field">
+                        <span>Cantidad de Ocupantes Totales</span>
+                        <input type="number" name="Input.OcupantesTotales" id="ocupantes" min="1" max="20" value="1" required />
+                    </label>
+                    <fieldset class="reserva-yesno">
+                        <legend>¿Posee hijos?</legend>
+                        <label><input type="radio" name="Input.PoseeHijos" value="true" /> Sí</label>
+                        <label><input type="radio" name="Input.PoseeHijos" value="false" checked /> No</label>
+                    </fieldset>
+                    <label class="reserva-field">
+                        <span>Cantidad de vehículos</span>
+                        <input type="number" name="Input.CantidadVehiculos" id="vehiculos" min="0" max="10" value="0" required />
+                    </label>
+                    <fieldset class="reserva-yesno">
+                        <legend>¿Posee mascotas?</legend>
+                        <label><input type="radio" name="Input.PoseeMascotas" value="true" /> Sí</label>
+                        <label><input type="radio" name="Input.PoseeMascotas" value="false" checked /> No</label>
+                    </fieldset>
+                </div>
+                <p class="reserva-note">La veracidad de estos datos es indispensable para la validación legal del perfil del inquilino.</p>
+            </section>
+
+            <section class="reserva-section">
+                <h2 class="reserva-section-title">3. TÉRMINOS DEL DEPÓSITO DE RESERVA</h2>
+                <div class="reserva-terms-box">
+                    <p><strong>Monto del depósito:</strong> $125.00 USD</p>
+                    <ul>
+                        <li><strong>Garantía de reembolso:</strong> Si el cliente no procede tras la visita, se reembolsa el 100% del depósito.</li>
+                        <li><strong>Crédito a renta:</strong> Si renta la propiedad, el 100% del depósito se aplica al primer mes.</li>
+                        <li><strong>Política de inasistencia:</strong> Cancelación o no-show sin aviso de 24h genera un cargo administrativo de $5.00 (reembolso $120.00).</li>
+                        <li><strong>Seguridad:</strong> La propiedad no se mostrará a terceros durante el período de reserva del cliente.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="reserva-section">
+                <h2 class="reserva-section-title">4. DECLARACIÓN DE LEGALIDAD Y GARANTÍA DE FONDO</h2>
+                <p class="reserva-legal">
+                    El presente protocolo forma parte de los procedimientos administrativos internos debidamente estructurados bajo principios de legalidad y transparencia en gestión inmobiliaria.
+                </p>
+                <p class="reserva-legal">
+                    Ningún pago realizado bajo este acuerdo se pierde fuera de las condiciones previamente estipuladas, contando el cliente con respaldo documental y garantía de reembolso conforme a los términos establecidos.
+                </p>
+
+                <div class="reserva-sign-block">
+                    <p class="reserva-sign-label">FIRMA DEL SOLICITANTE</p>
+                    <div class="signature-pad-wrap reserva-pad">
+                        <canvas id="signaturePad" width="600" height="180" aria-label="Pad de firma"></canvas>
+                        <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Borrar</button>
+                    </div>
+                    <label class="reserva-accept">
+                        <input type="checkbox" id="aceptaTerminos" required />
+                        Acepto los términos y condiciones
+                    </label>
+                </div>
+            </section>
+
+            <p id="formError" class="reserva-error d-none"></p>
+
+            <button type="submit" class="reserva-submit" id="submitBtn">Enviar protocolo</button>
+        </form>
+
+        <footer class="reserva-doc-footer">
+            <p>Premier Property Hub © @DateTime.UtcNow.Year. Todos los derechos reservados.</p>
+            <p>Documento amparado bajo normativas de transparencia inmobiliaria.</p>
+            <p>Tel: +1 (945) 384-6408 · premier-property-hub.onrender.com</p>
+        </footer>
+    </div>
+</div>
+
+@* Modal: upload ID + selfie *@
+<div class="reserva-modal d-none" id="identityModal" role="dialog" aria-modal="true" aria-labelledby="identityTitle">
+    <div class="reserva-modal-card">
+        <h2 id="identityTitle">Verificación de identidad</h2>
+        <p>Para completar su reserva, debe suministrar una foto de su <strong>documento de identidad junto con un selfie</strong> (mismo encuadre: usted sosteniendo su ID).</p>
+        <label class="reserva-upload-box">
+            <input type="file" id="identityFile" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <span id="identityFileLabel">Seleccionar foto (ID + selfie)</span>
+        </label>
+        <div class="reserva-preview d-none" id="identityPreviewWrap">
+            <img id="identityPreview" alt="Vista previa del documento" />
+        </div>
+        <p id="identityError" class="reserva-error d-none"></p>
+        <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir y confirmar</button>
+    </div>
+</div>
+
+@* Modal: confirmation *@
+<div class="reserva-modal d-none" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="reserva-modal-card reserva-confirm-card">
+        <div class="reserva-confirm-icon" aria-hidden="true">✓</div>
+        <h2 id="confirmTitle">¡Reserva confirmada!</h2>
+        <p id="confirmName"></p>
+        <p id="confirmVisit"></p>
+        <p class="reserva-code-label">Su código de confirmación</p>
+        <p class="reserva-code" id="confirmCode"></p>
+        <p class="reserva-confirm-note">Guarde este código. Lo necesitará para validar su visita y depósito de reserva.</p>
+        <a class="reserva-submit reserva-link-btn" asp-page="/Apartamentos/Index">Ver propiedades disponibles</a>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const form = document.getElementById('reservaForm');
+    const formError = document.getElementById('formError');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    const identityModal = document.getElementById('identityModal');
+    const confirmModal = document.getElementById('confirmModal');
+    const identityFile = document.getElementById('identityFile');
+    const identityFileLabel = document.getElementById('identityFileLabel');
+    const identityPreviewWrap = document.getElementById('identityPreviewWrap');
+    const identityPreview = document.getElementById('identityPreview');
+    const identityError = document.getElementById('identityError');
+    const uploadIdentityBtn = document.getElementById('uploadIdentityBtn');
+
+    let drawing = false;
+    let hasSignature = false;
+    let publicToken = null;
+
+    // Phone mask
+    document.getElementById('telefono').addEventListener('input', (e) => {
+        let d = e.target.value.replace(/\D/g, '').slice(0, 10);
+        if (d.length >= 6) e.target.value = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+        else if (d.length >= 3) e.target.value = `(${d.slice(0,3)}) ${d.slice(3)}`;
+        else if (d.length > 0) e.target.value = `(${d}`;
+    });
+
+    // Min date = tomorrow
+    const fecha = document.getElementById('fechaVisita');
+    const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+    fecha.min = tmr.toISOString().slice(0, 10);
+    if (!fecha.value) fecha.value = fecha.min;
+
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * ratio;
+        canvas.height = rect.height * ratio;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.strokeStyle = '#1a1a1b';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+    }
+
+    function getPoint(e) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches?.[0] ?? e.changedTouches?.[0];
+        const clientX = touch ? touch.clientX : e.clientX;
+        const clientY = touch ? touch.clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDraw(e) { e.preventDefault(); drawing = true; hasSignature = true; const p = getPoint(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+    function draw(e) { if (!drawing) return; e.preventDefault(); const p = getPoint(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+    function endDraw() { drawing = false; }
+    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSignature = false; }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    document.getElementById('clearSignature').addEventListener('click', clearSignature);
+    window.addEventListener('resize', () => {
+        const data = hasSignature ? canvas.toDataURL('image/png') : null;
+        resizeCanvas();
+        if (data) {
+            const img = new Image();
+            img.onload = () => { ctx.drawImage(img, 0, 0, canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height); hasSignature = true; };
+            img.src = data;
+        }
+    });
+    resizeCanvas();
+
+    function showError(el, msg) {
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        formError.classList.add('d-none');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        if (!hasSignature) {
+            showError(formError, 'Debe firmar el protocolo antes de enviar.');
+            return;
+        }
+        if (!document.getElementById('aceptaTerminos').checked) {
+            showError(formError, 'Debe aceptar los términos y condiciones.');
+            return;
+        }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+
+        const fd = new FormData(form);
+        fd.set('Input.FirmaDataUrl', canvas.toDataURL('image/png'));
+        fd.set('Input.AceptaTerminos', 'true');
+
+        try {
+            const res = await fetch(window.location.pathname, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: fd
+            });
+            const data = await res.json();
+            if (!data.success) {
+                showError(formError, (data.errors || ['Error al guardar.']).join(' '));
+                btn.disabled = false;
+                btn.textContent = 'Enviar protocolo';
+                return;
+            }
+            publicToken = data.token;
+            identityModal.classList.remove('d-none');
+            document.body.style.overflow = 'hidden';
+        } catch {
+            showError(formError, 'Error de conexión. Intente de nuevo.');
+            btn.disabled = false;
+            btn.textContent = 'Enviar protocolo';
+        }
+    });
+
+    identityFile.addEventListener('change', () => {
+        identityError.classList.add('d-none');
+        const file = identityFile.files?.[0];
+        if (!file) {
+            uploadIdentityBtn.disabled = true;
+            identityPreviewWrap.classList.add('d-none');
+            identityFileLabel.textContent = 'Seleccionar foto (ID + selfie)';
+            return;
+        }
+        identityFileLabel.textContent = file.name;
+        uploadIdentityBtn.disabled = false;
+        const url = URL.createObjectURL(file);
+        identityPreview.src = url;
+        identityPreviewWrap.classList.remove('d-none');
+    });
+
+    uploadIdentityBtn.addEventListener('click', async () => {
+        identityError.classList.add('d-none');
+        const file = identityFile.files?.[0];
+        if (!file || !publicToken) {
+            showError(identityError, 'Seleccione una imagen válida.');
+            return;
+        }
+
+        uploadIdentityBtn.disabled = true;
+        uploadIdentityBtn.textContent = 'Subiendo…';
+
+        const fd = new FormData();
+        fd.append('token', publicToken);
+        fd.append('identityDoc', file);
+
+        try {
+            const res = await fetch(`${window.location.pathname}?handler=UploadIdentity`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: fd
+            });
+            const data = await res.json();
+            if (!data.success) {
+                showError(identityError, data.error || 'No se pudo subir el documento.');
+                uploadIdentityBtn.disabled = false;
+                uploadIdentityBtn.textContent = 'Subir y confirmar';
+                return;
+            }
+
+            identityModal.classList.add('d-none');
+            document.getElementById('confirmName').textContent = data.nombre || '';
+            document.getElementById('confirmVisit').textContent = data.fechaVisita ? `Visita: ${data.fechaVisita}` : '';
+            document.getElementById('confirmCode').textContent = data.confirmationCode || '';
+            confirmModal.classList.remove('d-none');
+        } catch {
+            showError(identityError, 'Error de conexión. Intente de nuevo.');
+            uploadIdentityBtn.disabled = false;
+            uploadIdentityBtn.textContent = 'Subir y confirmar';
+        }
+    });
+})();
+</script>
+}
