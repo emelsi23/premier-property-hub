@@ -1,155 +1,188 @@
 @page "/reserva"
 @model ApartamentosRenta.Pages.Reserva.IndexModel
 @{
+    Layout = null;
     ViewData["Title"] = "Protocolo de Seguridad y Reserva";
-    Layout = "_Layout";
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>@ViewData["Title"] — Premier Property Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
+</head>
+<body class="reserva-body">
+    <div class="reserva-shell">
+        <div class="reserva-doc">
+            <header class="reserva-doc-header">
+                <div class="reserva-brand-row">
+                    <div class="reserva-brand-mark" aria-hidden="true">PPH</div>
+                    <div>
+                        <p class="reserva-doc-brand">Premier Property Hub</p>
+                        <p class="reserva-doc-by">By Zillow · Departamento Jurídico</p>
+                    </div>
+                </div>
+                <p class="reserva-doc-code">Documento PPH-ELITE-2026-V</p>
+                <h1 class="reserva-doc-title">Protocolo de Seguridad y Reserva de Propiedad</h1>
+                <p class="reserva-doc-lead">Complete este formulario en línea. Al firmar, se le pedirá verificar su identidad con documento y selfie.</p>
+            </header>
 
-<link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
-
-<div class="reserva-page">
-    <div class="reserva-doc">
-        <header class="reserva-doc-header">
-            <p class="reserva-doc-brand">Premier Property Hub</p>
-            <p class="reserva-doc-by">By Zillow · Departamento Jurídico y Gestión de Propiedades</p>
-            <p class="reserva-doc-code">Código de Documento: PPH-ELITE-2026-V</p>
-            <h1 class="reserva-doc-title">PROTOCOLO DE SEGURIDAD Y RESERVA DE PROPIEDAD</h1>
-        </header>
-
-        <form id="reservaForm" class="reserva-form" novalidate>
-            <section class="reserva-section">
-                <h2 class="reserva-section-title">1. INFORMACIÓN DEL SOLICITANTE (EL CLIENTE)</h2>
-                <div class="reserva-fields">
-                    <label class="reserva-field">
-                        <span>NOMBRE COMPLETO</span>
-                        <input type="text" name="Input.NombreCompleto" id="nombreCompleto" maxlength="160" required autocomplete="name" />
-                    </label>
-                    <label class="reserva-field">
-                        <span>TELÉFONO DE CONTACTO</span>
-                        <input type="tel" name="Input.Telefono" id="telefono" maxlength="14" placeholder="(945) 384-6408" required autocomplete="tel" />
-                    </label>
-                    <label class="reserva-field">
-                        <span>CORREO ELECTRÓNICO</span>
-                        <input type="email" name="Input.Email" id="email" maxlength="256" required autocomplete="email" />
-                    </label>
-                    <div class="reserva-field-row">
+            <form id="reservaForm" class="reserva-form" novalidate>
+                <section class="reserva-section">
+                    <div class="reserva-section-head">
+                        <span class="reserva-step">01</span>
+                        <h2>Información del solicitante</h2>
+                    </div>
+                    <div class="reserva-grid">
+                        <label class="reserva-field reserva-field-full">
+                            <span>Nombre completo</span>
+                            <input type="text" name="Input.NombreCompleto" id="nombreCompleto" maxlength="160" required autocomplete="name" placeholder="Como aparece en su ID" />
+                        </label>
                         <label class="reserva-field">
-                            <span>FECHA DE VISITA</span>
+                            <span>Teléfono</span>
+                            <input type="tel" name="Input.Telefono" id="telefono" maxlength="14" placeholder="(945) 384-6408" required autocomplete="tel" />
+                        </label>
+                        <label class="reserva-field">
+                            <span>Correo electrónico</span>
+                            <input type="email" name="Input.Email" id="email" maxlength="256" required autocomplete="email" placeholder="correo@ejemplo.com" />
+                        </label>
+                        <label class="reserva-field">
+                            <span>Fecha de visita</span>
                             <input type="date" name="Input.FechaVisita" id="fechaVisita" required />
                         </label>
                         <label class="reserva-field">
-                            <span>HORA</span>
+                            <span>Hora</span>
                             <input type="time" name="Input.HoraVisita" id="horaVisita" value="10:00" required />
                         </label>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section class="reserva-section">
-                <h2 class="reserva-section-title">2. REQUERIMIENTOS DE RESIDENCIA</h2>
-                <div class="reserva-fields">
-                    <label class="reserva-field">
-                        <span>Cantidad de Ocupantes Totales</span>
-                        <input type="number" name="Input.OcupantesTotales" id="ocupantes" min="1" max="20" value="1" required />
-                    </label>
-                    <fieldset class="reserva-yesno">
-                        <legend>¿Posee hijos?</legend>
-                        <label><input type="radio" name="Input.PoseeHijos" value="true" /> Sí</label>
-                        <label><input type="radio" name="Input.PoseeHijos" value="false" checked /> No</label>
-                    </fieldset>
-                    <label class="reserva-field">
-                        <span>Cantidad de vehículos</span>
-                        <input type="number" name="Input.CantidadVehiculos" id="vehiculos" min="0" max="10" value="0" required />
-                    </label>
-                    <fieldset class="reserva-yesno">
-                        <legend>¿Posee mascotas?</legend>
-                        <label><input type="radio" name="Input.PoseeMascotas" value="true" /> Sí</label>
-                        <label><input type="radio" name="Input.PoseeMascotas" value="false" checked /> No</label>
-                    </fieldset>
-                </div>
-                <p class="reserva-note">La veracidad de estos datos es indispensable para la validación legal del perfil del inquilino.</p>
-            </section>
+                <section class="reserva-section">
+                    <div class="reserva-section-head">
+                        <span class="reserva-step">02</span>
+                        <h2>Requerimientos de residencia</h2>
+                    </div>
+                    <div class="reserva-grid">
+                        <label class="reserva-field">
+                            <span>Ocupantes totales</span>
+                            <input type="number" name="Input.OcupantesTotales" id="ocupantes" min="1" max="20" value="1" required />
+                        </label>
+                        <label class="reserva-field">
+                            <span>Cantidad de vehículos</span>
+                            <input type="number" name="Input.CantidadVehiculos" id="vehiculos" min="0" max="10" value="0" required />
+                        </label>
+                        <div class="reserva-toggle-group">
+                            <p class="reserva-toggle-label">¿Posee hijos?</p>
+                            <div class="reserva-toggles">
+                                <label class="reserva-toggle"><input type="radio" name="Input.PoseeHijos" value="true" /><span>Sí</span></label>
+                                <label class="reserva-toggle"><input type="radio" name="Input.PoseeHijos" value="false" checked /><span>No</span></label>
+                            </div>
+                        </div>
+                        <div class="reserva-toggle-group">
+                            <p class="reserva-toggle-label">¿Posee mascotas?</p>
+                            <div class="reserva-toggles">
+                                <label class="reserva-toggle"><input type="radio" name="Input.PoseeMascotas" value="true" /><span>Sí</span></label>
+                                <label class="reserva-toggle"><input type="radio" name="Input.PoseeMascotas" value="false" checked /><span>No</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="reserva-note">La veracidad de estos datos es indispensable para la validación legal del perfil del inquilino.</p>
+                </section>
 
-            <section class="reserva-section">
-                <h2 class="reserva-section-title">3. TÉRMINOS DEL DEPÓSITO DE RESERVA</h2>
-                <div class="reserva-terms-box">
-                    <p><strong>Monto del depósito:</strong> $125.00 USD</p>
-                    <ul>
-                        <li><strong>Garantía de reembolso:</strong> Si el cliente no procede tras la visita, se reembolsa el 100% del depósito.</li>
-                        <li><strong>Crédito a renta:</strong> Si renta la propiedad, el 100% del depósito se aplica al primer mes.</li>
-                        <li><strong>Política de inasistencia:</strong> Cancelación o no-show sin aviso de 24h genera un cargo administrativo de $5.00 (reembolso $120.00).</li>
-                        <li><strong>Seguridad:</strong> La propiedad no se mostrará a terceros durante el período de reserva del cliente.</li>
-                    </ul>
-                </div>
-            </section>
+                <section class="reserva-section">
+                    <div class="reserva-section-head">
+                        <span class="reserva-step">03</span>
+                        <h2>Términos del depósito de reserva</h2>
+                    </div>
+                    <div class="reserva-deposit">
+                        <div class="reserva-deposit-amount">
+                            <span>Monto del depósito</span>
+                            <strong>$125.00 USD</strong>
+                        </div>
+                        <ul>
+                            <li><strong>Reembolso:</strong> Si no procede tras la visita, se reembolsa el 100%.</li>
+                            <li><strong>Crédito a renta:</strong> Si renta, el 100% aplica al primer mes.</li>
+                            <li><strong>Inasistencia:</strong> Sin aviso de 24h → cargo $5.00 (reembolso $120.00).</li>
+                            <li><strong>Seguridad:</strong> La propiedad no se muestra a terceros durante su reserva.</li>
+                        </ul>
+                    </div>
+                </section>
 
-            <section class="reserva-section">
-                <h2 class="reserva-section-title">4. DECLARACIÓN DE LEGALIDAD Y GARANTÍA DE FONDO</h2>
-                <p class="reserva-legal">
-                    El presente protocolo forma parte de los procedimientos administrativos internos debidamente estructurados bajo principios de legalidad y transparencia en gestión inmobiliaria.
-                </p>
-                <p class="reserva-legal">
-                    Ningún pago realizado bajo este acuerdo se pierde fuera de las condiciones previamente estipuladas, contando el cliente con respaldo documental y garantía de reembolso conforme a los términos establecidos.
-                </p>
-
-                <div class="reserva-sign-block">
-                    <p class="reserva-sign-label">FIRMA DEL SOLICITANTE</p>
-                    <div class="signature-pad-wrap reserva-pad">
+                <section class="reserva-section">
+                    <div class="reserva-section-head">
+                        <span class="reserva-step">04</span>
+                        <h2>Declaración y firma</h2>
+                    </div>
+                    <p class="reserva-legal">
+                        Este protocolo forma parte de los procedimientos administrativos internos bajo principios de legalidad y transparencia en gestión inmobiliaria. Ningún pago se pierde fuera de las condiciones estipuladas; el cliente cuenta con respaldo documental y garantía de reembolso.
+                    </p>
+                    <p class="reserva-sign-label">Firma del solicitante</p>
+                    <div class="reserva-pad">
                         <canvas id="signaturePad" width="600" height="180" aria-label="Pad de firma"></canvas>
-                        <button type="button" class="btn btn-sm btn-outline-secondary signature-clear" id="clearSignature">Borrar</button>
+                        <button type="button" class="reserva-clear-btn" id="clearSignature">Borrar firma</button>
                     </div>
                     <label class="reserva-accept">
                         <input type="checkbox" id="aceptaTerminos" required />
-                        Acepto los términos y condiciones
+                        <span>Acepto los términos y condiciones del protocolo de reserva</span>
                     </label>
-                </div>
-            </section>
+                </section>
 
-            <p id="formError" class="reserva-error d-none"></p>
+                <p id="formError" class="reserva-error" hidden></p>
 
-            <button type="submit" class="reserva-submit" id="submitBtn">Enviar protocolo</button>
-        </form>
+                <button type="submit" class="reserva-submit" id="submitBtn">Firmar y continuar</button>
+            </form>
 
-        <footer class="reserva-doc-footer">
-            <p>Premier Property Hub © @DateTime.UtcNow.Year. Todos los derechos reservados.</p>
-            <p>Documento amparado bajo normativas de transparencia inmobiliaria.</p>
-            <p>Tel: +1 (945) 384-6408 · premier-property-hub.onrender.com</p>
-        </footer>
-    </div>
-</div>
-
-@* Modal: upload ID + selfie *@
-<div class="reserva-modal d-none" id="identityModal" role="dialog" aria-modal="true" aria-labelledby="identityTitle">
-    <div class="reserva-modal-card">
-        <h2 id="identityTitle">Verificación de identidad</h2>
-        <p>Para completar su reserva, debe suministrar una foto de su <strong>documento de identidad junto con un selfie</strong> (mismo encuadre: usted sosteniendo su ID).</p>
-        <label class="reserva-upload-box">
-            <input type="file" id="identityFile" accept="image/jpeg,image/png,image/webp,image/gif" />
-            <span id="identityFileLabel">Seleccionar foto (ID + selfie)</span>
-        </label>
-        <div class="reserva-preview d-none" id="identityPreviewWrap">
-            <img id="identityPreview" alt="Vista previa del documento" />
+            <footer class="reserva-doc-footer">
+                <p>Premier Property Hub © @DateTime.UtcNow.Year</p>
+                <p>+1 (945) 384-6408</p>
+            </footer>
         </div>
-        <p id="identityError" class="reserva-error d-none"></p>
-        <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir y confirmar</button>
     </div>
-</div>
 
-@* Modal: confirmation *@
-<div class="reserva-modal d-none" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="reserva-modal-card reserva-confirm-card">
-        <div class="reserva-confirm-icon" aria-hidden="true">✓</div>
-        <h2 id="confirmTitle">¡Reserva confirmada!</h2>
-        <p id="confirmName"></p>
-        <p id="confirmVisit"></p>
-        <p class="reserva-code-label">Su código de confirmación</p>
-        <p class="reserva-code" id="confirmCode"></p>
-        <p class="reserva-confirm-note">Guarde este código. Lo necesitará para validar su visita y depósito de reserva.</p>
-        <a class="reserva-submit reserva-link-btn" asp-page="/Apartamentos/Index">Ver propiedades disponibles</a>
+    @* Modal ID + selfie *@
+    <div class="reserva-overlay" id="identityModal" hidden>
+        <div class="reserva-modal" role="dialog" aria-modal="true" aria-labelledby="identityTitle">
+            <div class="reserva-modal-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 16.5c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M14 10h5M14 13h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <h2 id="identityTitle">Verificación de identidad</h2>
+            <p class="reserva-modal-text">Para completar su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara).</p>
+            <ul class="reserva-modal-tips">
+                <li>Buena iluminación, sin reflejos</li>
+                <li>ID legible y rostro visible</li>
+                <li>JPG o PNG · máx. 8 MB</li>
+            </ul>
+            <label class="reserva-upload" for="identityFile">
+                <input type="file" id="identityFile" accept="image/jpeg,image/png,image/webp,image/gif" />
+                <span class="reserva-upload-title" id="identityFileLabel">Seleccionar foto</span>
+                <span class="reserva-upload-sub">Toque para elegir desde su galería o cámara</span>
+            </label>
+            <div class="reserva-preview" id="identityPreviewWrap" hidden>
+                <img id="identityPreview" alt="Vista previa" />
+            </div>
+            <p id="identityError" class="reserva-error" hidden></p>
+            <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir y confirmar</button>
+        </div>
     </div>
-</div>
 
-@section Scripts {
+    @* Modal confirmación *@
+    <div class="reserva-overlay" id="confirmModal" hidden>
+        <div class="reserva-modal reserva-modal-success" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+            <div class="reserva-success-check" aria-hidden="true">✓</div>
+            <h2 id="confirmTitle">¡Reserva confirmada!</h2>
+            <p id="confirmName" class="reserva-modal-text"></p>
+            <p id="confirmVisit" class="reserva-modal-sub"></p>
+            <p class="reserva-code-label">Código de confirmación</p>
+            <p class="reserva-code" id="confirmCode"></p>
+            <p class="reserva-modal-sub">Guarde este código. Lo necesitará para validar su visita y depósito.</p>
+            <button type="button" class="reserva-submit" id="entendidoBtn">Entendido</button>
+        </div>
+    </div>
+
 <script>
 (() => {
     const form = document.getElementById('reservaForm');
@@ -164,12 +197,12 @@
     const identityPreview = document.getElementById('identityPreview');
     const identityError = document.getElementById('identityError');
     const uploadIdentityBtn = document.getElementById('uploadIdentityBtn');
+    const entendidoBtn = document.getElementById('entendidoBtn');
 
     let drawing = false;
     let hasSignature = false;
     let publicToken = null;
 
-    // Phone mask
     document.getElementById('telefono').addEventListener('input', (e) => {
         let d = e.target.value.replace(/\D/g, '').slice(0, 10);
         if (d.length >= 6) e.target.value = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
@@ -177,7 +210,6 @@
         else if (d.length > 0) e.target.value = `(${d}`;
     });
 
-    // Min date = tomorrow
     const fecha = document.getElementById('fechaVisita');
     const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
     fecha.min = tmr.toISOString().slice(0, 10);
@@ -190,7 +222,7 @@
         canvas.height = rect.height * ratio;
         ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
         ctx.strokeStyle = '#1a1a1b';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
     }
@@ -198,9 +230,7 @@
     function getPoint(e) {
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches?.[0] ?? e.changedTouches?.[0];
-        const clientX = touch ? touch.clientX : e.clientX;
-        const clientY = touch ? touch.clientY : e.clientY;
-        return { x: clientX - rect.left, y: clientY - rect.top };
+        return { x: (touch ? touch.clientX : e.clientX) - rect.left, y: (touch ? touch.clientY : e.clientY) - rect.top };
     }
 
     function startDraw(e) { e.preventDefault(); drawing = true; hasSignature = true; const p = getPoint(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
@@ -227,27 +257,20 @@
     });
     resizeCanvas();
 
-    function showError(el, msg) {
-        el.textContent = msg;
-        el.classList.remove('d-none');
+    function showErr(el, msg) { el.hidden = false; el.textContent = msg; }
+    function hideErr(el) { el.hidden = true; el.textContent = ''; }
+
+    function openOverlay(el) {
+        el.hidden = false;
+        document.body.classList.add('reserva-modal-open');
     }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        formError.classList.add('d-none');
-
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-        if (!hasSignature) {
-            showError(formError, 'Debe firmar el protocolo antes de enviar.');
-            return;
-        }
-        if (!document.getElementById('aceptaTerminos').checked) {
-            showError(formError, 'Debe aceptar los términos y condiciones.');
-            return;
-        }
+        hideErr(formError);
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (!hasSignature) { showErr(formError, 'Debe firmar el protocolo antes de continuar.'); return; }
+        if (!document.getElementById('aceptaTerminos').checked) { showErr(formError, 'Debe aceptar los términos y condiciones.'); return; }
 
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
@@ -265,44 +288,39 @@
             });
             const data = await res.json();
             if (!data.success) {
-                showError(formError, (data.errors || ['Error al guardar.']).join(' '));
+                showErr(formError, (data.errors || ['Error al guardar.']).join(' '));
                 btn.disabled = false;
-                btn.textContent = 'Enviar protocolo';
+                btn.textContent = 'Firmar y continuar';
                 return;
             }
             publicToken = data.token;
-            identityModal.classList.remove('d-none');
-            document.body.style.overflow = 'hidden';
+            openOverlay(identityModal);
         } catch {
-            showError(formError, 'Error de conexión. Intente de nuevo.');
+            showErr(formError, 'Error de conexión. Intente de nuevo.');
             btn.disabled = false;
-            btn.textContent = 'Enviar protocolo';
+            btn.textContent = 'Firmar y continuar';
         }
     });
 
     identityFile.addEventListener('change', () => {
-        identityError.classList.add('d-none');
+        hideErr(identityError);
         const file = identityFile.files?.[0];
         if (!file) {
             uploadIdentityBtn.disabled = true;
-            identityPreviewWrap.classList.add('d-none');
-            identityFileLabel.textContent = 'Seleccionar foto (ID + selfie)';
+            identityPreviewWrap.hidden = true;
+            identityFileLabel.textContent = 'Seleccionar foto';
             return;
         }
         identityFileLabel.textContent = file.name;
         uploadIdentityBtn.disabled = false;
-        const url = URL.createObjectURL(file);
-        identityPreview.src = url;
-        identityPreviewWrap.classList.remove('d-none');
+        identityPreview.src = URL.createObjectURL(file);
+        identityPreviewWrap.hidden = false;
     });
 
     uploadIdentityBtn.addEventListener('click', async () => {
-        identityError.classList.add('d-none');
+        hideErr(identityError);
         const file = identityFile.files?.[0];
-        if (!file || !publicToken) {
-            showError(identityError, 'Seleccione una imagen válida.');
-            return;
-        }
+        if (!file || !publicToken) { showErr(identityError, 'Seleccione una imagen válida.'); return; }
 
         uploadIdentityBtn.disabled = true;
         uploadIdentityBtn.textContent = 'Subiendo…';
@@ -319,23 +337,31 @@
             });
             const data = await res.json();
             if (!data.success) {
-                showError(identityError, data.error || 'No se pudo subir el documento.');
+                showErr(identityError, data.error || 'No se pudo subir el documento.');
                 uploadIdentityBtn.disabled = false;
                 uploadIdentityBtn.textContent = 'Subir y confirmar';
                 return;
             }
 
-            identityModal.classList.add('d-none');
+            identityModal.hidden = true;
             document.getElementById('confirmName').textContent = data.nombre || '';
             document.getElementById('confirmVisit').textContent = data.fechaVisita ? `Visita: ${data.fechaVisita}` : '';
             document.getElementById('confirmCode').textContent = data.confirmationCode || '';
-            confirmModal.classList.remove('d-none');
+            openOverlay(confirmModal);
         } catch {
-            showError(identityError, 'Error de conexión. Intente de nuevo.');
+            showErr(identityError, 'Error de conexión. Intente de nuevo.');
             uploadIdentityBtn.disabled = false;
             uploadIdentityBtn.textContent = 'Subir y confirmar';
         }
     });
+
+    // Keep confirmation modal open — no redirect
+    entendidoBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        entendidoBtn.textContent = 'Código guardado ✓';
+        entendidoBtn.disabled = true;
+    });
 })();
 </script>
-}
+</body>
+</html>
