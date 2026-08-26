@@ -228,10 +228,19 @@
     let publicToken = null;
 
     document.getElementById('telefono').addEventListener('input', (e) => {
-        let d = e.target.value.replace(/\D/g, '').slice(0, 10);
-        if (d.length >= 6) e.target.value = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
-        else if (d.length >= 3) e.target.value = `(${d.slice(0,3)}) ${d.slice(3)}`;
-        else if (d.length > 0) e.target.value = `(${d}`;
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+        let formatted = '';
+        if (digits.length === 0) {
+            formatted = '';
+        } else if (digits.length <= 3) {
+            // Keep open paren only — no forced ") " so backspace can clear area code
+            formatted = `(${digits}`;
+        } else if (digits.length <= 6) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+        } else {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        }
+        e.target.value = formatted;
     });
 
     const fecha = document.getElementById('fechaVisita');
