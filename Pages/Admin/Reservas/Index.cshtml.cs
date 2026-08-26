@@ -4,10 +4,11 @@ using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace ApartamentosRenta.Pages.Admin.Reservas;
 
-public class IndexModel(AppDbContext context) : PageModel
+public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSettings) : PageModel
 {
     public IList<ReservaGenerica> Reservas { get; private set; } = [];
 
@@ -18,7 +19,8 @@ public class IndexModel(AppDbContext context) : PageModel
     public async Task OnGetAsync()
     {
         CurrentUsername = AdminUsers.CurrentUsername(User);
-        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+        var slug = AdminUsers.CurrentPublicSlug(User, authSettings.Value);
+        PublicReservaUrl = AdminUsers.BuildReservaUrl(Request.Scheme, Request.Host, slug);
 
         Reservas = await context.ReservasGenericas
             .Where(r => r.AdminUsername == CurrentUsername)

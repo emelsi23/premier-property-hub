@@ -40,6 +40,7 @@ public class LoginModel(IOptions<AdminAuthSettings> authSettings) : PageModel
         {
             new(ClaimTypes.Name, account.Username),
             new("display_name", account.EffectiveDisplayName),
+            new("public_slug", account.EffectivePublicSlug),
             new(ClaimTypes.Role, "Admin")
         };
 

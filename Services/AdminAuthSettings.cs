@@ -20,16 +20,52 @@ public class AdminUserAccount
 
     public string DisplayName { get; set; } = string.Empty;
 
-    public string NormalizedUsername => AdminUsers.Normalize(Username);
+    /// <summary>Public URL segment for /reserva/{slug}, e.g. maria-angelica.</summary>
+    public string PublicSlug { get; set; } = string.Empty;
 
     public string EffectiveDisplayName =>
         string.IsNullOrWhiteSpace(DisplayName) ? Username : DisplayName.Trim();
+
+    public string EffectivePublicSlug
+    {
+        get
+        {
+            var slug = AdminUsers.Slugify(PublicSlug);
+            if (!string.IsNullOrEmpty(slug))
+            {
+                return slug;
+            }
+
+            slug = AdminUsers.Slugify(DisplayName);
+            return string.IsNullOrEmpty(slug) ? AdminUsers.Normalize(Username) : slug;
+        }
+    }
 }
 
 public static class AdminUsers
 {
     public static string Normalize(string? username) =>
         (username ?? string.Empty).Trim().ToLowerInvariant();
+
+    public static string Slugify(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var normalized = value.Trim().ToLowerInvariant();
+        var chars = normalized
+            .Select(ch => char.IsLetterOrDigit(ch) ? ch : '-')
+            .ToArray();
+        var slug = new string(chars);
+        while (slug.Contains("--", StringComparison.Ordinal))
+        {
+            slug = slug.Replace("--", "-", StringComparison.Ordinal);
+        }
+
+        return slug.Trim('-');
+    }
 
     public static IReadOnlyList<AdminUserAccount> Resolve(AdminAuthSettings settings)
     {
@@ -41,7 +77,8 @@ public static class AdminUsers
                 {
                     Username = Normalize(u.Username),
                     Password = u.Password,
-                    DisplayName = string.IsNullOrWhiteSpace(u.DisplayName) ? Normalize(u.Username) : u.DisplayName.Trim()
+                    DisplayName = string.IsNullOrWhiteSpace(u.DisplayName) ? Normalize(u.Username) : u.DisplayName.Trim(),
+                    PublicSlug = string.IsNullOrWhiteSpace(u.PublicSlug) ? string.Empty : Slugify(u.PublicSlug)
                 })
                 .GroupBy(u => u.Username)
                 .Select(g => g.First())
@@ -56,7 +93,8 @@ public static class AdminUsers
                 {
                     Username = Normalize(settings.Username),
                     Password = settings.Password,
-                    DisplayName = Normalize(settings.Username)
+                    DisplayName = Normalize(settings.Username),
+                    PublicSlug = Normalize(settings.Username)
                 }
             ];
         }
@@ -64,7 +102,7 @@ public static class AdminUsers
         return [];
     }
 
-    public static AdminUserAccount? Find(AdminAuthSettings settings, string? username)
+    public static AdminUserAccount? FindByUsername(AdminAuthSettings settings, string? username)
     {
         var key = Normalize(username);
         if (string.IsNullOrEmpty(key))
@@ -75,9 +113,27 @@ public static class AdminUsers
         return Resolve(settings).FirstOrDefault(u => u.Username == key);
     }
 
+    /// <summary>Resolve by public URL slug or legacy login username.</summary>
+    public static AdminUserAccount? FindByPublicAgent(AdminAuthSettings settings, string? agent)
+    {
+        var key = Slugify(agent);
+        if (string.IsNullOrEmpty(key))
+        {
+            key = Normalize(agent);
+        }
+
+        if (string.IsNullOrEmpty(key))
+        {
+            return null;
+        }
+
+        return Resolve(settings).FirstOrDefault(u =>
+            u.EffectivePublicSlug == key || u.Username == key);
+    }
+
     public static bool TryAuthenticate(AdminAuthSettings settings, string? username, string? password, out AdminUserAccount? user)
     {
-        user = Find(settings, username);
+        user = FindByUsername(settings, username);
         if (user is null || string.IsNullOrEmpty(password))
         {
             return false;
@@ -88,4 +144,19 @@ public static class AdminUsers
 
     public static string CurrentUsername(System.Security.Claims.ClaimsPrincipal user) =>
         Normalize(user.Identity?.Name);
+
+    public static string CurrentPublicSlug(System.Security.Claims.ClaimsPrincipal user, AdminAuthSettings settings)
+    {
+        var claim = user.FindFirst("public_slug")?.Value;
+        if (!string.IsNullOrWhiteSpace(claim))
+        {
+            return Slugify(claim);
+        }
+
+        var account = FindByUsername(settings, CurrentUsername(user));
+        return account?.EffectivePublicSlug ?? CurrentUsername(user);
+    }
+
+    public static string BuildReservaUrl(string scheme, HostString host, string publicSlug) =>
+        $"{scheme}://{host}/reserva/{Slugify(publicSlug)}";
 }

@@ -264,7 +264,7 @@ public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
 
     private bool TryResolveAgent(string? agent, out AdminUserAccount account)
     {
-        var found = AdminUsers.Find(authSettings.Value, agent);
+        var found = AdminUsers.FindByPublicAgent(authSettings.Value, agent);
         if (found is null)
         {
             account = new AdminUserAccount();

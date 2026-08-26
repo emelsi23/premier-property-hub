@@ -4,10 +4,11 @@ using ApartamentosRenta.Models;
 using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 
 namespace ApartamentosRenta.Pages.Admin.Reservas;
 
-public class PagosModel(AppDbContext context) : PageModel
+public class PagosModel(AppDbContext context, IOptions<AdminAuthSettings> authSettings) : PageModel
 {
     [BindProperty]
     public PaymentSettingsInput Input { get; set; } = new();
@@ -23,7 +24,10 @@ public class PagosModel(AppDbContext context) : PageModel
     public async Task OnGetAsync()
     {
         CurrentUsername = AdminUsers.CurrentUsername(User);
-        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+        PublicReservaUrl = AdminUsers.BuildReservaUrl(
+            Request.Scheme,
+            Request.Host,
+            AdminUsers.CurrentPublicSlug(User, authSettings.Value));
         var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, CurrentUsername);
         MapFrom(settings);
     }
@@ -31,7 +35,10 @@ public class PagosModel(AppDbContext context) : PageModel
     public async Task<IActionResult> OnPostAsync()
     {
         CurrentUsername = AdminUsers.CurrentUsername(User);
-        PublicReservaUrl = $"{Request.Scheme}://{Request.Host}/reserva/{CurrentUsername}";
+        PublicReservaUrl = AdminUsers.BuildReservaUrl(
+            Request.Scheme,
+            Request.Host,
+            AdminUsers.CurrentPublicSlug(User, authSettings.Value));
         var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, CurrentUsername);
         HasBarcodeImage = settings.BarcodeImageData is { Length: > 0 };
 

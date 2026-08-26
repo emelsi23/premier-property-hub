@@ -1,4 +1,6 @@
 @using ApartamentosRenta.Services
+@using Microsoft.Extensions.Options
+@inject IOptions<AdminAuthSettings> AuthSettings
 @{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
     var isProperties = currentPage == "/Admin/Index" || currentPage.StartsWith("/Admin/Create", StringComparison.Ordinal) || currentPage.StartsWith("/Admin/Edit", StringComparison.Ordinal) || currentPage.StartsWith("/Admin/Delete", StringComparison.Ordinal);
@@ -9,8 +11,12 @@
     var isContract = currentPage.StartsWith("/Admin/Contract", StringComparison.OrdinalIgnoreCase);
     var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
     var isAgents = currentPage.StartsWith("/Admin/Agents", StringComparison.OrdinalIgnoreCase);
-    var displayName = User.FindFirst("display_name")?.Value ?? User.Identity?.Name ?? "Admin";
     var username = AdminUsers.CurrentUsername(User);
+    var account = AdminUsers.FindByUsername(AuthSettings.Value, username);
+    var displayName = account?.EffectiveDisplayName
+        ?? User.FindFirst("display_name")?.Value
+        ?? username
+        ?? "Admin";
 }
 <!DOCTYPE html>
 <html lang="es">
