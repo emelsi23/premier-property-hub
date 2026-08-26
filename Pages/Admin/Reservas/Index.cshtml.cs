@@ -1,5 +1,6 @@
 using ApartamentosRenta.Data;
 using ApartamentosRenta.Models;
+using ApartamentosRenta.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,27 @@ public class IndexModel(AppDbContext context) : PageModel
         }
 
         return File(r.PaymentProofData, r.PaymentProofContentType ?? "image/jpeg");
+    }
+
+    public async Task<IActionResult> OnGetPdfAsync(int id)
+    {
+        var r = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (r is null)
+        {
+            return NotFound();
+        }
+
+        var pdf = ReservaGenericaPdfDocument.Generate(r);
+        var safeName = string.Concat(r.NombreCompleto.Where(ch => char.IsLetterOrDigit(ch) || ch is ' ' or '-' or '_'))
+            .Trim()
+            .Replace(' ', '_');
+        if (string.IsNullOrWhiteSpace(safeName))
+        {
+            safeName = $"reserva-{r.Id}";
+        }
+
+        var fileName = $"Protocolo-Reserva-{safeName}-{r.Id}.pdf";
+        return File(pdf, "application/pdf", fileName);
     }
 
     public async Task<IActionResult> OnPostConfirmAsync(int id)

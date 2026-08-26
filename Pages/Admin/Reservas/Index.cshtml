@@ -80,6 +80,7 @@ else
                     <div class="text-end">
                         <span class="badge @badge">@estadoLabel</span>
                         <div class="mt-2 d-flex flex-wrap gap-1 justify-content-end">
+                            <a class="btn btn-sm btn-dark" href="?handler=Pdf&id=@r.Id">Descargar PDF</a>
                             @if (r.FirmaData is { Length: > 0 })
                             {
                                 <a class="btn btn-sm btn-outline-primary" href="?handler=Firma&id=@r.Id" target="_blank">Ver firma</a>
