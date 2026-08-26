@@ -117,6 +117,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<ReservaPaymentSettings>(entity =>
         {
+            entity.Property(s => s.Id).UseIdentityByDefaultColumn();
             entity.Property(s => s.DepositAmount).HasPrecision(10, 2);
             entity.Property(s => s.NoShowFee).HasPrecision(10, 2);
             entity.Property(s => s.AdminUsername).HasMaxLength(64);

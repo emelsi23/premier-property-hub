@@ -20,9 +20,31 @@ public static class ReservaPaymentSettingsService
             return settings;
         }
 
-        settings = new ReservaPaymentSettings { AdminUsername = key };
+        // Postgres table may lack IDENTITY on Id (created as plain integer PK). Assign next id explicitly.
+        var nextId = await context.ReservaPaymentSettings.MaxAsync(s => (int?)s.Id) ?? 0;
+        settings = new ReservaPaymentSettings
+        {
+            Id = nextId + 1,
+            AdminUsername = key
+        };
         context.ReservaPaymentSettings.Add(settings);
-        await context.SaveChangesAsync();
-        return settings;
+
+        try
+        {
+            await context.SaveChangesAsync();
+            return settings;
+        }
+        catch (DbUpdateException)
+        {
+            // Concurrent create or unique race — reload.
+            context.Entry(settings).State = EntityState.Detached;
+            var existing = await context.ReservaPaymentSettings.FirstOrDefaultAsync(s => s.AdminUsername == key);
+            if (existing is not null)
+            {
+                return existing;
+            }
+
+            throw;
+        }
     }
 }
