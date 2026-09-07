@@ -127,6 +127,13 @@ public static class AdminUsers
             return null;
         }
 
+        // Old public links for renamed agents.
+        key = key switch
+        {
+            "junior-linarez" => "alexis-morgan",
+            _ => key
+        };
+
         return Resolve(settings).FirstOrDefault(u =>
             u.EffectivePublicSlug == key || u.Username == key);
     }

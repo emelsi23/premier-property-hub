@@ -25,6 +25,11 @@ public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
 
     public async Task<IActionResult> OnGetAsync(string? agent)
     {
+        if (string.Equals(AdminUsers.Slugify(agent), "junior-linarez", StringComparison.Ordinal))
+        {
+            return RedirectPermanent("/reserva/alexis-morgan");
+        }
+
         if (!TryResolveAgent(agent, out var account))
         {
             AgentNotFound = true;
