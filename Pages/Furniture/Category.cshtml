@@ -17,8 +17,9 @@ else
 
     <div class="iw-toolbar">
         <div>
+            <p class="iw-kicker">Category</p>
             <h1>@Model.Category.Name</h1>
-            <p class="iw-count">@Model.Products.Count items</p>
+            <p class="iw-count">@Model.Products.Count items available</p>
         </div>
         <form method="get" class="iw-sort-wrap">
             <label for="sort">Sort by</label>
@@ -49,7 +50,7 @@ else
 
     <div class="iw-layout-shop">
         <aside class="iw-side">
-            <h2>Categories</h2>
+            <h2>Shop rooms</h2>
             <ul class="iw-side-list">
                 @foreach (var c in Model.AllCategories)
                 {
@@ -70,35 +71,7 @@ else
                 <div class="iw-product-grid">
                     @foreach (var p in Model.Products)
                     {
-                        var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
-                            ?? "/images/ironwood-logo.jpg";
-                        var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
-                        <a class="iw-card" href="/furniture/item/@p.Slug">
-                            <div class="iw-card-media">
-                                @if (onSale)
-                                {
-                                    <span class="iw-badge-sale">Sale</span>
-                                }
-                                <img src="@thumb" alt="@p.Title" loading="lazy" />
-                            </div>
-                            <div class="iw-card-body">
-                                <h2 class="iw-card-title">@p.Title</h2>
-                                <p class="iw-card-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
-                                <p class="iw-card-short">@p.ShortDescription</p>
-                                <div class="iw-price-row">
-                                    @if (onSale)
-                                    {
-                                        <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
-                                        <span class="iw-price">$@p.Price.ToString("N2")</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="iw-price">$@p.Price.ToString("N2")</span>
-                                    }
-                                </div>
-                                <span class="iw-card-cta">View details</span>
-                            </div>
-                        </a>
+                        @await Html.PartialAsync("_ProductCard", p)
                     }
                 </div>
             }

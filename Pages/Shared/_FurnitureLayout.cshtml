@@ -22,7 +22,7 @@
 <body class="iw-body">
     <div class="iw-topbar">
         <div class="iw-topbar-inner">
-            <span><strong>Entrega y consultas por WhatsApp</strong> · Sin pago en línea</span>
+            <span><strong>Premium furniture catalog</strong> · Order via WhatsApp</span>
             <span>Ironwood Home Furniture Co.</span>
         </div>
     </div>
@@ -84,5 +84,7 @@
             <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co. All rights reserved.</p>
         </div>
     </footer>
+    <script src="~/js/furniture.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

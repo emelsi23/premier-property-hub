@@ -27,8 +27,15 @@ else
 
     <article class="iw-detail">
         <div class="iw-gallery">
-            <div class="iw-gallery-main">
-                <img id="iwMainPhoto" src="@main" alt="@p.Title" />
+            <div class="iw-gallery-wrap">
+                <div class="iw-gallery-main">
+                    <img id="iwMainPhoto" class="iw-fade" src="@main" alt="@p.Title" />
+                </div>
+                @if (photos.Count > 1)
+                {
+                    <button type="button" class="iw-gallery-nav prev" data-gallery-prev aria-label="Foto anterior">‹</button>
+                    <button type="button" class="iw-gallery-nav next" data-gallery-next aria-label="Foto siguiente">›</button>
+                }
             </div>
             @if (photos.Count > 1)
             {
@@ -73,21 +80,4 @@ else
             <p class="iw-wa-note">Abre WhatsApp con el link de este producto. Sin carrito ni pago con tarjeta.</p>
         </div>
     </article>
-
-    <script>
-        (function () {
-            const main = document.getElementById('iwMainPhoto');
-            const thumbs = document.getElementById('iwThumbs');
-            if (!main || !thumbs) return;
-            thumbs.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const src = btn.getAttribute('data-src');
-                    if (!src) return;
-                    main.src = src;
-                    thumbs.querySelectorAll('button').forEach(b => b.classList.remove('is-active'));
-                    btn.classList.add('is-active');
-                });
-            });
-        })();
-    </script>
 }

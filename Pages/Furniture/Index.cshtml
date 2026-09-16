@@ -5,83 +5,201 @@
     Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
     var catImages = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        ["living-room"] = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80",
-        ["bedroom"] = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80",
-        ["dining"] = "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80",
-        ["home-office"] = "https://images.unsplash.com/photo-1518455027359-f3f8164ba9c7?w=800&q=80",
-        ["outdoor"] = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80",
-        ["mattresses"] = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
-        ["sale"] = "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80"
+        ["living-room"] = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=80",
+        ["bedroom"] = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=900&q=80",
+        ["dining"] = "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=900&q=80",
+        ["home-office"] = "https://images.unsplash.com/photo-1518455027359-f3f8164ba9c7?w=900&q=80",
+        ["outdoor"] = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=900&q=80",
+        ["mattresses"] = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=900&q=80",
+        ["sale"] = "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=80"
+    };
+
+    var heroSlides = new (string Img, string Eyebrow, string Title, string Text, string Cta, string Href)[]
+    {
+        ("https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1800&q=80",
+            "Living Collection", "Furniture that feels like home",
+            "Sofás, sectionals y mesas con acabados premium. Elige tu pieza y pídela por WhatsApp.",
+            "Shop Living Room", "/furniture/living-room"),
+        ("https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1800&q=80",
+            "Bedroom Edit", "Rest better, live beautifully",
+            "Camas, cómodas y nightstands seleccionados para un dormitorio sereno y moderno.",
+            "Shop Bedroom", "/furniture/bedroom"),
+        ("https://images.unsplash.com/photo-1617806118233-18e1de247200?w=1800&q=80",
+            "Dining Moments", "Gather around great design",
+            "Mesas extensibles, sillas y sideboards listos para tu próximo dinner.",
+            "Shop Dining", "/furniture/dining")
     };
 }
 
-<section class="iw-hero">
-    <div>
-        <h1>Stylish furniture for every room</h1>
-        <p>Sofás, camas, comedores y más. Explora el catálogo y pide por WhatsApp — te enviamos el link del producto.</p>
-        <a class="iw-hero-cta" href="/furniture/living-room">Shop Living Room</a>
+<div class="iw-marquee" aria-hidden="true">
+    <div class="iw-marquee-track">
+        <span>Free consultation on WhatsApp</span>
+        <span>·</span>
+        <span>No online checkout</span>
+        <span>·</span>
+        <span>Ironwood Home Furniture Co.</span>
+        <span>·</span>
+        <span>Living · Bedroom · Dining · Outdoor</span>
+        <span>·</span>
+        <span>Free consultation on WhatsApp</span>
+        <span>·</span>
+        <span>No online checkout</span>
+        <span>·</span>
+        <span>Ironwood Home Furniture Co.</span>
+        <span>·</span>
+        <span>Living · Bedroom · Dining · Outdoor</span>
     </div>
-</section>
+</div>
 
-<section class="iw-section">
-    <div class="iw-section-head">
-        <h2 class="iw-section-title">Shop by room</h2>
-    </div>
-    <div class="iw-cat-grid">
-        @foreach (var c in Model.Categories)
+<section class="iw-hero-carousel" data-hero-carousel>
+    @for (var i = 0; i < heroSlides.Length; i++)
+    {
+        var s = heroSlides[i];
+        <div class="iw-hero-slide @(i == 0 ? "is-active" : null)" style="--hero-img:url('@s.Img')">
+            <div class="iw-hero-content">
+                <p class="iw-hero-eyebrow">@s.Eyebrow</p>
+                <h1>@s.Title</h1>
+                <p>@s.Text</p>
+                <div class="iw-hero-actions">
+                    <a class="iw-hero-cta" href="@s.Href">@s.Cta</a>
+                    <a class="iw-hero-cta iw-hero-cta-ghost" href="/furniture/sale">View Sale</a>
+                </div>
+            </div>
+        </div>
+    }
+    <button type="button" class="iw-hero-nav iw-hero-prev" data-hero-prev aria-label="Anterior">‹</button>
+    <button type="button" class="iw-hero-nav iw-hero-next" data-hero-next aria-label="Siguiente">›</button>
+    <div class="iw-hero-dots">
+        @for (var i = 0; i < heroSlides.Length; i++)
         {
-            var img = catImages.GetValueOrDefault(c.Slug);
-            <a class="iw-cat-tile" href="/furniture/@c.Slug" style="@(img is null ? null : $"--iw-cat-img:url('{img}')")">
-                <span>@c.Name</span>
-            </a>
+            <button type="button" data-hero-dot class="@(i == 0 ? "is-active" : null)" aria-label="Slide @(i + 1)"></button>
         }
     </div>
 </section>
 
+<section class="iw-trust">
+    <div class="iw-trust-item">
+        <strong>Curated catalog</strong>
+        <span>Piezas seleccionadas por estilo y calidad</span>
+    </div>
+    <div class="iw-trust-item">
+        <strong>WhatsApp ordering</strong>
+        <span>Sin carrito, Affirm ni tarjeta en línea</span>
+    </div>
+    <div class="iw-trust-item">
+        <strong>Product links</strong>
+        <span>Cada consulta lleva el link exacto del mueble</span>
+    </div>
+    <div class="iw-trust-item">
+        <strong>Every room</strong>
+        <span>Living, bedroom, dining, office y más</span>
+    </div>
+</section>
+
 <section class="iw-section">
     <div class="iw-section-head">
-        <h2 class="iw-section-title">Featured pieces</h2>
-        <a class="iw-section-link" href="/furniture/living-room">View living room →</a>
-    </div>
-    @if (Model.Featured.Count == 0)
-    {
-        <div class="iw-empty">Pronto agregaremos productos destacados.</div>
-    }
-    else
-    {
-        <div class="iw-product-grid">
-            @foreach (var p in Model.Featured)
-            {
-                var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
-                    ?? "/images/ironwood-logo.jpg";
-                var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
-                <a class="iw-card" href="/furniture/item/@p.Slug">
-                    <div class="iw-card-media">
-                        @if (onSale)
-                        {
-                            <span class="iw-badge-sale">Sale</span>
-                        }
-                        <img src="@thumb" alt="@p.Title" loading="lazy" />
-                    </div>
-                    <div class="iw-card-body">
-                        <h3 class="iw-card-title">@p.Title</h3>
-                        <p class="iw-card-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
-                        <p class="iw-card-short">@p.ShortDescription</p>
-                        <div class="iw-price-row">
-                            @if (onSale)
-                            {
-                                <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
-                                <span class="iw-price">$@p.Price.ToString("N2")</span>
-                            }
-                            else
-                            {
-                                <span class="iw-price">$@p.Price.ToString("N2")</span>
-                            }
-                        </div>
-                        <span class="iw-card-cta">View details</span>
-                    </div>
-                </a>
-            }
+        <div>
+            <p class="iw-kicker">Collections</p>
+            <h2 class="iw-section-title">Shop by room</h2>
         </div>
-    }
+    </div>
+    <div class="iw-carousel" data-carousel>
+        <button type="button" class="iw-carousel-edge iw-carousel-edge-prev" data-carousel-prev aria-label="Anterior">‹</button>
+        <div class="iw-carousel-viewport">
+            <div class="iw-carousel-track" data-carousel-track>
+                @foreach (var c in Model.Categories)
+                {
+                    var img = catImages.GetValueOrDefault(c.Slug) ?? catImages["living-room"];
+                    <a class="iw-cat-slide" href="/furniture/@c.Slug" style="--iw-cat-img:url('@img')">
+                        <span class="iw-cat-slide-label">@c.Name</span>
+                        <span class="iw-cat-slide-cta">Explore →</span>
+                    </a>
+                }
+            </div>
+        </div>
+        <button type="button" class="iw-carousel-edge iw-carousel-edge-next" data-carousel-next aria-label="Siguiente">›</button>
+    </div>
+</section>
+
+@if (Model.Featured.Count > 0)
+{
+    <section class="iw-section">
+        <div class="iw-section-head">
+            <div>
+                <p class="iw-kicker">Editor’s picks</p>
+                <h2 class="iw-section-title">Featured pieces</h2>
+            </div>
+            <a class="iw-section-link" href="/furniture/living-room">Shop all living →</a>
+        </div>
+        <div class="iw-carousel" data-carousel>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-prev" data-carousel-prev aria-label="Anterior">‹</button>
+            <div class="iw-carousel-viewport">
+                <div class="iw-carousel-track" data-carousel-track>
+                    @foreach (var p in Model.Featured)
+                    {
+                        @await Html.PartialAsync("_ProductCard", p)
+                    }
+                </div>
+            </div>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-next" data-carousel-next aria-label="Siguiente">›</button>
+        </div>
+    </section>
+}
+
+@if (Model.OnSale.Count > 0)
+{
+    <section class="iw-section iw-section-sale">
+        <div class="iw-section-head">
+            <div>
+                <p class="iw-kicker iw-kicker-sale">Limited offers</p>
+                <h2 class="iw-section-title">On sale now</h2>
+            </div>
+            <a class="iw-section-link" href="/furniture/sale">View sale →</a>
+        </div>
+        <div class="iw-carousel" data-carousel>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-prev" data-carousel-prev aria-label="Anterior">‹</button>
+            <div class="iw-carousel-viewport">
+                <div class="iw-carousel-track" data-carousel-track>
+                    @foreach (var p in Model.OnSale)
+                    {
+                        @await Html.PartialAsync("_ProductCard", p)
+                    }
+                </div>
+            </div>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-next" data-carousel-next aria-label="Siguiente">›</button>
+        </div>
+    </section>
+}
+
+@if (Model.Newest.Count > 0)
+{
+    <section class="iw-section">
+        <div class="iw-section-head">
+            <div>
+                <p class="iw-kicker">Just in</p>
+                <h2 class="iw-section-title">New arrivals</h2>
+            </div>
+        </div>
+        <div class="iw-carousel" data-carousel>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-prev" data-carousel-prev aria-label="Anterior">‹</button>
+            <div class="iw-carousel-viewport">
+                <div class="iw-carousel-track" data-carousel-track>
+                    @foreach (var p in Model.Newest)
+                    {
+                        @await Html.PartialAsync("_ProductCard", p)
+                    }
+                </div>
+            </div>
+            <button type="button" class="iw-carousel-edge iw-carousel-edge-next" data-carousel-next aria-label="Siguiente">›</button>
+        </div>
+    </section>
+}
+
+<section class="iw-banner">
+    <div class="iw-banner-copy">
+        <p class="iw-kicker">How it works</p>
+        <h2>See it. Love it. Message us.</h2>
+        <p>Abre cualquier producto, toca <strong>Pedir por WhatsApp</strong> y te llega un mensaje con el link listo. Sin carrito, sin Affirm, sin tarjeta.</p>
+    </div>
+    <a class="iw-hero-cta" href="/furniture/living-room">Start shopping</a>
 </section>
