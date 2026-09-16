@@ -15,6 +15,8 @@ public static class FurnitureCatalogSeed
         decimal? CompareAt,
         string Short,
         string Description,
+        string ShortEn,
+        string DescriptionEn,
         bool Featured,
         string[] Photos);
 
@@ -545,6 +547,23 @@ public static class FurnitureCatalogSeed
         string shortDesc,
         string desc)
     {
-        list.Add(new SeedItem(cat, title, sku, price, compare, shortDesc, desc, featured, []));
+        var roomEn = cat switch
+        {
+            "living-room" => "living room",
+            "bedroom" => "bedroom",
+            "dining" => "dining room",
+            "home-office" => "home office",
+            "outdoor" => "outdoor",
+            "mattresses" => "bedroom",
+            "sale" => "home",
+            _ => "home"
+        };
+
+        var shortEn = $"{title} — a standout piece for your {roomEn}.";
+        var descEn =
+            $"{title} (SKU {sku}) from Ironwood Home Furniture Co. Built for everyday comfort and a polished look. " +
+            $"Message us on WhatsApp for finishes, measurements, delivery options, and current availability.";
+
+        list.Add(new SeedItem(cat, title, sku, price, compare, shortDesc, desc, shortEn, descEn, featured, []));
     }
 }

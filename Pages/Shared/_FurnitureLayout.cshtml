@@ -1,4 +1,5 @@
 @using ApartamentosRenta.Data
+@using ApartamentosRenta.Services
 @using Microsoft.EntityFrameworkCore
 @inject AppDbContext Db
 @{
@@ -7,9 +8,10 @@
         .OrderBy(c => c.SortOrder)
         .ToListAsync();
     var path = Context.Request.Path.Value ?? "";
+    var htmlLang = SiteCulture.Current;
 }
 <!DOCTYPE html>
-<html lang="es">
+<html lang="@htmlLang">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -22,7 +24,7 @@
 <body class="iw-body">
     <div class="iw-topbar">
         <div class="iw-topbar-inner">
-            <span><strong>Premium furniture catalog</strong> · Order via WhatsApp</span>
+            <span>@UiText.T("Furniture.Topbar")</span>
             <span>Ironwood Home Furniture Co.</span>
         </div>
     </div>
@@ -38,17 +40,18 @@
                     </span>
                 </a>
                 <div class="iw-header-actions">
-                    <span class="iw-chip">Catálogo profesional</span>
+                    <partial name="_LanguageToggle" />
+                    <span class="iw-chip">@UiText.T("Furniture.Chip")</span>
                 </div>
             </div>
             <div class="iw-nav-wrap">
-                <nav class="iw-nav" aria-label="Categorías">
-                    <a class="iw-nav-link @(path.Equals("/furniture", StringComparison.OrdinalIgnoreCase) ? "is-active" : "")" href="/furniture">Home</a>
+                <nav class="iw-nav" aria-label="@UiText.T("Furniture.Categories")">
+                    <a class="iw-nav-link @(path.Equals("/furniture", StringComparison.OrdinalIgnoreCase) ? "is-active" : "")" href="/furniture">@UiText.T("Furniture.Home")</a>
                     @foreach (var c in categories)
                     {
                         var active = path.Contains($"/furniture/{c.Slug}", StringComparison.OrdinalIgnoreCase)
                             && !path.Contains("/furniture/item/", StringComparison.OrdinalIgnoreCase);
-                        <a class="iw-nav-link @(active ? "is-active" : "")" href="/furniture/@c.Slug">@c.Name</a>
+                        <a class="iw-nav-link @(active ? "is-active" : "")" href="/furniture/@c.Slug">@FurnitureLocalizer.CategoryName(c)</a>
                     }
                 </nav>
             </div>
@@ -66,22 +69,22 @@
                     <img src="~/images/ironwood-logo.jpg" alt="" class="iw-logo iw-logo-sm" asp-append-version="true" />
                     <div>
                         <strong>Ironwood Home Furniture Co.</strong>
-                        <p>Living, bedroom, dining y más. Elige el mueble y pídelo por WhatsApp con el link del producto.</p>
+                        <p>@UiText.T("Furniture.FooterBlurb")</p>
                     </div>
                 </div>
                 <div class="iw-footer-col">
-                    <h3>Shop</h3>
+                    <h3>@UiText.T("Furniture.Shop")</h3>
                     @foreach (var c in categories.Take(5))
                     {
-                        <a href="/furniture/@c.Slug">@c.Name</a>
+                        <a href="/furniture/@c.Slug">@FurnitureLocalizer.CategoryName(c)</a>
                     }
                 </div>
                 <div class="iw-footer-col">
-                    <h3>Contacto</h3>
-                    <p>Consultas solo por WhatsApp desde cada producto. Sin carrito, Affirm ni tarjeta.</p>
+                    <h3>@UiText.T("Furniture.Contact")</h3>
+                    <p>@UiText.T("Furniture.FooterContact")</p>
                 </div>
             </div>
-            <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co. All rights reserved.</p>
+            <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co. @UiText.T("Furniture.Rights")</p>
         </div>
     </footer>
     <script src="~/js/furniture.js" asp-append-version="true"></script>

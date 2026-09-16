@@ -26,8 +26,7 @@ public class ItemModel(AppDbContext context) : PageModel
         }
 
         var productUrl = $"{Request.Scheme}://{Request.Host}/furniture/item/{Product.Slug}";
-        var message =
-            $"Hola, me interesa: {Product.Title} (SKU {Product.Sku}) — {productUrl}";
+        var message = UiText.T("Furniture.WaMessage", Product.Title, Product.Sku, productUrl);
         WhatsAppUrl = WhatsAppLinkHelper.BuildUrl(null, message);
 
         return Page();

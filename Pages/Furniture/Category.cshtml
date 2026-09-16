@@ -1,36 +1,41 @@
 @page "/furniture/{category}"
 @model ApartamentosRenta.Pages.Furniture.CategoryModel
+@using ApartamentosRenta.Services
 @{
-    ViewData["Title"] = Model.Category?.Name ?? "Categoría";
+    ViewData["Title"] = Model.Category is null
+        ? UiText.T("Furniture.Category")
+        : FurnitureLocalizer.CategoryName(Model.Category);
     Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
 }
 
 @if (Model.Category is null)
 {
-    <div class="iw-empty">Categoría no encontrada.</div>
+    <div class="iw-empty">@UiText.T("Furniture.CategoryNotFound")</div>
 }
 else
 {
     <p class="iw-breadcrumb">
-        <a href="/furniture">Home</a> / <a href="/furniture">Furniture</a> / <strong>@Model.Category.Name</strong>
+        <a href="/furniture">@UiText.T("Furniture.Home")</a>
+        / <a href="/furniture">@UiText.T("Furniture.BreadcrumbFurniture")</a>
+        / <strong>@FurnitureLocalizer.CategoryName(Model.Category)</strong>
     </p>
 
     <div class="iw-toolbar">
         <div>
-            <p class="iw-kicker">Category</p>
-            <h1>@Model.Category.Name</h1>
-            <p class="iw-count">@Model.Products.Count items available</p>
+            <p class="iw-kicker">@UiText.T("Furniture.Category")</p>
+            <h1>@FurnitureLocalizer.CategoryName(Model.Category)</h1>
+            <p class="iw-count">@UiText.T("Furniture.ItemsAvailable", Model.Products.Count)</p>
         </div>
         <form method="get" class="iw-sort-wrap">
-            <label for="sort">Sort by</label>
+            <label for="sort">@UiText.T("Furniture.SortBy")</label>
             <select class="iw-sort" id="sort" name="sort" onchange="this.form.submit()">
                 @{
                     var options = new (string Value, string Label)[]
                     {
-                        ("featured", "Featured"),
-                        ("price-asc", "Price: Low to High"),
-                        ("price-desc", "Price: High to Low"),
-                        ("name", "Product Name")
+                        ("featured", UiText.T("Furniture.SortFeatured")),
+                        ("price-asc", UiText.T("Furniture.SortPriceAsc")),
+                        ("price-desc", UiText.T("Furniture.SortPriceDesc")),
+                        ("name", UiText.T("Furniture.SortName"))
                     };
                 }
                 @foreach (var opt in options)
@@ -50,12 +55,12 @@ else
 
     <div class="iw-layout-shop">
         <aside class="iw-side">
-            <h2>Shop rooms</h2>
+            <h2>@UiText.T("Furniture.ShopRooms")</h2>
             <ul class="iw-side-list">
                 @foreach (var c in Model.AllCategories)
                 {
                     <li>
-                        <a class="@(c.Slug == Model.Category.Slug ? "is-active" : null)" href="/furniture/@c.Slug">@c.Name</a>
+                        <a class="@(c.Slug == Model.Category.Slug ? "is-active" : null)" href="/furniture/@c.Slug">@FurnitureLocalizer.CategoryName(c)</a>
                     </li>
                 }
             </ul>
@@ -64,7 +69,7 @@ else
         <div>
             @if (Model.Products.Count == 0)
             {
-                <div class="iw-empty">No hay productos en esta categoría todavía.</div>
+                <div class="iw-empty">@UiText.T("Furniture.EmptyCategory")</div>
             }
             else
             {

@@ -1,4 +1,5 @@
 @model ApartamentosRenta.Models.FurnitureProduct
+@using ApartamentosRenta.Services
 @{
     var thumb = Model.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
         ?? "/images/ironwood-logo.jpg";
@@ -8,14 +9,14 @@
     <div class="iw-card-media">
         @if (onSale)
         {
-            <span class="iw-badge-sale">Sale</span>
+            <span class="iw-badge-sale">@UiText.T("Furniture.Sale")</span>
         }
         <img src="@thumb" alt="@Model.Title" loading="lazy" />
     </div>
     <div class="iw-card-body">
         <h3 class="iw-card-title">@Model.Title</h3>
-        <p class="iw-card-sku">Model: @(string.IsNullOrWhiteSpace(Model.Sku) ? "—" : Model.Sku)</p>
-        <p class="iw-card-short">@Model.ShortDescription</p>
+        <p class="iw-card-sku">@UiText.T("Furniture.Model"): @(string.IsNullOrWhiteSpace(Model.Sku) ? "—" : Model.Sku)</p>
+        <p class="iw-card-short">@FurnitureLocalizer.Short(Model)</p>
         <div class="iw-price-row">
             @if (onSale)
             {
@@ -27,6 +28,6 @@
                 <span class="iw-price">$@Model.Price.ToString("N2")</span>
             }
         </div>
-        <span class="iw-card-cta">View details</span>
+        <span class="iw-card-cta">@UiText.T("Furniture.ViewDetails")</span>
     </div>
 </a>

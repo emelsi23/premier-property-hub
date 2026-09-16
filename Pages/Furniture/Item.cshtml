@@ -1,13 +1,14 @@
 @page "/furniture/item/{slug}"
 @model ApartamentosRenta.Pages.Furniture.ItemModel
+@using ApartamentosRenta.Services
 @{
-    ViewData["Title"] = Model.Product?.Title ?? "Producto";
+    ViewData["Title"] = Model.Product?.Title ?? UiText.T("Furniture.ProductNotFound");
     Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
 }
 
 @if (Model.Product is null)
 {
-    <div class="iw-empty">Producto no encontrado.</div>
+    <div class="iw-empty">@UiText.T("Furniture.ProductNotFound")</div>
 }
 else
 {
@@ -17,10 +18,10 @@ else
     var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
 
     <p class="iw-breadcrumb">
-        <a href="/furniture">Home</a>
+        <a href="/furniture">@UiText.T("Furniture.Home")</a>
         @if (p.Category is not null)
         {
-            <text> / </text><a href="/furniture/@p.Category.Slug">@p.Category.Name</a>
+            <text> / </text><a href="/furniture/@p.Category.Slug">@FurnitureLocalizer.CategoryName(p.Category)</a>
         }
         <text> / <strong>@p.Title</strong></text>
     </p>
@@ -33,8 +34,8 @@ else
                 </div>
                 @if (photos.Count > 1)
                 {
-                    <button type="button" class="iw-gallery-nav prev" data-gallery-prev aria-label="Foto anterior">‹</button>
-                    <button type="button" class="iw-gallery-nav next" data-gallery-next aria-label="Foto siguiente">›</button>
+                    <button type="button" class="iw-gallery-nav prev" data-gallery-prev aria-label="@UiText.T("Furniture.PrevPhoto")">‹</button>
+                    <button type="button" class="iw-gallery-nav next" data-gallery-next aria-label="@UiText.T("Furniture.NextPhoto")">›</button>
                 }
             </div>
             @if (photos.Count > 1)
@@ -42,7 +43,7 @@ else
                 <div class="iw-thumbs" id="iwThumbs">
                     @for (var i = 0; i < photos.Count; i++)
                     {
-                        <button type="button" class="@(i == 0 ? "is-active" : null)" data-src="@photos[i].Url" aria-label="Foto @(i + 1)">
+                        <button type="button" class="@(i == 0 ? "is-active" : null)" data-src="@photos[i].Url" aria-label="@UiText.T("Furniture.PhotoN", i + 1)">
                             <img src="@photos[i].Url" alt="" />
                         </button>
                     }
@@ -53,10 +54,10 @@ else
         <div class="iw-detail-panel">
             @if (onSale)
             {
-                <span class="iw-badge-sale">Sale</span>
+                <span class="iw-badge-sale">@UiText.T("Furniture.Sale")</span>
             }
             <h1>@p.Title</h1>
-            <p class="iw-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
+            <p class="iw-sku">@UiText.T("Furniture.Model"): @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
             <div class="iw-price-row">
                 @if (onSale)
                 {
@@ -68,16 +69,20 @@ else
                     <span class="iw-price">$@p.Price.ToString("N2")</span>
                 }
             </div>
-            @if (!string.IsNullOrWhiteSpace(p.ShortDescription))
-            {
-                <p class="iw-detail-desc" style="margin-bottom:0.5rem;color:#1c1917;font-weight:600;">@p.ShortDescription</p>
+            @{
+                var shortText = FurnitureLocalizer.Short(p);
+                var descText = FurnitureLocalizer.Description(p);
             }
-            <p class="iw-detail-desc">@p.Description</p>
+            @if (!string.IsNullOrWhiteSpace(shortText))
+            {
+                <p class="iw-detail-desc" style="margin-bottom:0.5rem;color:#1c1917;font-weight:600;">@shortText</p>
+            }
+            <p class="iw-detail-desc">@descText</p>
 
             <a class="iw-wa-btn" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">
-                Pedir por WhatsApp
+                @UiText.T("Furniture.OrderWhatsApp")
             </a>
-            <p class="iw-wa-note">Abre WhatsApp con el link de este producto. Sin carrito ni pago con tarjeta.</p>
+            <p class="iw-wa-note">@UiText.T("Furniture.WaNote")</p>
         </div>
     </article>
 }
