@@ -12,6 +12,8 @@ public class CategoryModel(AppDbContext context) : PageModel
 
     public List<FurnitureProduct> Products { get; private set; } = [];
 
+    public List<FurnitureCategory> AllCategories { get; private set; } = [];
+
     public string Sort { get; private set; } = "featured";
 
     public async Task<IActionResult> OnGetAsync(string category, string? sort)
@@ -21,8 +23,12 @@ public class CategoryModel(AppDbContext context) : PageModel
             return NotFound();
         }
 
-        Category = await context.FurnitureCategories.AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Slug == category && c.IsActive);
+        AllCategories = await context.FurnitureCategories.AsNoTracking()
+            .Where(c => c.IsActive)
+            .OrderBy(c => c.SortOrder)
+            .ToListAsync();
+
+        Category = AllCategories.FirstOrDefault(c => c.Slug == category);
 
         if (Category is null)
         {

@@ -12,81 +12,96 @@
 else
 {
     <p class="iw-breadcrumb">
-        <a href="/furniture">Home</a> / @Model.Category.Name
+        <a href="/furniture">Home</a> / <a href="/furniture">Furniture</a> / <strong>@Model.Category.Name</strong>
     </p>
 
     <div class="iw-toolbar">
-        <h1>@Model.Category.Name</h1>
-        <form method="get">
-            <label class="visually-hidden" for="sort">Ordenar</label>
+        <div>
+            <h1>@Model.Category.Name</h1>
+            <p class="iw-count">@Model.Products.Count items</p>
+        </div>
+        <form method="get" class="iw-sort-wrap">
+            <label for="sort">Sort by</label>
             <select class="iw-sort" id="sort" name="sort" onchange="this.form.submit()">
-                @if (Model.Sort == "featured")
-                {
-                    <option value="featured" selected>Destacados</option>
+                @{
+                    var options = new (string Value, string Label)[]
+                    {
+                        ("featured", "Featured"),
+                        ("price-asc", "Price: Low to High"),
+                        ("price-desc", "Price: High to Low"),
+                        ("name", "Product Name")
+                    };
                 }
-                else
+                @foreach (var opt in options)
                 {
-                    <option value="featured">Destacados</option>
-                }
-                @if (Model.Sort == "price-asc")
-                {
-                    <option value="price-asc" selected>Precio: menor a mayor</option>
-                }
-                else
-                {
-                    <option value="price-asc">Precio: menor a mayor</option>
-                }
-                @if (Model.Sort == "price-desc")
-                {
-                    <option value="price-desc" selected>Precio: mayor a menor</option>
-                }
-                else
-                {
-                    <option value="price-desc">Precio: mayor a menor</option>
-                }
-                @if (Model.Sort == "name")
-                {
-                    <option value="name" selected>Nombre</option>
-                }
-                else
-                {
-                    <option value="name">Nombre</option>
+                    if (Model.Sort == opt.Value)
+                    {
+                        <option value="@opt.Value" selected>@opt.Label</option>
+                    }
+                    else
+                    {
+                        <option value="@opt.Value">@opt.Label</option>
+                    }
                 }
             </select>
         </form>
     </div>
 
-    @if (Model.Products.Count == 0)
-    {
-        <div class="iw-empty">No hay productos en esta categoría todavía.</div>
-    }
-    else
-    {
-        <div class="iw-product-grid">
-            @foreach (var p in Model.Products)
+    <div class="iw-layout-shop">
+        <aside class="iw-side">
+            <h2>Categories</h2>
+            <ul class="iw-side-list">
+                @foreach (var c in Model.AllCategories)
+                {
+                    <li>
+                        <a class="@(c.Slug == Model.Category.Slug ? "is-active" : null)" href="/furniture/@c.Slug">@c.Name</a>
+                    </li>
+                }
+            </ul>
+        </aside>
+
+        <div>
+            @if (Model.Products.Count == 0)
             {
-                var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
-                    ?? "/images/ironwood-logo.jpg";
-                var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
-                <a class="iw-card" href="/furniture/item/@p.Slug">
-                    <div class="iw-card-media"><img src="@thumb" alt="@p.Title" loading="lazy" /></div>
-                    <div class="iw-card-body">
-                        @if (onSale)
-                        {
-                            <span class="iw-badge-sale">Sale</span>
-                        }
-                        <h2 class="iw-card-title">@p.Title</h2>
-                        <p class="iw-card-short">@p.ShortDescription</p>
-                        <div class="iw-price-row">
-                            <span class="iw-price">$@p.Price.ToString("N2")</span>
-                            @if (onSale)
-                            {
-                                <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
-                            }
-                        </div>
-                    </div>
-                </a>
+                <div class="iw-empty">No hay productos en esta categoría todavía.</div>
+            }
+            else
+            {
+                <div class="iw-product-grid">
+                    @foreach (var p in Model.Products)
+                    {
+                        var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
+                            ?? "/images/ironwood-logo.jpg";
+                        var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
+                        <a class="iw-card" href="/furniture/item/@p.Slug">
+                            <div class="iw-card-media">
+                                @if (onSale)
+                                {
+                                    <span class="iw-badge-sale">Sale</span>
+                                }
+                                <img src="@thumb" alt="@p.Title" loading="lazy" />
+                            </div>
+                            <div class="iw-card-body">
+                                <h2 class="iw-card-title">@p.Title</h2>
+                                <p class="iw-card-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
+                                <p class="iw-card-short">@p.ShortDescription</p>
+                                <div class="iw-price-row">
+                                    @if (onSale)
+                                    {
+                                        <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                                        <span class="iw-price">$@p.Price.ToString("N2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="iw-price">$@p.Price.ToString("N2")</span>
+                                    }
+                                </div>
+                                <span class="iw-card-cta">View details</span>
+                            </div>
+                        </a>
+                    }
+                </div>
             }
         </div>
-    }
+    </div>
 }

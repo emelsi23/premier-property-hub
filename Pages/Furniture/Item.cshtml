@@ -22,7 +22,7 @@ else
         {
             <text> / </text><a href="/furniture/@p.Category.Slug">@p.Category.Name</a>
         }
-        <text> / @p.Title</text>
+        <text> / <strong>@p.Title</strong></text>
     </p>
 
     <article class="iw-detail">
@@ -49,24 +49,28 @@ else
                 <span class="iw-badge-sale">Sale</span>
             }
             <h1>@p.Title</h1>
-            <p class="iw-sku">SKU: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
+            <p class="iw-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
             <div class="iw-price-row">
-                <span class="iw-price">$@p.Price.ToString("N2")</span>
                 @if (onSale)
                 {
                     <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                    <span class="iw-price">$@p.Price.ToString("N2")</span>
+                }
+                else
+                {
+                    <span class="iw-price">$@p.Price.ToString("N2")</span>
                 }
             </div>
             @if (!string.IsNullOrWhiteSpace(p.ShortDescription))
             {
-                <p class="iw-detail-desc" style="margin-bottom:0.5rem;">@p.ShortDescription</p>
+                <p class="iw-detail-desc" style="margin-bottom:0.5rem;color:#1c1917;font-weight:600;">@p.ShortDescription</p>
             }
             <p class="iw-detail-desc">@p.Description</p>
 
             <a class="iw-wa-btn" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">
                 Pedir por WhatsApp
             </a>
-            <p class="iw-wa-note">Te enviaremos un mensaje con el enlace de este producto. Sin pago en línea.</p>
+            <p class="iw-wa-note">Abre WhatsApp con el link de este producto. Sin carrito ni pago con tarjeta.</p>
         </div>
     </article>
 

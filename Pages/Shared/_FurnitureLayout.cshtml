@@ -20,23 +20,38 @@
     <link rel="stylesheet" href="~/css/furniture.css" asp-append-version="true" />
 </head>
 <body class="iw-body">
+    <div class="iw-topbar">
+        <div class="iw-topbar-inner">
+            <span><strong>Entrega y consultas por WhatsApp</strong> · Sin pago en línea</span>
+            <span>Ironwood Home Furniture Co.</span>
+        </div>
+    </div>
+
     <header class="iw-header">
         <div class="iw-header-inner">
-            <a class="iw-brand" href="/furniture" aria-label="Ironwood Home Furniture Co.">
-                <img src="~/images/ironwood-logo.jpg" alt="Ironwood Home Furniture Co." class="iw-logo" asp-append-version="true" />
-                <span class="iw-brand-text">
-                    <strong>IRONWOOD HOME</strong>
-                    <small>Furniture Co.</small>
-                </span>
-            </a>
-            <nav class="iw-nav" aria-label="Categorías">
-                <a class="iw-nav-link @(path.Equals("/furniture", StringComparison.OrdinalIgnoreCase) ? "is-active" : "")" href="/furniture">Home</a>
-                @foreach (var c in categories)
-                {
-                    var active = path.Contains($"/furniture/{c.Slug}", StringComparison.OrdinalIgnoreCase);
-                    <a class="iw-nav-link @(active ? "is-active" : "")" href="/furniture/@c.Slug">@c.Name</a>
-                }
-            </nav>
+            <div class="iw-header-row">
+                <a class="iw-brand" href="/furniture" aria-label="Ironwood Home Furniture Co.">
+                    <img src="~/images/ironwood-logo.jpg" alt="Ironwood Home Furniture Co." class="iw-logo" asp-append-version="true" />
+                    <span class="iw-brand-text">
+                        <strong>IRONWOOD HOME</strong>
+                        <small>Furniture Co.</small>
+                    </span>
+                </a>
+                <div class="iw-header-actions">
+                    <span class="iw-chip">Catálogo profesional</span>
+                </div>
+            </div>
+            <div class="iw-nav-wrap">
+                <nav class="iw-nav" aria-label="Categorías">
+                    <a class="iw-nav-link @(path.Equals("/furniture", StringComparison.OrdinalIgnoreCase) ? "is-active" : "")" href="/furniture">Home</a>
+                    @foreach (var c in categories)
+                    {
+                        var active = path.Contains($"/furniture/{c.Slug}", StringComparison.OrdinalIgnoreCase)
+                            && !path.Contains("/furniture/item/", StringComparison.OrdinalIgnoreCase);
+                        <a class="iw-nav-link @(active ? "is-active" : "")" href="/furniture/@c.Slug">@c.Name</a>
+                    }
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -46,14 +61,27 @@
 
     <footer class="iw-footer">
         <div class="iw-footer-inner">
-            <div class="iw-footer-brand">
-                <img src="~/images/ironwood-logo.jpg" alt="" class="iw-logo iw-logo-sm" asp-append-version="true" />
-                <div>
-                    <strong>Ironwood Home Furniture Co.</strong>
-                    <p>Muebles para toda la casa. Consultas por WhatsApp — sin carrito ni pago en línea.</p>
+            <div class="iw-footer-grid">
+                <div class="iw-footer-brand">
+                    <img src="~/images/ironwood-logo.jpg" alt="" class="iw-logo iw-logo-sm" asp-append-version="true" />
+                    <div>
+                        <strong>Ironwood Home Furniture Co.</strong>
+                        <p>Living, bedroom, dining y más. Elige el mueble y pídelo por WhatsApp con el link del producto.</p>
+                    </div>
+                </div>
+                <div class="iw-footer-col">
+                    <h3>Shop</h3>
+                    @foreach (var c in categories.Take(5))
+                    {
+                        <a href="/furniture/@c.Slug">@c.Name</a>
+                    }
+                </div>
+                <div class="iw-footer-col">
+                    <h3>Contacto</h3>
+                    <p>Consultas solo por WhatsApp desde cada producto. Sin carrito, Affirm ni tarjeta.</p>
                 </div>
             </div>
-            <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co.</p>
+            <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co. All rights reserved.</p>
         </div>
     </footer>
 </body>

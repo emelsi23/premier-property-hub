@@ -3,25 +3,46 @@
 @{
     ViewData["Title"] = "Home";
     Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
+    var catImages = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["living-room"] = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80",
+        ["bedroom"] = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80",
+        ["dining"] = "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80",
+        ["home-office"] = "https://images.unsplash.com/photo-1518455027359-f3f8164ba9c7?w=800&q=80",
+        ["outdoor"] = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80",
+        ["mattresses"] = "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
+        ["sale"] = "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80"
+    };
 }
 
 <section class="iw-hero">
-    <h1>Muebles para toda la casa</h1>
-    <p>Explora living, dormitorio, comedor y más. Elige un producto y pídelo por WhatsApp — sin carrito ni tarjeta.</p>
+    <div>
+        <h1>Stylish furniture for every room</h1>
+        <p>Sofás, camas, comedores y más. Explora el catálogo y pide por WhatsApp — te enviamos el link del producto.</p>
+        <a class="iw-hero-cta" href="/furniture/living-room">Shop Living Room</a>
+    </div>
 </section>
 
-<section>
-    <h2 class="iw-section-title">Categorías</h2>
+<section class="iw-section">
+    <div class="iw-section-head">
+        <h2 class="iw-section-title">Shop by room</h2>
+    </div>
     <div class="iw-cat-grid">
         @foreach (var c in Model.Categories)
         {
-            <a class="iw-cat-tile" href="/furniture/@c.Slug">@c.Name</a>
+            var img = catImages.GetValueOrDefault(c.Slug);
+            <a class="iw-cat-tile" href="/furniture/@c.Slug" style="@(img is null ? null : $"--iw-cat-img:url('{img}')")">
+                <span>@c.Name</span>
+            </a>
         }
     </div>
 </section>
 
-<section>
-    <h2 class="iw-section-title">Destacados</h2>
+<section class="iw-section">
+    <div class="iw-section-head">
+        <h2 class="iw-section-title">Featured pieces</h2>
+        <a class="iw-section-link" href="/furniture/living-room">View living room →</a>
+    </div>
     @if (Model.Featured.Count == 0)
     {
         <div class="iw-empty">Pronto agregaremos productos destacados.</div>
@@ -35,21 +56,29 @@
                     ?? "/images/ironwood-logo.jpg";
                 var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
                 <a class="iw-card" href="/furniture/item/@p.Slug">
-                    <div class="iw-card-media"><img src="@thumb" alt="@p.Title" loading="lazy" /></div>
-                    <div class="iw-card-body">
+                    <div class="iw-card-media">
                         @if (onSale)
                         {
                             <span class="iw-badge-sale">Sale</span>
                         }
+                        <img src="@thumb" alt="@p.Title" loading="lazy" />
+                    </div>
+                    <div class="iw-card-body">
                         <h3 class="iw-card-title">@p.Title</h3>
+                        <p class="iw-card-sku">Model: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
                         <p class="iw-card-short">@p.ShortDescription</p>
                         <div class="iw-price-row">
-                            <span class="iw-price">$@p.Price.ToString("N2")</span>
                             @if (onSale)
                             {
                                 <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                                <span class="iw-price">$@p.Price.ToString("N2")</span>
+                            }
+                            else
+                            {
+                                <span class="iw-price">$@p.Price.ToString("N2")</span>
                             }
                         </div>
+                        <span class="iw-card-cta">View details</span>
                     </div>
                 </a>
             }
