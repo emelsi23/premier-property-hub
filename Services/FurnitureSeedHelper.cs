@@ -11,25 +11,45 @@ public static class FurnitureSeedHelper
         await EnsureCategoriesAsync(context);
 
         var categories = await context.FurnitureCategories.ToDictionaryAsync(c => c.Slug, c => c.Id);
-        var existingSkus = await context.FurnitureProducts
-            .Select(p => p.Sku)
+        var existing = await context.FurnitureProducts
+            .Include(p => p.Photos)
             .ToListAsync();
-        var existingSkuSet = existingSkus.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var bySku = existing.ToDictionary(p => p.Sku, StringComparer.OrdinalIgnoreCase);
 
         var now = DateTime.UtcNow;
-        var toAdd = new List<FurnitureProduct>();
+        var added = 0;
+        var refreshed = 0;
 
         foreach (var s in FurnitureCatalogSeed.All)
         {
-            if (existingSkuSet.Contains(s.Sku) || !categories.TryGetValue(s.CategorySlug, out var categoryId))
+            if (!categories.TryGetValue(s.CategorySlug, out var categoryId))
             {
+                continue;
+            }
+
+            if (bySku.TryGetValue(s.Sku, out var product))
+            {
+                if (PhotosNeedRefresh(product.Photos, s.Photos))
+                {
+                    context.FurniturePhotos.RemoveRange(product.Photos);
+                    product.Photos = s.Photos.Select((url, i) => new FurniturePhoto
+                    {
+                        ProductId = product.Id,
+                        Url = url,
+                        SortOrder = i,
+                        IsPrimary = i == 0
+                    }).ToList();
+                    product.UpdatedAt = now;
+                    refreshed++;
+                }
+
                 continue;
             }
 
             var baseSlug = $"{SlugHelper.FromText(s.Title)}-{s.Sku.ToLowerInvariant().Replace("iw-", "", StringComparison.OrdinalIgnoreCase)}";
             var slug = await SlugHelper.EnsureUniqueFurnitureProductAsync(context, baseSlug);
 
-            toAdd.Add(new FurnitureProduct
+            context.FurnitureProducts.Add(new FurnitureProduct
             {
                 Title = s.Title,
                 Slug = slug,
@@ -50,18 +70,50 @@ public static class FurnitureSeedHelper
                     IsPrimary = i == 0
                 }).ToList()
             });
-
-            existingSkuSet.Add(s.Sku);
+            added++;
         }
 
-        if (toAdd.Count == 0)
+        if (added > 0 || refreshed > 0)
         {
-            return;
+            await context.SaveChangesAsync();
+            Console.WriteLine($"Furniture catalog: +{added} products, refreshed photos on {refreshed} (library {FurniturePhotoLibrary.Count} unique images).");
+        }
+    }
+
+    private static bool PhotosNeedRefresh(IReadOnlyList<FurniturePhoto> existing, IReadOnlyList<string> desired)
+    {
+        if (existing.Count == 0)
+        {
+            return desired.Count > 0;
         }
 
-        context.FurnitureProducts.AddRange(toAdd);
-        await context.SaveChangesAsync();
-        Console.WriteLine($"Furniture catalog seeded: +{toAdd.Count} products (catalog size {FurnitureCatalogSeed.All.Count}).");
+        // Refresh if any Unsplash/broken pool URL remains, or set doesn't match catalog assignment.
+        if (existing.Any(p =>
+                p.Url.Contains("images.unsplash.com", StringComparison.OrdinalIgnoreCase)
+                || p.Url.Contains("photo-1532372320572", StringComparison.OrdinalIgnoreCase)
+                || p.Url.Contains("photo-1518455027359", StringComparison.OrdinalIgnoreCase)
+                || p.Url.Contains("photo-1594026112284", StringComparison.OrdinalIgnoreCase)
+                || p.Url.Contains("photo-1593062096033", StringComparison.OrdinalIgnoreCase)
+                || p.Url.Contains("photo-1600047509807", StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        var current = existing.OrderBy(p => p.SortOrder).Select(p => p.Url).ToList();
+        if (current.Count != desired.Count)
+        {
+            return true;
+        }
+
+        for (var i = 0; i < desired.Count; i++)
+        {
+            if (!string.Equals(current[i], desired[i], StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static async Task EnsureCategoriesAsync(AppDbContext context)
