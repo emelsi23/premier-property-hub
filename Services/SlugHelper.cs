@@ -64,6 +64,20 @@ public static partial class SlugHelper
         return slug;
     }
 
+    public static async Task<string> EnsureUniqueFurnitureProductAsync(AppDbContext context, string baseSlug, int? excludeId = null)
+    {
+        var slug = baseSlug;
+        var counter = 1;
+
+        while (await context.FurnitureProducts.AnyAsync(p =>
+                   p.Slug == slug && (excludeId == null || p.Id != excludeId)))
+        {
+            slug = $"{baseSlug}-{counter++}";
+        }
+
+        return slug;
+    }
+
     [GeneratedRegex(@"[^a-z0-9]+")]
     private static partial Regex NonAlphanumeric();
 

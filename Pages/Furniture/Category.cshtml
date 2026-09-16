@@ -1,0 +1,92 @@
+@page "/furniture/{category}"
+@model ApartamentosRenta.Pages.Furniture.CategoryModel
+@{
+    ViewData["Title"] = Model.Category?.Name ?? "Categoría";
+    Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
+}
+
+@if (Model.Category is null)
+{
+    <div class="iw-empty">Categoría no encontrada.</div>
+}
+else
+{
+    <p class="iw-breadcrumb">
+        <a href="/furniture">Home</a> / @Model.Category.Name
+    </p>
+
+    <div class="iw-toolbar">
+        <h1>@Model.Category.Name</h1>
+        <form method="get">
+            <label class="visually-hidden" for="sort">Ordenar</label>
+            <select class="iw-sort" id="sort" name="sort" onchange="this.form.submit()">
+                @if (Model.Sort == "featured")
+                {
+                    <option value="featured" selected>Destacados</option>
+                }
+                else
+                {
+                    <option value="featured">Destacados</option>
+                }
+                @if (Model.Sort == "price-asc")
+                {
+                    <option value="price-asc" selected>Precio: menor a mayor</option>
+                }
+                else
+                {
+                    <option value="price-asc">Precio: menor a mayor</option>
+                }
+                @if (Model.Sort == "price-desc")
+                {
+                    <option value="price-desc" selected>Precio: mayor a menor</option>
+                }
+                else
+                {
+                    <option value="price-desc">Precio: mayor a menor</option>
+                }
+                @if (Model.Sort == "name")
+                {
+                    <option value="name" selected>Nombre</option>
+                }
+                else
+                {
+                    <option value="name">Nombre</option>
+                }
+            </select>
+        </form>
+    </div>
+
+    @if (Model.Products.Count == 0)
+    {
+        <div class="iw-empty">No hay productos en esta categoría todavía.</div>
+    }
+    else
+    {
+        <div class="iw-product-grid">
+            @foreach (var p in Model.Products)
+            {
+                var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
+                    ?? "/images/ironwood-logo.jpg";
+                var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
+                <a class="iw-card" href="/furniture/item/@p.Slug">
+                    <div class="iw-card-media"><img src="@thumb" alt="@p.Title" loading="lazy" /></div>
+                    <div class="iw-card-body">
+                        @if (onSale)
+                        {
+                            <span class="iw-badge-sale">Sale</span>
+                        }
+                        <h2 class="iw-card-title">@p.Title</h2>
+                        <p class="iw-card-short">@p.ShortDescription</p>
+                        <div class="iw-price-row">
+                            <span class="iw-price">$@p.Price.ToString("N2")</span>
+                            @if (onSale)
+                            {
+                                <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+}

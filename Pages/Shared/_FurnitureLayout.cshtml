@@ -1,0 +1,60 @@
+@using ApartamentosRenta.Data
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+@{
+    var categories = await Db.FurnitureCategories.AsNoTracking()
+        .Where(c => c.IsActive)
+        .OrderBy(c => c.SortOrder)
+        .ToListAsync();
+    var path = Context.Request.Path.Value ?? "";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>@ViewData["Title"] · Ironwood Home Furniture Co.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/furniture.css" asp-append-version="true" />
+</head>
+<body class="iw-body">
+    <header class="iw-header">
+        <div class="iw-header-inner">
+            <a class="iw-brand" href="/furniture" aria-label="Ironwood Home Furniture Co.">
+                <img src="~/images/ironwood-logo.jpg" alt="Ironwood Home Furniture Co." class="iw-logo" asp-append-version="true" />
+                <span class="iw-brand-text">
+                    <strong>IRONWOOD HOME</strong>
+                    <small>Furniture Co.</small>
+                </span>
+            </a>
+            <nav class="iw-nav" aria-label="Categorías">
+                <a class="iw-nav-link @(path.Equals("/furniture", StringComparison.OrdinalIgnoreCase) ? "is-active" : "")" href="/furniture">Home</a>
+                @foreach (var c in categories)
+                {
+                    var active = path.Contains($"/furniture/{c.Slug}", StringComparison.OrdinalIgnoreCase);
+                    <a class="iw-nav-link @(active ? "is-active" : "")" href="/furniture/@c.Slug">@c.Name</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main class="iw-main">
+        @RenderBody()
+    </main>
+
+    <footer class="iw-footer">
+        <div class="iw-footer-inner">
+            <div class="iw-footer-brand">
+                <img src="~/images/ironwood-logo.jpg" alt="" class="iw-logo iw-logo-sm" asp-append-version="true" />
+                <div>
+                    <strong>Ironwood Home Furniture Co.</strong>
+                    <p>Muebles para toda la casa. Consultas por WhatsApp — sin carrito ni pago en línea.</p>
+                </div>
+            </div>
+            <p class="iw-footer-copy">&copy; @DateTime.UtcNow.Year Ironwood Home Furniture Co.</p>
+        </div>
+    </footer>
+</body>
+</html>

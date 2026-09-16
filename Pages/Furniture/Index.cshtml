@@ -1,0 +1,58 @@
+@page "/furniture"
+@model ApartamentosRenta.Pages.Furniture.IndexModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
+}
+
+<section class="iw-hero">
+    <h1>Muebles para toda la casa</h1>
+    <p>Explora living, dormitorio, comedor y más. Elige un producto y pídelo por WhatsApp — sin carrito ni tarjeta.</p>
+</section>
+
+<section>
+    <h2 class="iw-section-title">Categorías</h2>
+    <div class="iw-cat-grid">
+        @foreach (var c in Model.Categories)
+        {
+            <a class="iw-cat-tile" href="/furniture/@c.Slug">@c.Name</a>
+        }
+    </div>
+</section>
+
+<section>
+    <h2 class="iw-section-title">Destacados</h2>
+    @if (Model.Featured.Count == 0)
+    {
+        <div class="iw-empty">Pronto agregaremos productos destacados.</div>
+    }
+    else
+    {
+        <div class="iw-product-grid">
+            @foreach (var p in Model.Featured)
+            {
+                var thumb = p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault()
+                    ?? "/images/ironwood-logo.jpg";
+                var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
+                <a class="iw-card" href="/furniture/item/@p.Slug">
+                    <div class="iw-card-media"><img src="@thumb" alt="@p.Title" loading="lazy" /></div>
+                    <div class="iw-card-body">
+                        @if (onSale)
+                        {
+                            <span class="iw-badge-sale">Sale</span>
+                        }
+                        <h3 class="iw-card-title">@p.Title</h3>
+                        <p class="iw-card-short">@p.ShortDescription</p>
+                        <div class="iw-price-row">
+                            <span class="iw-price">$@p.Price.ToString("N2")</span>
+                            @if (onSale)
+                            {
+                                <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</section>

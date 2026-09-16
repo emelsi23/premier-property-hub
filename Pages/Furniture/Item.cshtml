@@ -1,0 +1,89 @@
+@page "/furniture/item/{slug}"
+@model ApartamentosRenta.Pages.Furniture.ItemModel
+@{
+    ViewData["Title"] = Model.Product?.Title ?? "Producto";
+    Layout = "/Pages/Shared/_FurnitureLayout.cshtml";
+}
+
+@if (Model.Product is null)
+{
+    <div class="iw-empty">Producto no encontrado.</div>
+}
+else
+{
+    var p = Model.Product;
+    var photos = p.Photos.OrderBy(x => x.SortOrder).ToList();
+    var main = photos.FirstOrDefault()?.Url ?? "/images/ironwood-logo.jpg";
+    var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
+
+    <p class="iw-breadcrumb">
+        <a href="/furniture">Home</a>
+        @if (p.Category is not null)
+        {
+            <text> / </text><a href="/furniture/@p.Category.Slug">@p.Category.Name</a>
+        }
+        <text> / @p.Title</text>
+    </p>
+
+    <article class="iw-detail">
+        <div class="iw-gallery">
+            <div class="iw-gallery-main">
+                <img id="iwMainPhoto" src="@main" alt="@p.Title" />
+            </div>
+            @if (photos.Count > 1)
+            {
+                <div class="iw-thumbs" id="iwThumbs">
+                    @for (var i = 0; i < photos.Count; i++)
+                    {
+                        <button type="button" class="@(i == 0 ? "is-active" : null)" data-src="@photos[i].Url" aria-label="Foto @(i + 1)">
+                            <img src="@photos[i].Url" alt="" />
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="iw-detail-panel">
+            @if (onSale)
+            {
+                <span class="iw-badge-sale">Sale</span>
+            }
+            <h1>@p.Title</h1>
+            <p class="iw-sku">SKU: @(string.IsNullOrWhiteSpace(p.Sku) ? "—" : p.Sku)</p>
+            <div class="iw-price-row">
+                <span class="iw-price">$@p.Price.ToString("N2")</span>
+                @if (onSale)
+                {
+                    <span class="iw-price-compare">$@p.CompareAtPrice!.Value.ToString("N2")</span>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(p.ShortDescription))
+            {
+                <p class="iw-detail-desc" style="margin-bottom:0.5rem;">@p.ShortDescription</p>
+            }
+            <p class="iw-detail-desc">@p.Description</p>
+
+            <a class="iw-wa-btn" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">
+                Pedir por WhatsApp
+            </a>
+            <p class="iw-wa-note">Te enviaremos un mensaje con el enlace de este producto. Sin pago en línea.</p>
+        </div>
+    </article>
+
+    <script>
+        (function () {
+            const main = document.getElementById('iwMainPhoto');
+            const thumbs = document.getElementById('iwThumbs');
+            if (!main || !thumbs) return;
+            thumbs.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const src = btn.getAttribute('data-src');
+                    if (!src) return;
+                    main.src = src;
+                    thumbs.querySelectorAll('button').forEach(b => b.classList.remove('is-active'));
+                    btn.classList.add('is-active');
+                });
+            });
+        })();
+    </script>
+}

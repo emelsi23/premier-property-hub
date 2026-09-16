@@ -15,6 +15,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Agente> Agentes => Set<Agente>();
     public DbSet<ReservaGenerica> ReservasGenericas => Set<ReservaGenerica>();
     public DbSet<ReservaPaymentSettings> ReservaPaymentSettings => Set<ReservaPaymentSettings>();
+    public DbSet<FurnitureCategory> FurnitureCategories => Set<FurnitureCategory>();
+    public DbSet<FurnitureProduct> FurnitureProducts => Set<FurnitureProduct>();
+    public DbSet<FurniturePhoto> FurniturePhotos => Set<FurniturePhoto>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -122,6 +125,36 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(s => s.NoShowFee).HasPrecision(10, 2);
             entity.Property(s => s.AdminUsername).HasMaxLength(64);
             entity.HasIndex(s => s.AdminUsername).IsUnique();
+        });
+
+        modelBuilder.Entity<FurnitureCategory>(entity =>
+        {
+            entity.HasIndex(c => c.Slug).IsUnique();
+            entity.HasIndex(c => c.SortOrder);
+            entity.HasIndex(c => c.IsActive);
+        });
+
+        modelBuilder.Entity<FurnitureProduct>(entity =>
+        {
+            entity.Property(p => p.Price).HasPrecision(10, 2);
+            entity.Property(p => p.CompareAtPrice).HasPrecision(10, 2);
+            entity.HasIndex(p => p.Slug).IsUnique();
+            entity.HasIndex(p => p.IsActive);
+            entity.HasIndex(p => p.IsFeatured);
+            entity.HasIndex(p => p.CategoryId);
+            entity.HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<FurniturePhoto>(entity =>
+        {
+            entity.HasOne(f => f.Product)
+                .WithMany(p => p.Photos)
+                .HasForeignKey(f => f.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(f => f.ProductId);
         });
     }
 }

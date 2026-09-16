@@ -23,15 +23,16 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 6 * 1024 * 1024;
+    options.Limits.MaxRequestBodySize = 12 * 1024 * 1024;
 });
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 6 * 1024 * 1024;
+    options.MultipartBodyLengthLimit = 12 * 1024 * 1024;
 });
 
 builder.Services.AddScoped<PropertyPhotoUploadService>();
 builder.Services.AddScoped<AgentPhotoUploadService>();
+builder.Services.AddScoped<FurniturePhotoUploadService>();
 SiteCulture.Configure(builder.Services);
 builder.Services.AddAdminRazorPages();
 builder.Services.AddAppDatabase(builder.Configuration);
@@ -141,6 +142,7 @@ static async Task InitializeDatabaseAsync(IServiceProvider services)
             await StampSealSeedHelper.EnsureForAllPropertiesAsync(db);
             await ContractSpanishLocalizationHelper.ApplySpanishDefaultsIfLegacyEnglishAsync(db);
             await AgentSeedHelper.EnsureSampleAgentAsync(db);
+            await FurnitureSeedHelper.EnsureCatalogAsync(db);
             Console.WriteLine("Database initialized successfully.");
             return;
         }

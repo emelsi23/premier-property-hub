@@ -11,6 +11,7 @@
     var isContract = currentPage.StartsWith("/Admin/Contract", StringComparison.OrdinalIgnoreCase);
     var isStampSeals = currentPage.StartsWith("/Admin/StampSeals", StringComparison.OrdinalIgnoreCase);
     var isAgents = currentPage.StartsWith("/Admin/Agents", StringComparison.OrdinalIgnoreCase);
+    var isFurniture = currentPage.StartsWith("/Admin/Furniture", StringComparison.OrdinalIgnoreCase);
     var username = AdminUsers.CurrentUsername(User);
     var account = AdminUsers.FindByUsername(AuthSettings.Value, username);
     var displayName = account?.EffectiveDisplayName
@@ -62,6 +63,7 @@
                 <p class="admin-nav-label">Compartido</p>
                 <a class="admin-nav-link @(isProperties ? "active" : "")" asp-page="/Admin/Index">Propiedades</a>
                 <a class="admin-nav-link @(isAgents ? "active" : "")" asp-page="/Admin/Agents/Index">Agentes</a>
+                <a class="admin-nav-link @(isFurniture ? "active" : "")" asp-page="/Admin/Furniture/Index">Muebles</a>
 
                 <p class="admin-nav-label">Su bandeja</p>
                 <a class="admin-nav-link @(isAppointments ? "active" : "")" asp-page="/Admin/Appointments/Index">Citas</a>
@@ -88,6 +90,7 @@
             <p class="admin-nav-label">Compartido</p>
             <a class="admin-nav-link @(isProperties ? "active" : "")" asp-page="/Admin/Index">Propiedades</a>
             <a class="admin-nav-link @(isAgents ? "active" : "")" asp-page="/Admin/Agents/Index">Agentes</a>
+            <a class="admin-nav-link @(isFurniture ? "active" : "")" asp-page="/Admin/Furniture/Index">Muebles</a>
 
             <p class="admin-nav-label">Su bandeja</p>
             <a class="admin-nav-link @(isAppointments ? "active" : "")" asp-page="/Admin/Appointments/Index">Citas</a>
