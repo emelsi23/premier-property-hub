@@ -169,6 +169,35 @@ public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
         });
     }
 
+    public async Task<IActionResult> OnPostSkipIdentityAsync(Guid token)
+    {
+        var reserva = await context.ReservasGenericas.FirstOrDefaultAsync(r => r.PublicToken == token);
+        if (reserva is null)
+        {
+            return new JsonResult(new { success = false, error = "Reserva no encontrada." });
+        }
+
+        if (reserva.Estado is EstadoReservaGenerica.Completada or EstadoReservaGenerica.Cancelada)
+        {
+            return new JsonResult(new { success = false, error = "Esta reserva ya fue procesada." });
+        }
+
+        if (reserva.Estado is EstadoReservaGenerica.EsperandoIdentidad)
+        {
+            reserva.Estado = EstadoReservaGenerica.EsperandoPago;
+            await context.SaveChangesAsync();
+        }
+
+        var settings = await ReservaPaymentSettingsService.GetOrCreateAsync(context, reserva.AdminUsername);
+        return new JsonResult(new
+        {
+            success = true,
+            next = "payment",
+            skippedIdentity = true,
+            payment = BuildPaymentPayload(settings, reserva.DepositAmount > 0 ? reserva.DepositAmount : settings.DepositAmount)
+        });
+    }
+
     public async Task<IActionResult> OnGetPaymentOptionsAsync(Guid token)
     {
         var reserva = await context.ReservasGenericas.AsNoTracking().FirstOrDefaultAsync(r => r.PublicToken == token);

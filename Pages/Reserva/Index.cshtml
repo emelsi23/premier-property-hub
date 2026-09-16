@@ -51,7 +51,7 @@
                     Complete este protocolo de forma segura. Su reserva queda protegida y el depósito es reembolsable según los términos.
                     @if (Model.PaymentSettings.RequireIdentitySelfie)
                     {
-                        <text> Al firmar, verificaremos su identidad con documento y selfie.</text>
+                        <text> Al firmar, podrá verificar su identidad con documento y selfie (opcional) o continuar directo al pago.</text>
                     }
                 </p>
             </header>
@@ -202,7 +202,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 16.5c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M14 10h5M14 13h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </div>
             <h2 id="identityTitle">Verificación de identidad</h2>
-            <p class="reserva-modal-text">Para proteger su reserva, suba una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara).</p>
+            <p class="reserva-modal-text">Para proteger su reserva, puede subir una foto clara de su <strong>documento de identidad junto con un selfie</strong> (usted sosteniendo su ID frente a la cámara). <strong>Este paso es opcional.</strong></p>
             <ul class="reserva-modal-tips">
                 <li>Buena iluminación, sin reflejos</li>
                 <li>ID legible y rostro visible</li>
@@ -218,6 +218,7 @@
             </div>
             <p id="identityError" class="reserva-error" hidden></p>
             <button type="button" class="reserva-submit" id="uploadIdentityBtn" disabled>Subir documento</button>
+            <button type="button" class="reserva-skip-btn" id="skipIdentityBtn">Continuar sin verificación</button>
         </div>
     </div>
 
@@ -512,9 +513,18 @@
         uploadPaymentBtn.disabled = !(paymentFile.files && paymentFile.files[0]);
     }
 
-    function showSatisfactionThenPayment(pay) {
+    function showSatisfactionThenPayment(pay, options) {
         identityModal.hidden = true;
         applyPaymentOptions(pay);
+        const title = satisfactionModal.querySelector('h2');
+        const text = satisfactionModal.querySelector('.reserva-modal-text');
+        if (options?.skipped) {
+            if (title) title.textContent = 'Continúe con el pago';
+            if (text) text.textContent = 'Puede completar su reserva ahora. En un momento le mostraremos las opciones de pago.';
+        } else {
+            if (title) title.textContent = '¡Identidad verificada!';
+            if (text) text.textContent = 'Su documento fue recibido correctamente. En un momento le mostraremos las opciones de pago para completar su reserva.';
+        }
         if (satisfactionBar) {
             satisfactionBar.style.transition = 'none';
             satisfactionBar.style.width = '0%';
@@ -615,6 +625,42 @@
             showErr(identityError, 'Error de conexión. Intente de nuevo.');
             uploadIdentityBtn.disabled = false;
             uploadIdentityBtn.textContent = 'Subir documento';
+        }
+    });
+
+    document.getElementById('skipIdentityBtn')?.addEventListener('click', async () => {
+        hideErr(identityError);
+        if (!publicToken) {
+            showErr(identityError, 'No se encontró la reserva. Vuelva a firmar el formulario.');
+            return;
+        }
+
+        const skipBtn = document.getElementById('skipIdentityBtn');
+        skipBtn.disabled = true;
+        skipBtn.textContent = 'Continuando…';
+
+        const fd = new FormData();
+        fd.append('token', publicToken);
+
+        try {
+            const res = await fetch(`${window.location.pathname}?handler=SkipIdentity`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: fd
+            });
+            const data = await res.json();
+            if (!data.success) {
+                showErr(identityError, data.error || 'No se pudo continuar.');
+                skipBtn.disabled = false;
+                skipBtn.textContent = 'Continuar sin verificación';
+                return;
+            }
+
+            showSatisfactionThenPayment(data.payment, { skipped: true });
+        } catch {
+            showErr(identityError, 'Error de conexión. Intente de nuevo.');
+            skipBtn.disabled = false;
+            skipBtn.textContent = 'Continuar sin verificación';
         }
     });
 

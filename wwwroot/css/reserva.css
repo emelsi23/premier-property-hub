@@ -428,6 +428,31 @@ html {
   box-shadow: none;
 }
 
+.reserva-skip-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.reserva-skip-btn:hover:not(:disabled) {
+  color: #374151;
+}
+
+.reserva-skip-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .reserva-doc-footer {
   margin-top: 1.75rem;
   padding-top: 1rem;
