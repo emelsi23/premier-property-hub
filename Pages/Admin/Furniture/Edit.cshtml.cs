@@ -22,7 +22,8 @@ public class EditModel(AppDbContext context, FurniturePhotoUploadService photoUp
     public async Task<IActionResult> OnGetAsync(int id)
     {
         var product = await context.FurnitureProducts
-            .Include(p => p.Photos)
+            .Include(p => p.Photos).ThenInclude(ph => ph.ColorOption)
+            .Include(p => p.ColorOptions)
             .FirstOrDefaultAsync(p => p.Id == id);
         if (product is null)
         {
@@ -39,6 +40,7 @@ public class EditModel(AppDbContext context, FurniturePhotoUploadService photoUp
     {
         var product = await context.FurnitureProducts
             .Include(p => p.Photos)
+            .Include(p => p.ColorOptions)
             .FirstOrDefaultAsync(p => p.Id == id);
         if (product is null)
         {
@@ -48,8 +50,8 @@ public class EditModel(AppDbContext context, FurniturePhotoUploadService photoUp
         CurrentSlug = product.Slug;
         await LoadCategoriesAsync();
 
-        var urlList = Input.ParseFotoUrls().ToList();
-        if (urlList.Count == 0 && FotoUploads.All(f => f.Length == 0))
+        var lines = Input.ParseFotoLines().ToList();
+        if (lines.Count == 0 && FotoUploads.All(f => f.Length == 0))
         {
             ModelState.AddModelError("FotoUploads", "Deja al menos una foto (URL o archivo nuevo).");
         }
@@ -68,19 +70,24 @@ public class EditModel(AppDbContext context, FurniturePhotoUploadService photoUp
         FurnitureProductHelper.ApplyInput(product, Input);
         await context.SaveChangesAsync();
 
-        var uploaded = await photoUpload.SaveAsync(product.Id, FotoUploads);
-        var allUrls = urlList.Concat(uploaded).ToList();
+        await FurnitureProductHelper.ReplaceColorsAsync(context, product, Input);
 
-        var removedLocal = product.Photos
-            .Select(p => p.Url)
-            .Where(u => u.StartsWith("/uploads/furniture/", StringComparison.OrdinalIgnoreCase)
-                        && !allUrls.Contains(u, StringComparer.OrdinalIgnoreCase));
-        foreach (var url in removedLocal)
+        var uploaded = await photoUpload.SaveAsync(product.Id, FotoUploads);
+        var uploadColor = string.IsNullOrWhiteSpace(Input.UploadColorName) ? null : Input.UploadColorName.Trim();
+        var allLines = lines
+            .Concat(uploaded.Select(url => (Url: url, ColorName: uploadColor)))
+            .ToList();
+
+        var keptUrls = allLines.Select(x => x.Url).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var url in product.Photos
+                     .Select(p => p.Url)
+                     .Where(u => u.StartsWith("/uploads/furniture/", StringComparison.OrdinalIgnoreCase)
+                                 && !keptUrls.Contains(u)))
         {
             photoUpload.TryDeleteLocalUrl(url);
         }
 
-        await FurnitureProductHelper.ReplacePhotosAsync(context, product, allUrls);
+        await FurnitureProductHelper.ReplacePhotosAsync(context, product, allLines);
         CurrentSlug = product.Slug;
         return RedirectToPage("Index");
     }

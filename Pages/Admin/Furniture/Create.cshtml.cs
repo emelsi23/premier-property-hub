@@ -20,6 +20,8 @@ public class CreateModel(AppDbContext context, FurniturePhotoUploadService photo
 
     public async Task OnGetAsync()
     {
+        Input.ColorsText = "Natural Beige|#E8DCC8\nWarm Taupe|#B8A08A\nCharcoal|#2C2C2C\nNavy|#1B2A4A";
+        Input.AllowColorPreview = true;
         await LoadCategoriesAsync();
     }
 
@@ -27,8 +29,8 @@ public class CreateModel(AppDbContext context, FurniturePhotoUploadService photo
     {
         await LoadCategoriesAsync();
 
-        var urlList = Input.ParseFotoUrls().ToList();
-        if (urlList.Count == 0 && FotoUploads.All(f => f.Length == 0))
+        var lines = Input.ParseFotoLines().ToList();
+        if (lines.Count == 0 && FotoUploads.All(f => f.Length == 0))
         {
             ModelState.AddModelError("FotoUploads", "Sube al menos una imagen o agrega una URL.");
         }
@@ -55,9 +57,14 @@ public class CreateModel(AppDbContext context, FurniturePhotoUploadService photo
         context.FurnitureProducts.Add(product);
         await context.SaveChangesAsync();
 
+        await FurnitureProductHelper.ReplaceColorsAsync(context, product, Input);
+
         var uploaded = await photoUpload.SaveAsync(product.Id, FotoUploads);
-        var allUrls = urlList.Concat(uploaded).ToList();
-        await FurnitureProductHelper.ReplacePhotosAsync(context, product, allUrls);
+        var uploadColor = string.IsNullOrWhiteSpace(Input.UploadColorName) ? null : Input.UploadColorName.Trim();
+        var allLines = lines
+            .Concat(uploaded.Select(url => (Url: url, ColorName: uploadColor)))
+            .ToList();
+        await FurnitureProductHelper.ReplacePhotosAsync(context, product, allLines);
 
         return RedirectToPage("Index");
     }

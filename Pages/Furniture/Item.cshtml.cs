@@ -18,6 +18,7 @@ public class ItemModel(AppDbContext context) : PageModel
         Product = await context.FurnitureProducts.AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.Photos)
+            .Include(p => p.ColorOptions)
             .FirstOrDefaultAsync(p => p.Slug == slug && p.IsActive);
 
         if (Product is null)
@@ -26,8 +27,10 @@ public class ItemModel(AppDbContext context) : PageModel
         }
 
         var productUrl = $"{Request.Scheme}://{Request.Host}/furniture/item/{Product.Slug}";
+        var defaultColor = Product.ColorOptions.OrderBy(c => c.SortOrder).FirstOrDefault();
+        var colorPart = defaultColor is null ? "" : $" · Color: {defaultColor.Name}";
         var message =
-            $"Hola, me interesa: {Product.Title} (SKU {Product.Sku}) — {productUrl}";
+            $"Hola, me interesa: {Product.Title} (SKU {Product.Sku}){colorPart} — {productUrl}";
         WhatsAppUrl = WhatsAppLinkHelper.BuildUrl(null, message);
 
         return Page();

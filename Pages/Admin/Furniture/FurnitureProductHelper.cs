@@ -32,23 +32,66 @@ public static class FurnitureProductHelper
         product.CategoryId = input.CategoryId;
         product.IsActive = input.IsActive;
         product.IsFeatured = input.IsFeatured;
+        product.AllowColorPreview = input.AllowColorPreview;
         product.UpdatedAt = DateTime.UtcNow;
     }
 
-    public static async Task ReplacePhotosAsync(AppDbContext context, FurnitureProduct product, IReadOnlyList<string> urls)
+    public static async Task ReplaceColorsAsync(AppDbContext context, FurnitureProduct product, FurnitureProductInput input)
+    {
+        var existing = await context.FurnitureColorOptions
+            .Where(c => c.ProductId == product.Id)
+            .ToListAsync();
+        context.FurnitureColorOptions.RemoveRange(existing);
+        await context.SaveChangesAsync();
+
+        var order = 0;
+        foreach (var (name, hex) in input.ParseColors())
+        {
+            context.FurnitureColorOptions.Add(new FurnitureColorOption
+            {
+                ProductId = product.Id,
+                Name = name,
+                HexColor = hex,
+                SortOrder = order,
+                IsDefault = order == 0
+            });
+            order++;
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task ReplacePhotosAsync(
+        AppDbContext context,
+        FurnitureProduct product,
+        IReadOnlyList<(string Url, string? ColorName)> lines)
     {
         var existing = await context.FurniturePhotos.Where(f => f.ProductId == product.Id).ToListAsync();
         context.FurniturePhotos.RemoveRange(existing);
 
+        var colors = await context.FurnitureColorOptions
+            .Where(c => c.ProductId == product.Id)
+            .ToListAsync();
+
         var order = 0;
-        foreach (var url in urls.Where(u => !string.IsNullOrWhiteSpace(u)))
+        foreach (var (url, colorName) in lines.Where(u => !string.IsNullOrWhiteSpace(u.Url)))
         {
+            int? colorId = null;
+            if (!string.IsNullOrWhiteSpace(colorName))
+            {
+                var match = colors.FirstOrDefault(c =>
+                    c.Name.Equals(colorName, StringComparison.OrdinalIgnoreCase)
+                    || c.HexColor.Equals(colorName, StringComparison.OrdinalIgnoreCase));
+                colorId = match?.Id;
+            }
+
             context.FurniturePhotos.Add(new FurniturePhoto
             {
                 ProductId = product.Id,
                 Url = url.Trim(),
                 SortOrder = order,
-                IsPrimary = order == 0
+                IsPrimary = order == 0,
+                ColorOptionId = colorId
             });
             order++;
         }

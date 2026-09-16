@@ -16,4 +16,9 @@ public class FurniturePhoto
     public int SortOrder { get; set; }
 
     public bool IsPrimary { get; set; }
+
+    /// <summary>Optional finish/color this photo belongs to.</summary>
+    public int? ColorOptionId { get; set; }
+
+    public FurnitureColorOption? ColorOption { get; set; }
 }

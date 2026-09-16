@@ -18,6 +18,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<FurnitureCategory> FurnitureCategories => Set<FurnitureCategory>();
     public DbSet<FurnitureProduct> FurnitureProducts => Set<FurnitureProduct>();
     public DbSet<FurniturePhoto> FurniturePhotos => Set<FurniturePhoto>();
+    public DbSet<FurnitureColorOption> FurnitureColorOptions => Set<FurnitureColorOption>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -154,7 +155,21 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(p => p.Photos)
                 .HasForeignKey(f => f.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(f => f.ColorOption)
+                .WithMany(c => c.Photos)
+                .HasForeignKey(f => f.ColorOptionId)
+                .OnDelete(DeleteBehavior.SetNull);
             entity.HasIndex(f => f.ProductId);
+            entity.HasIndex(f => f.ColorOptionId);
+        });
+
+        modelBuilder.Entity<FurnitureColorOption>(entity =>
+        {
+            entity.HasOne(c => c.Product)
+                .WithMany(p => p.ColorOptions)
+                .HasForeignKey(c => c.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(c => c.ProductId);
         });
     }
 }
