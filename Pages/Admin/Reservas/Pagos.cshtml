@@ -43,6 +43,13 @@
             </div>
         </div>
 
+        <h2 class="h6 text-muted mb-3">Verificación de identidad</h2>
+        <div class="form-check mb-2">
+            <input asp-for="Input.RequireIdentitySelfie" class="form-check-input" />
+            <label asp-for="Input.RequireIdentitySelfie" class="form-check-label"></label>
+        </div>
+        <p class="form-text mb-4">Si lo desactiva, el cliente pasa directo al pago sin subir documento ni selfie.</p>
+
         <h2 class="h6 text-muted mb-3">Zelle</h2>
         <div class="form-check mb-3">
             <input asp-for="Input.ZelleEnabled" class="form-check-input" />

@@ -107,18 +107,31 @@ public class IndexModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
             FirmaContentType = "image/png",
             DepositAmount = settings.DepositAmount,
             AdminUsername = account.Username,
-            Estado = EstadoReservaGenerica.EsperandoIdentidad,
+            Estado = settings.RequireIdentitySelfie
+                ? EstadoReservaGenerica.EsperandoIdentidad
+                : EstadoReservaGenerica.EsperandoPago,
             FechaSolicitud = DateTime.UtcNow
         };
 
         context.ReservasGenericas.Add(reserva);
         await context.SaveChangesAsync();
 
+        if (settings.RequireIdentitySelfie)
+        {
+            return new JsonResult(new
+            {
+                success = true,
+                token = token.ToString(),
+                needsIdentity = true
+            });
+        }
+
         return new JsonResult(new
         {
             success = true,
             token = token.ToString(),
-            needsIdentity = true
+            needsIdentity = false,
+            payment = BuildPaymentPayload(settings, settings.DepositAmount)
         });
     }
 

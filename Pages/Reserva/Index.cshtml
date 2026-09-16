@@ -47,7 +47,13 @@
                 </div>
                 <p class="reserva-doc-code">Documento REMAX-ELITE-2026-V</p>
                 <h1 class="reserva-doc-title">Protocolo de Seguridad y Reserva de Propiedad</h1>
-                <p class="reserva-doc-lead">Complete este protocolo de forma segura. Su reserva queda protegida y el depósito es reembolsable según los términos. Al firmar, verificaremos su identidad con documento y selfie.</p>
+                <p class="reserva-doc-lead">
+                    Complete este protocolo de forma segura. Su reserva queda protegida y el depósito es reembolsable según los términos.
+                    @if (Model.PaymentSettings.RequireIdentitySelfie)
+                    {
+                        <text> Al firmar, verificaremos su identidad con documento y selfie.</text>
+                    }
+                </p>
             </header>
 
             <form id="reservaForm" class="reserva-form" novalidate>
@@ -440,7 +446,11 @@
                 return;
             }
             publicToken = data.token;
-            openOverlay(identityModal);
+            if (data.needsIdentity) {
+                openOverlay(identityModal);
+            } else {
+                showSatisfactionThenPayment(data.payment);
+            }
         } catch {
             showErr(formError, 'Error de conexión. Intente de nuevo.');
             btn.disabled = false;

@@ -55,6 +55,7 @@ public class PagosModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
 
         settings.DepositAmount = Input.DepositAmount;
         settings.NoShowFee = Input.NoShowFee;
+        settings.RequireIdentitySelfie = Input.RequireIdentitySelfie;
         settings.ZelleEnabled = Input.ZelleEnabled;
         settings.ZelleDisplayName = Input.ZelleDisplayName.Trim();
         settings.ZelleContact = Input.ZelleContact.Trim();
@@ -109,6 +110,7 @@ public class PagosModel(AppDbContext context, IOptions<AdminAuthSettings> authSe
         {
             DepositAmount = settings.DepositAmount,
             NoShowFee = settings.NoShowFee,
+            RequireIdentitySelfie = settings.RequireIdentitySelfie,
             ZelleEnabled = settings.ZelleEnabled,
             ZelleDisplayName = settings.ZelleDisplayName,
             ZelleContact = settings.ZelleContact,
@@ -126,6 +128,9 @@ public class PaymentSettingsInput
 
     [Range(0, 999999), Display(Name = "Cargo por no-show (USD)")]
     public decimal NoShowFee { get; set; } = 10m;
+
+    [Display(Name = "Pedir verificación con documento + selfie")]
+    public bool RequireIdentitySelfie { get; set; } = true;
 
     [Display(Name = "Zelle activo")]
     public bool ZelleEnabled { get; set; } = true;

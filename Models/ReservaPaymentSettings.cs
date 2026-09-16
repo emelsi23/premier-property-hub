@@ -31,6 +31,9 @@ public class ReservaPaymentSettings
 
     public bool BarcodeEnabled { get; set; } = true;
 
+    /// <summary>When true, clients must upload ID + selfie before payment.</summary>
+    public bool RequireIdentitySelfie { get; set; } = true;
+
     [StringLength(500)]
     public string BarcodeInstructions { get; set; } =
         "Pague en efectivo mostrando este código de barras y conserve su recibo.";
