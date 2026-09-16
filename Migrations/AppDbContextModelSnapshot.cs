@@ -375,45 +375,10 @@ namespace ApartamentosRenta.Migrations
                     b.ToTable("FurnitureCategories");
                 });
 
-            modelBuilder.Entity("ApartamentosRenta.Models.FurnitureColorOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("HexColor")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("FurnitureColorOptions");
-                });
-
             modelBuilder.Entity("ApartamentosRenta.Models.FurniturePhoto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ColorOptionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPrimary")
@@ -432,8 +397,6 @@ namespace ApartamentosRenta.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColorOptionId");
-
                     b.HasIndex("ProductId");
 
                     b.ToTable("FurniturePhotos");
@@ -443,9 +406,6 @@ namespace ApartamentosRenta.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("AllowColorPreview")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CategoryId")
@@ -953,31 +913,13 @@ namespace ApartamentosRenta.Migrations
                     b.Navigation("Propiedad");
                 });
 
-            modelBuilder.Entity("ApartamentosRenta.Models.FurnitureColorOption", b =>
-                {
-                    b.HasOne("ApartamentosRenta.Models.FurnitureProduct", "Product")
-                        .WithMany("ColorOptions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("ApartamentosRenta.Models.FurniturePhoto", b =>
                 {
-                    b.HasOne("ApartamentosRenta.Models.FurnitureColorOption", "ColorOption")
-                        .WithMany("Photos")
-                        .HasForeignKey("ColorOptionId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("ApartamentosRenta.Models.FurnitureProduct", "Product")
                         .WithMany("Photos")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ColorOption");
 
                     b.Navigation("Product");
                 });
@@ -1031,15 +973,8 @@ namespace ApartamentosRenta.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ApartamentosRenta.Models.FurnitureColorOption", b =>
-                {
-                    b.Navigation("Photos");
-                });
-
             modelBuilder.Entity("ApartamentosRenta.Models.FurnitureProduct", b =>
                 {
-                    b.Navigation("ColorOptions");
-
                     b.Navigation("Photos");
                 });
 

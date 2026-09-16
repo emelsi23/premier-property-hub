@@ -39,10 +39,5 @@ public class FurnitureProduct
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    /// <summary>Allow live color tint preview on product photos in the storefront.</summary>
-    public bool AllowColorPreview { get; set; } = true;
-
     public List<FurniturePhoto> Photos { get; set; } = [];
-
-    public List<FurnitureColorOption> ColorOptions { get; set; } = [];
 }

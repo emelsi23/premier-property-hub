@@ -49,7 +49,7 @@
         <input asp-for="CompareAtPrice" class="form-control" type="number" step="0.01" min="0" />
         <div class="form-text">Opcional: precio tachado (oferta).</div>
     </div>
-    <div class="col-md-4 d-flex align-items-end gap-4 pb-2 flex-wrap">
+    <div class="col-md-4 d-flex align-items-end gap-4 pb-2">
         <div class="form-check">
             <input asp-for="IsActive" class="form-check-input" />
             <label asp-for="IsActive" class="form-check-label"></label>
@@ -58,17 +58,6 @@
             <input asp-for="IsFeatured" class="form-check-input" />
             <label asp-for="IsFeatured" class="form-check-label"></label>
         </div>
-        <div class="form-check">
-            <input asp-for="AllowColorPreview" class="form-check-input" />
-            <label asp-for="AllowColorPreview" class="form-check-label"></label>
-        </div>
-    </div>
-
-    <div class="col-12">
-        <hr class="my-1" />
-        <label asp-for="ColorsText" class="form-label"></label>
-        <textarea asp-for="ColorsText" class="form-control font-monospace" rows="4" placeholder="Beige|#E8DCC8&#10;Charcoal|#2C2C2C&#10;Navy|#1B2A4A"></textarea>
-        <div class="form-text">Una línea por color: <code>Nombre|#HEX</code>. El cliente los verá como círculos para personalizar.</div>
     </div>
 
     <div class="col-12">
@@ -84,21 +73,13 @@
             </div>
             <p class="form-text">Quita URLs del cuadro de abajo para eliminar fotos.</p>
         }
-        <div class="row g-2 mb-2">
-            <div class="col-md-6">
-                <label class="form-label fw-normal small text-muted">Subir desde tu PC</label>
-                <input type="file" name="FotoUploads" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
-            </div>
-            <div class="col-md-6">
-                <label asp-for="UploadColorName" class="form-label fw-normal small text-muted"></label>
-                <input asp-for="UploadColorName" class="form-control" placeholder="ej. Beige (opcional)" />
-            </div>
-        </div>
-        <div class="form-text">JPG, PNG, WEBP o GIF · máx. 8 MB. Si pones un color, las fotos nuevas se asocian a ese acabado.</div>
+        <label class="form-label fw-normal small text-muted">Subir desde tu PC</label>
+        <input type="file" name="FotoUploads" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
+        <div class="form-text">JPG, PNG, WEBP o GIF · máx. 8 MB cada una · puedes seleccionar varias.</div>
         <span class="text-danger small" data-valmsg-for="FotoUploads" data-valmsg-replace="true"></span>
         <label asp-for="FotosUrls" class="form-label mt-3"></label>
-        <textarea asp-for="FotosUrls" class="form-control font-monospace" rows="5" placeholder="https://foto.jpg&#10;https://foto-beige.jpg|Beige&#10;/uploads/furniture/1/xxx.jpg|Navy"></textarea>
-        <div class="form-text">Una URL por línea. Opcional: <code>url|NombreDelColor</code> para ligar la foto a un acabado.</div>
+        <textarea asp-for="FotosUrls" class="form-control font-monospace" rows="4" placeholder="https://...&#10;/uploads/furniture/..."></textarea>
+        <div class="form-text">Opcional: una URL por línea (además de las subidas).</div>
         <span asp-validation-for="FotosUrls" class="text-danger"></span>
     </div>
 </div>

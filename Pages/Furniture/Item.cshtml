@@ -12,29 +12,9 @@
 else
 {
     var p = Model.Product;
-    var colors = p.ColorOptions.OrderBy(c => c.SortOrder).ToList();
     var photos = p.Photos.OrderBy(x => x.SortOrder).ToList();
-    var defaultColor = colors.FirstOrDefault(c => c.IsDefault) ?? colors.FirstOrDefault();
-    List<ApartamentosRenta.Models.FurniturePhoto> initialPhotos = photos;
-    if (defaultColor is not null)
-    {
-        var dedicated = photos.Where(ph => ph.ColorOptionId == defaultColor.Id).ToList();
-        if (dedicated.Count > 0)
-        {
-            initialPhotos = dedicated;
-        }
-        else
-        {
-            var shared = photos.Where(ph => ph.ColorOptionId == null).ToList();
-            if (shared.Count > 0)
-            {
-                initialPhotos = shared;
-            }
-        }
-    }
-    var main = initialPhotos.FirstOrDefault()?.Url ?? "/images/ironwood-logo.jpg";
+    var main = photos.FirstOrDefault()?.Url ?? "/images/ironwood-logo.jpg";
     var onSale = p.CompareAtPrice is > 0 && p.CompareAtPrice > p.Price;
-    var productUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/furniture/item/{p.Slug}";
 
     <p class="iw-breadcrumb">
         <a href="/furniture">Home</a>
@@ -45,17 +25,11 @@ else
         <text> / <strong>@p.Title</strong></text>
     </p>
 
-    <article class="iw-detail" id="iwProductDetail"
-             data-title="@p.Title"
-             data-sku="@p.Sku"
-             data-url="@productUrl"
-             data-wa-number="@ApartamentosRenta.Services.WhatsAppLinkHelper.DefaultNumber"
-             data-allow-preview="@(p.AllowColorPreview ? "true" : "false")">
+    <article class="iw-detail">
         <div class="iw-gallery">
             <div class="iw-gallery-wrap">
-                <div class="iw-gallery-main iw-colorize-stage" id="iwColorStage">
+                <div class="iw-gallery-main">
                     <img id="iwMainPhoto" class="iw-fade" src="@main" alt="@p.Title" />
-                    <div class="iw-colorize-tint" id="iwColorTint" hidden></div>
                 </div>
                 @if (photos.Count > 1)
                 {
@@ -63,24 +37,17 @@ else
                     <button type="button" class="iw-gallery-nav next" data-gallery-next aria-label="Foto siguiente">›</button>
                 }
             </div>
-            <div class="iw-thumbs" id="iwThumbs">
-                @for (var i = 0; i < initialPhotos.Count; i++)
-                {
-                    <button type="button"
-                            class="@(i == 0 ? "is-active" : null)"
-                            data-src="@initialPhotos[i].Url"
-                            data-color-id="@(initialPhotos[i].ColorOptionId?.ToString() ?? "")"
-                            aria-label="Foto @(i + 1)">
-                        <img src="@initialPhotos[i].Url" alt="" />
-                    </button>
-                }
-            </div>
-            <script type="application/json" id="iwPhotoData">
-                @Html.Raw(System.Text.Json.JsonSerializer.Serialize(photos.Select(ph => new {
-                    url = ph.Url,
-                    colorId = ph.ColorOptionId
-                })))
-            </script>
+            @if (photos.Count > 1)
+            {
+                <div class="iw-thumbs" id="iwThumbs">
+                    @for (var i = 0; i < photos.Count; i++)
+                    {
+                        <button type="button" class="@(i == 0 ? "is-active" : null)" data-src="@photos[i].Url" aria-label="Foto @(i + 1)">
+                            <img src="@photos[i].Url" alt="" />
+                        </button>
+                    }
+                </div>
+            }
         </div>
 
         <div class="iw-detail-panel">
@@ -101,53 +68,16 @@ else
                     <span class="iw-price">$@p.Price.ToString("N2")</span>
                 }
             </div>
-
-            @if (colors.Count > 0)
-            {
-                <div class="iw-customize" id="iwCustomize">
-                    <div class="iw-customize-head">
-                        <h2>Personalizar acabado</h2>
-                        <p>Elige un color. Las fotos se actualizan al instante.</p>
-                    </div>
-                    <p class="iw-selected-color">Acabado: <strong id="iwColorName">@(defaultColor?.Name ?? "—")</strong></p>
-                    <div class="iw-swatches" role="listbox" aria-label="Colores disponibles">
-                        @foreach (var c in colors)
-                        {
-                            var isActive = defaultColor is not null && c.Id == defaultColor.Id;
-                            <button type="button"
-                                    class="iw-swatch @(isActive ? "is-active" : null)"
-                                    role="option"
-                                    aria-selected="@(isActive ? "true" : "false")"
-                                    data-color-id="@c.Id"
-                                    data-color-name="@c.Name"
-                                    data-color-hex="@c.HexColor"
-                                    title="@c.Name"
-                                    style="--swatch:@c.HexColor">
-                                <span class="visually-hidden">@c.Name</span>
-                            </button>
-                        }
-                    </div>
-                    @if (p.AllowColorPreview)
-                    {
-                        <div class="iw-tint-controls">
-                            <label for="iwTintStrength">Intensidad del preview</label>
-                            <input type="range" id="iwTintStrength" min="0" max="70" value="32" />
-                        </div>
-                        <p class="iw-customize-note">Si un color no tiene fotos propias, verás un preview tintado sobre la imagen.</p>
-                    }
-                </div>
-            }
-
             @if (!string.IsNullOrWhiteSpace(p.ShortDescription))
             {
                 <p class="iw-detail-desc" style="margin-bottom:0.5rem;color:#1c1917;font-weight:600;">@p.ShortDescription</p>
             }
             <p class="iw-detail-desc">@p.Description</p>
 
-            <a class="iw-wa-btn" id="iwWaBtn" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">
+            <a class="iw-wa-btn" href="@Model.WhatsAppUrl" target="_blank" rel="noopener noreferrer">
                 Pedir por WhatsApp
             </a>
-            <p class="iw-wa-note">El mensaje incluye el producto, el color elegido y el link. Sin carrito ni tarjeta.</p>
+            <p class="iw-wa-note">Abre WhatsApp con el link de este producto. Sin carrito ni pago con tarjeta.</p>
         </div>
     </article>
 }

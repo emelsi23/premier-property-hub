@@ -35,68 +35,13 @@ public class FurnitureProductInput
     [Display(Name = "Destacado")]
     public bool IsFeatured { get; set; }
 
-    [Display(Name = "Permitir preview de color en la tienda")]
-    public bool AllowColorPreview { get; set; } = true;
-
-    /// <summary>One color per line: Name|#RRGGBB</summary>
-    [Display(Name = "Colores / acabados")]
-    public string ColorsText { get; set; } = string.Empty;
-
-    /// <summary>One photo per line: url  OR  url|ColorName</summary>
     [Display(Name = "Fotos existentes (URLs)")]
     public string FotosUrls { get; set; } = string.Empty;
 
-    [Display(Name = "Color para fotos nuevas")]
-    public string? UploadColorName { get; set; }
-
-    public IReadOnlyList<(string Url, string? ColorName)> ParseFotoLines()
-    {
-        var list = new List<(string Url, string? ColorName)>();
-        foreach (var raw in (FotosUrls ?? string.Empty)
-                     .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            if (string.IsNullOrWhiteSpace(raw))
-            {
-                continue;
-            }
-
-            var parts = raw.Split('|', 2, StringSplitOptions.TrimEntries);
-            var url = parts[0];
-            var color = parts.Length > 1 && !string.IsNullOrWhiteSpace(parts[1]) ? parts[1] : null;
-            if (!string.IsNullOrWhiteSpace(url))
-            {
-                list.Add((url, color));
-            }
-        }
-
-        return list;
-    }
-
     public IEnumerable<string> ParseFotoUrls() =>
-        ParseFotoLines().Select(x => x.Url);
-
-    public IReadOnlyList<(string Name, string Hex)> ParseColors()
-    {
-        var list = new List<(string Name, string Hex)>();
-        foreach (var raw in (ColorsText ?? string.Empty)
-                     .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            var parts = raw.Split('|', 2, StringSplitOptions.TrimEntries);
-            var name = parts[0];
-            var hex = parts.Length > 1 ? parts[1] : "#C4A574";
-            if (!hex.StartsWith('#'))
-            {
-                hex = "#" + hex;
-            }
-
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                list.Add((name, hex.ToUpperInvariant()));
-            }
-        }
-
-        return list;
-    }
+        (FotosUrls ?? string.Empty)
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(u => !string.IsNullOrWhiteSpace(u));
 
     public static FurnitureProductInput FromEntity(FurnitureProduct p) => new()
     {
@@ -110,14 +55,6 @@ public class FurnitureProductInput
         CategoryId = p.CategoryId,
         IsActive = p.IsActive,
         IsFeatured = p.IsFeatured,
-        AllowColorPreview = p.AllowColorPreview,
-        ColorsText = string.Join(Environment.NewLine,
-            p.ColorOptions.OrderBy(c => c.SortOrder)
-                .Select(c => $"{c.Name}|{c.HexColor}")),
-        FotosUrls = string.Join(Environment.NewLine,
-            p.Photos.OrderBy(x => x.SortOrder).Select(x =>
-                x.ColorOption is null
-                    ? x.Url
-                    : $"{x.Url}|{x.ColorOption.Name}"))
+        FotosUrls = string.Join(Environment.NewLine, p.Photos.OrderBy(x => x.SortOrder).Select(x => x.Url))
     };
 }

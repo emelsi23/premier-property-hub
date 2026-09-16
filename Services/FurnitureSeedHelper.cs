@@ -10,65 +10,18 @@ public static class FurnitureSeedHelper
     {
         await EnsureCategoriesAsync(context);
 
-        if (!await context.FurnitureProducts.AnyAsync())
-        {
-            var categories = await context.FurnitureCategories.ToDictionaryAsync(c => c.Slug, c => c.Id);
-            var now = DateTime.UtcNow;
-            var products = BuildSampleProducts(categories, now);
-
-            context.FurnitureProducts.AddRange(products);
-            await context.SaveChangesAsync();
-            Console.WriteLine($"Furniture catalog seeded: {products.Count} products.");
-        }
-
-        await EnsureSampleColorsAsync(context);
-    }
-
-    private static async Task EnsureSampleColorsAsync(AppDbContext context)
-    {
-        var productsNeedingColors = await context.FurnitureProducts
-            .Include(p => p.ColorOptions)
-            .Where(p => p.IsActive && !p.ColorOptions.Any())
-            .ToListAsync();
-
-        if (productsNeedingColors.Count == 0)
+        if (await context.FurnitureProducts.AnyAsync())
         {
             return;
         }
 
-        var palette = new (string Name, string Hex)[]
-        {
-            ("Natural Beige", "#E8DCC8"),
-            ("Warm Taupe", "#B8A08A"),
-            ("Charcoal", "#2C2C2C"),
-            ("Navy", "#1B2A4A"),
-            ("Forest", "#2F4F3E"),
-            ("Cream", "#F5F0E6")
-        };
+        var categories = await context.FurnitureCategories.ToDictionaryAsync(c => c.Slug, c => c.Id);
+        var now = DateTime.UtcNow;
+        var products = BuildSampleProducts(categories, now);
 
-        foreach (var product in productsNeedingColors)
-        {
-            product.AllowColorPreview = true;
-            // Soft goods / seating get more color options; wood pieces get fewer finishes.
-            var isSoft = product.Sku.Contains("-LR-", StringComparison.OrdinalIgnoreCase)
-                         || product.Sku.Contains("-BD-", StringComparison.OrdinalIgnoreCase)
-                         || product.Sku.Contains("-SL-", StringComparison.OrdinalIgnoreCase);
-            var colors = isSoft ? palette : palette.Take(3).ToArray();
-            for (var i = 0; i < colors.Length; i++)
-            {
-                context.FurnitureColorOptions.Add(new FurnitureColorOption
-                {
-                    ProductId = product.Id,
-                    Name = colors[i].Name,
-                    HexColor = colors[i].Hex,
-                    SortOrder = i,
-                    IsDefault = i == 0
-                });
-            }
-        }
-
+        context.FurnitureProducts.AddRange(products);
         await context.SaveChangesAsync();
-        Console.WriteLine($"Furniture color options seeded for {productsNeedingColors.Count} products.");
+        Console.WriteLine($"Furniture catalog seeded: {products.Count} products.");
     }
 
     private static async Task EnsureCategoriesAsync(AppDbContext context)
@@ -277,7 +230,6 @@ public static class FurnitureSeedHelper
                 CategoryId = categoryId,
                 IsActive = true,
                 IsFeatured = s.Featured,
-                AllowColorPreview = true,
                 CreatedAt = now,
                 UpdatedAt = now,
                 Photos = s.Photos.Select((url, i) => new FurniturePhoto
@@ -285,14 +237,7 @@ public static class FurnitureSeedHelper
                     Url = url,
                     SortOrder = i,
                     IsPrimary = i == 0
-                }).ToList(),
-                ColorOptions =
-                [
-                    new FurnitureColorOption { Name = "Natural Beige", HexColor = "#E8DCC8", SortOrder = 0, IsDefault = true },
-                    new FurnitureColorOption { Name = "Warm Taupe", HexColor = "#B8A08A", SortOrder = 1 },
-                    new FurnitureColorOption { Name = "Charcoal", HexColor = "#2C2C2C", SortOrder = 2 },
-                    new FurnitureColorOption { Name = "Navy", HexColor = "#1B2A4A", SortOrder = 3 }
-                ]
+                }).ToList()
             };
             list.Add(product);
         }
