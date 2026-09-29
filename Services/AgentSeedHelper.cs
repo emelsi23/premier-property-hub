@@ -15,13 +15,41 @@ public static class AgentSeedHelper
     private static readonly DateTime MarisolDelgadoVerificationDate =
         new(2017, 1, 4, 0, 0, 0, DateTimeKind.Utc);
 
+    private static readonly DateTime VictorSanchezVerificationDate =
+        new(2021, 3, 15, 0, 0, 0, DateTimeKind.Utc);
+
+    private static readonly DateTime BeboVerificationDate =
+        new(2020, 6, 8, 0, 0, 0, DateTimeKind.Utc);
+
     public static async Task EnsureSampleAgentAsync(AppDbContext context)
     {
         await EnsureAgentAsync(context, BuildMariaAngelica());
         await EnsureAgentAsync(context, BuildRobertoJGuzman());
         await EnsureAgentAsync(context, BuildSofiaRamirez());
         await EnsureAgentAsync(context, BuildMarisolDelgado());
+        await RenameAgentSlugAsync(context, "victor-sanchez", "victor-lopez");
+        await EnsureAgentAsync(context, BuildVictorSanchez());
+        await EnsureAgentAsync(context, BuildBebo());
         await SyncAgentWhatsAppFromTelefonoAsync(context);
+    }
+
+    private static async Task RenameAgentSlugAsync(AppDbContext context, string fromSlug, string toSlug)
+    {
+        var from = await context.Agentes.FirstOrDefaultAsync(a => a.Slug == fromSlug);
+        if (from is null)
+        {
+            return;
+        }
+
+        var to = await context.Agentes.FirstOrDefaultAsync(a => a.Slug == toSlug);
+        if (to is not null)
+        {
+            return;
+        }
+
+        from.Slug = toSlug;
+        from.FechaActualizacion = DateTime.UtcNow;
+        await context.SaveChangesAsync();
     }
 
     private static async Task EnsureAgentAsync(AppDbContext context, Agente definition)
@@ -78,6 +106,14 @@ public static class AgentSeedHelper
         else if (definition.Slug == "marisol-delgado")
         {
             existing.FechaVerificacion = MarisolDelgadoVerificationDate;
+        }
+        else if (definition.Slug == "victor-lopez")
+        {
+            existing.FechaVerificacion = VictorSanchezVerificationDate;
+        }
+        else if (definition.Slug == "bebo")
+        {
+            existing.FechaVerificacion = BeboVerificationDate;
         }
         else if (existing.Verificado && existing.FechaVerificacion is null)
         {
@@ -259,6 +295,64 @@ public static class AgentSeedHelper
         Activo = true,
         FechaVerificacion = MarisolDelgadoVerificationDate,
         FechaCreacion = MarisolDelgadoVerificationDate,
+        FechaActualizacion = DateTime.UtcNow
+    };
+
+    private static Agente BuildVictorSanchez() => new()
+    {
+        NombreCompleto = "Victor Lopez",
+        Slug = "victor-lopez",
+        FotoUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=640&q=80",
+        RolTitulo = "Agente inmobiliario verificado · Premier Property Hub",
+        Calificacion = 4.9m,
+        TotalResenas = 86,
+        NumeroLicencia = "FL-SL-5821047",
+        EstadoLicencia = "Florida",
+        AnosExperiencia = 7,
+        Biografia =
+            "Agente verificado de Premier Property Hub. Atiendo alquileres residenciales en español e inglés, con visitas coordinadas, perfil público y un proceso claro antes de cualquier pago o reserva.",
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(407) 555-0148"),
+        Email = "victor.lopez@premierpropertyhub.com",
+        Telefono = "(407) 555-0148",
+        AreasServicio = "Orlando, Kissimmee, Tampa, Miami, Florida",
+        Idiomas = "Español, Inglés",
+        PropiedadesActivas = 22,
+        TiempoRespuestaHoras = 1m,
+        PorcentajeRespuesta = 99,
+        CodigoVerificacion = "PPH-VL24",
+        Verificado = true,
+        Activo = true,
+        FechaVerificacion = VictorSanchezVerificationDate,
+        FechaCreacion = VictorSanchezVerificationDate,
+        FechaActualizacion = DateTime.UtcNow
+    };
+
+    private static Agente BuildBebo() => new()
+    {
+        NombreCompleto = "Bebo",
+        Slug = "bebo",
+        FotoUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=80",
+        RolTitulo = "Agente inmobiliario verificado · Premier Property Hub",
+        Calificacion = 4.8m,
+        TotalResenas = 74,
+        NumeroLicencia = "TX-RE-6102948",
+        EstadoLicencia = "Texas",
+        AnosExperiencia = 6,
+        Biografia =
+            "Agente verificado de Premier Property Hub. Acompaño a clientes en alquileres residenciales con documentación clara, visitas coordinadas y respuesta rápida en español e inglés.",
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(713) 555-0192"),
+        Email = "bebo@premierpropertyhub.com",
+        Telefono = "(713) 555-0192",
+        AreasServicio = "Houston, Katy, Sugar Land, Dallas, Texas",
+        Idiomas = "Español, Inglés",
+        PropiedadesActivas = 18,
+        TiempoRespuestaHoras = 1.5m,
+        PorcentajeRespuesta = 98,
+        CodigoVerificacion = "PPH-BB24",
+        Verificado = true,
+        Activo = true,
+        FechaVerificacion = BeboVerificationDate,
+        FechaCreacion = BeboVerificationDate,
         FechaActualizacion = DateTime.UtcNow
     };
 }
