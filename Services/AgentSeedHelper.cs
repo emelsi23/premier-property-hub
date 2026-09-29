@@ -29,6 +29,7 @@ public static class AgentSeedHelper
         await EnsureAgentAsync(context, BuildMarisolDelgado());
         await RenameAgentSlugAsync(context, "victor-sanchez", "victor-lopez");
         await EnsureAgentAsync(context, BuildVictorSanchez());
+        await RenameAgentSlugAsync(context, "bebo", "omar-aguilar-velasquez");
         await EnsureAgentAsync(context, BuildBebo());
         await SyncAgentWhatsAppFromTelefonoAsync(context);
     }
@@ -111,9 +112,13 @@ public static class AgentSeedHelper
         {
             existing.FechaVerificacion = VictorSanchezVerificationDate;
         }
-        else if (definition.Slug == "bebo")
+        else if (definition.Slug == "omar-aguilar-velasquez")
         {
             existing.FechaVerificacion = BeboVerificationDate;
+            existing.FotoUrl = definition.FotoUrl;
+            existing.Telefono = definition.Telefono;
+            existing.WhatsAppNumber = definition.WhatsAppNumber;
+            existing.CodigoVerificacion = definition.CodigoVerificacion;
         }
         else if (existing.Verificado && existing.FechaVerificacion is null)
         {
@@ -329,26 +334,26 @@ public static class AgentSeedHelper
 
     private static Agente BuildBebo() => new()
     {
-        NombreCompleto = "Bebo",
-        Slug = "bebo",
-        FotoUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=80",
-        RolTitulo = "Agente inmobiliario verificado · Premier Property Hub",
-        Calificacion = 4.8m,
-        TotalResenas = 74,
-        NumeroLicencia = "TX-RE-6102948",
-        EstadoLicencia = "Texas",
-        AnosExperiencia = 6,
+        NombreCompleto = "Omar Aguilar Velásquez",
+        Slug = "omar-aguilar-velasquez",
+        FotoUrl = "/images/agents/omar-aguilar-velasquez.jpg",
+        RolTitulo = "Agente inmobiliario RE/MAX · Miami",
+        Calificacion = 4.9m,
+        TotalResenas = 81,
+        NumeroLicencia = "FL-SL-7049182",
+        EstadoLicencia = "Florida",
+        AnosExperiencia = 5,
         Biografia =
-            "Agente verificado de Premier Property Hub. Acompaño a clientes en alquileres residenciales con documentación clara, visitas coordinadas y respuesta rápida en español e inglés.",
-        WhatsAppNumber = AgentWhatsAppFromTelefono("(713) 555-0192"),
-        Email = "bebo@premierpropertyhub.com",
-        Telefono = "(713) 555-0192",
-        AreasServicio = "Houston, Katy, Sugar Land, Dallas, Texas",
+            "Agente verificado de Premier Property Hub en Miami. Atiendo alquileres residenciales en español e inglés, con visitas coordinadas, perfil público y un proceso claro antes de cualquier pago o reserva.",
+        WhatsAppNumber = AgentWhatsAppFromTelefono("(305) 555-0174"),
+        Email = "omar.aguilar@premierpropertyhub.com",
+        Telefono = "(305) 555-0174",
+        AreasServicio = "Miami, Miami Beach, Brickell, Coral Gables, Doral, Florida",
         Idiomas = "Español, Inglés",
-        PropiedadesActivas = 18,
-        TiempoRespuestaHoras = 1.5m,
-        PorcentajeRespuesta = 98,
-        CodigoVerificacion = "PPH-BB24",
+        PropiedadesActivas = 24,
+        TiempoRespuestaHoras = 1m,
+        PorcentajeRespuesta = 99,
+        CodigoVerificacion = "PPH-OAV8",
         Verificado = true,
         Activo = true,
         FechaVerificacion = BeboVerificationDate,
