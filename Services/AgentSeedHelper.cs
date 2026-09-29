@@ -302,8 +302,8 @@ public static class AgentSeedHelper
     {
         NombreCompleto = "Victor Lopez",
         Slug = "victor-lopez",
-        FotoUrl = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=640&q=80",
-        RolTitulo = "Agente inmobiliario verificado · Premier Property Hub",
+        FotoUrl = "/images/agents/victor-lopez.png",
+        RolTitulo = "Agente inmobiliario RE/MAX · Florida",
         Calificacion = 4.9m,
         TotalResenas = 86,
         NumeroLicencia = "FL-SL-5821047",
